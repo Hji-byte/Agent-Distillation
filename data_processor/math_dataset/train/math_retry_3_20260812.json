@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "dataset_info": {
+      "name": "MATH retry subset",
+      "fold": "train",
+      "examples_num": 3,
+      "total_examples": 3,
+      "creation_date": "2026-08-12",
+      "filtering_criteria": "Only the three UTF-8 console failures from math_prompt_10"
+    }
+  },
+  "examples": [
+    {
+      "id": 1,
+      "question": "What is the smallest whole number $b$ such that 62 can be expressed in base $b$ using only three digits?",
+      "answer": "4",
+      "level": "Level 4",
+      "type": "Number Theory",
+      "dataset_name": "MATH",
+      "split": "train"
+    },
+    {
+      "id": 2,
+      "question": "Let $p$ and $q$ be positive integers such that\\[\\frac{5}{9} < \\frac{p}{q} < \\frac{4}{7}\\]and $q$ is as small as possible. What is $q-p$?\n$\\textbf{(A) } 7 \\qquad \\textbf{(B) } 11 \\qquad \\textbf{(C) } 13 \\qquad \\textbf{(D) } 17 \\qquad \\textbf{(E) } 19$\n",
+      "answer": "7",
+      "level": "Level 5",
+      "type": "Number Theory",
+      "dataset_name": "MATH",
+      "split": "train"
+    },
+    {
+      "id": 3,
+      "question": "Let $x$ and $y$ be real numbers such that $2(x^2 + y^2) = x + y.$  Find the maximum value of $x - y.$",
+      "answer": "\\frac{1}{2}",
+      "level": "Level 4",
+      "type": "Algebra",
+      "dataset_name": "MATH",
+      "split": "train"
+    }
+  ]
+}

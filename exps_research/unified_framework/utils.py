@@ -67,7 +67,7 @@ def load_dataset(file_path: str) -> List[Dict]:
         return json.load(f)["examples"]
 
 
-def get_answered_questions(file_path: str) -> Set[str]:
+def get_answered_questions(file_path: str, require_successful_agent_run: bool = False) -> Set[str]:
     """
     Get set of questions that have already been answered
     
@@ -85,6 +85,17 @@ def get_answered_questions(file_path: str) -> Set[str]:
                     entry = json.loads(line)
                     if type(entry) == str:
                         continue
+                    if require_successful_agent_run:
+                        log_data = entry.get("log_data")
+                        metadata = log_data.get("metadata", {}) if isinstance(log_data, dict) else {}
+                        trajectory_steps = log_data.get("trajectory_steps") if isinstance(log_data, dict) else None
+                        if (
+                            entry.get("error")
+                            or entry.get("generated_answer") is None
+                            or metadata.get("state") != "success"
+                            or not isinstance(trajectory_steps, list)
+                        ):
+                            continue
                     answered_questions.add(entry["question"])
                 except json.JSONDecodeError:
                     continue
@@ -146,8 +157,10 @@ def prepare_output_path(
     n: int = 1,
     seed: int = 42,
     max_steps: int = None,
+    max_tokens: int = None,
+    retry_max_tokens: int = None,
     experiment_type: str = None,
-    additional_postfix: list = [],
+    additional_postfix: Optional[list] = None,
 ) -> Dict[str, Any]:
     """
     Prepare output path for experiment results
@@ -167,9 +180,12 @@ def prepare_output_path(
     """
     # Extract dataset name from path
     dataset_name = os.path.splitext(os.path.basename(dataset_file))[0]
-    fold = dataset_file.strip("/").split("/")[-2]
+    fold = Path(dataset_file).parent.name
     dataset_name = f"{dataset_name}_{fold}"
-    model_id_base = model_id.split("/")[-1]
+    # Accept both Hugging Face IDs and absolute local paths. In particular,
+    # using a Windows path directly in a filename would otherwise retain the
+    # drive colon (for example ``E:``), producing an invalid output path.
+    model_id_base = os.path.basename(os.path.normpath(model_id))
     
     # Handle folder hierarchy
     if lora_folder:
@@ -201,6 +217,12 @@ def prepare_output_path(
     if max_steps:
         filename_parts.append(f"steps={max_steps}")
 
+    if max_tokens:
+        filename_parts.append(f"max_tokens={max_tokens}")
+
+    if retry_max_tokens:
+        filename_parts.append(f"retry_max_tokens={retry_max_tokens}")
+
     if additional_postfix:
         filename_parts.extend(additional_postfix)
     
@@ -213,4 +235,4 @@ def prepare_output_path(
         "output_file": output_file,
         "dataset_name": dataset_name,
         "model_id_base": model_id_base,
-    } 
+    }

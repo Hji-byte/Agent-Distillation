@@ -29,8 +29,8 @@ def load_prompt(prompt_name: str = "teacher_model") -> str:
     Returns:
         System prompt string
     """
-    prompt_file = Path(__file__).parent.parent.parent / "src" / "smolagents" / "prompts" / f"{prompt_name}.yaml"
-    with open(prompt_file, 'r') as f:
+    prompt_file = Path(__file__).resolve().parents[1] / "prompts" / f"{prompt_name}.yaml"
+    with open(prompt_file, "r", encoding="utf-8") as f:
         prompt_data = yaml.safe_load(f)
     return prompt_data['system_prompt']
 
@@ -48,6 +48,7 @@ def process_qa_experiment(
     verbose: bool = False,
     use_process_pool: bool = False,
     use_single_endpoint: bool = False,
+    max_samples: int = None,
     **extra_kwargs
 ) -> Dict:
     """
@@ -79,8 +80,20 @@ def process_qa_experiment(
         available_questions = list(prefix_memory.keys())
         entries = [entry for entry in entries if entry["question"] in available_questions]
     
+    if max_samples is not None:
+        if max_samples < 1:
+            raise ValueError("max_samples must be at least 1 when provided")
+        entries = entries[:max_samples]
+
     # Check for already processed questions
-    answered_questions = get_answered_questions(output_file) if output_file else set()
+    answered_questions = (
+        get_answered_questions(
+            output_file,
+            require_successful_agent_run=experiment_type == "agent",
+        )
+        if output_file
+        else set()
+    )
     
     # Filter questions that need to be processed
     entries_todo = [entry for entry in entries if entry["question"] not in answered_questions]
@@ -96,7 +109,12 @@ def process_qa_experiment(
             'costs': {
                 'total_cost': 0,
                 'average_cost_per_question': 0
-            }
+            },
+            'token_usage': {
+                'input_tokens': 0,
+                'output_tokens': 0,
+                'total_tokens': 0,
+            },
         }
     
     print("Output file:", output_file)
@@ -132,6 +150,8 @@ def process_qa_experiment(
     # Calculate statistics
     total_questions = len(results)
     total_cost = sum(result.get("cost", 0) for result in results)
+    input_tokens = sum(result.get("input_tokens", 0) for result in results)
+    output_tokens = sum(result.get("output_tokens", 0) for result in results)
     avg_cost = total_cost / total_questions if total_questions > 0 else 0
     
     stats = {
@@ -143,8 +163,19 @@ def process_qa_experiment(
         'costs': {
             'total_cost': total_cost,
             'average_cost_per_question': avg_cost
-        }
+        },
+        'token_usage': {
+            'input_tokens': input_tokens,
+            'output_tokens': output_tokens,
+            'total_tokens': input_tokens + output_tokens,
+        },
     }
     
-    print(f"All questions processed. Total cost: ${total_cost:.4f}")
-    return stats 
+    if experiment_type == "agent":
+        print(
+            "All questions processed. Token usage: "
+            f"{input_tokens} input + {output_tokens} output"
+        )
+    else:
+        print(f"All questions processed. Total cost: ${total_cost:.4f}")
+    return stats

@@ -1,0 +1,39 @@
+{
+  "schema_version": "merged-sft-v1",
+  "output_path": "data_processor/processed/sft/qwen35_27b_math_medium_hard_1646_v126.jsonl",
+  "order": [
+    "base",
+    "medium_retry",
+    "hard_retry"
+  ],
+  "sources": [
+    {
+      "label": "base",
+      "path": "generated base trajectories (local artifact)",
+      "input_rows": 1576,
+      "kept_rows": 1576,
+      "duplicate_tasks": 0
+    },
+    {
+      "label": "medium_retry",
+      "path": "generated medium retry trajectories (local artifact)",
+      "input_rows": 26,
+      "kept_rows": 26,
+      "duplicate_tasks": 0
+    },
+    {
+      "label": "hard_retry",
+      "path": "generated hard retry trajectories (local artifact)",
+      "input_rows": 44,
+      "kept_rows": 44,
+      "duplicate_tasks": 0
+    }
+  ],
+  "total_input_rows": 1646,
+  "total_duplicate_tasks": 0,
+  "total_kept": 1646,
+  "max_length": 4096,
+  "max_assistant_tokens": 2048,
+  "teacher_model": "qwen3.5-27b",
+  "student_tokenizer": "Qwen3.5-0.8B"
+}

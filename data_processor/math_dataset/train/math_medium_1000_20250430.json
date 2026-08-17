@@ -1129,7 +1129,7 @@
         {
             "id": 124,
             "question": "What is the largest value of $x$, if $\\frac{x}{5} + \\frac{1}{5x} = \\frac{1}{2}$?",
-            "answer": null,
+            "answer": "2",
             "level": "Level 3",
             "type": "Algebra",
             "dataset_name": "MATH",
@@ -4684,7 +4684,7 @@
         {
             "id": 519,
             "question": "If $(x + y)^2 = 1$ and $xy = -4$, what is the value of $x^2 + y^2$?",
-            "answer": null,
+            "answer": "9",
             "level": "Level 3",
             "type": "Algebra",
             "dataset_name": "MATH",

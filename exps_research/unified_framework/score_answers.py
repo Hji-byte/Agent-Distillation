@@ -13,13 +13,46 @@ from pydantic import BaseModel
 try:
     from .math_utils.qwen_math_parser import extract_answer
     from .math_utils.qwen_math_grader import math_equal
+    from .path_utils import bounded_artifact_path
 except ImportError:
     from math_utils.qwen_math_parser import extract_answer
     from math_utils.qwen_math_grader import math_equal
+    from path_utils import bounded_artifact_path
 
 class ResponseFormat(BaseModel):
     explanation: str
     score: int
+
+
+def select_attempt_per_question(entries: List[Dict]) -> List[Dict]:
+    """Select one record per question for resume-safe evaluation.
+
+    A resumed run intentionally retries failed questions by appending a new
+    record to the same JSONL file. Prefer the latest successful record; if a
+    question never succeeded, keep its latest failure. This prevents an old
+    failed attempt and its successful retry from both entering the accuracy
+    denominator.
+    """
+    selected = {}
+    question_order = []
+
+    def is_successful(entry: Dict) -> bool:
+        return not entry.get("error") and entry.get("generated_answer") is not None
+
+    for entry in entries:
+        question = entry.get("question")
+        if question is None:
+            raise ValueError("Every scored record must contain a question")
+        if question not in selected:
+            question_order.append(question)
+            selected[question] = entry
+            continue
+
+        previous = selected[question]
+        if is_successful(entry) or not is_successful(previous):
+            selected[question] = entry
+
+    return [selected[question] for question in question_order]
 
 def load_api_key() -> str:
     """Load OpenAI API key from file"""
@@ -140,6 +173,7 @@ def process_entry(args):
         result["score"] = False
         result["explanation"] = ""
         result["cost"] = 0.0
+        return result
 
     if "true_answer" in entry.keys():
         gold_key = "true_answer"
@@ -200,7 +234,7 @@ def score_qa_results(
 
     # Generate output filename based on input filename
     base_filename = os.path.splitext(filename)[0]
-    output_file = os.path.join(output_dir, f"{base_filename}_scored.jsonl")
+    output_file = bounded_artifact_path(output_dir, base_filename, "_scored.jsonl")
 
     # Read all entries first
     entries = []
@@ -210,9 +244,16 @@ def score_qa_results(
             if type(entry) == str:
                 continue # Invalid entry
             entries.append(entry)
+    raw_record_count = len(entries)
+    entries = select_attempt_per_question(entries)
 
-    # Create a pool of models
-    models = [setup_scoring_model() for _ in range(max_workers)]
+    # Mathematical answers are graded deterministically and do not need an
+    # LLM judge. Only factual tasks create scoring model clients.
+    models = (
+        [setup_scoring_model() for _ in range(max_workers)]
+        if task_type == "fact"
+        else [None] * max_workers
+    )
     # Process entries in parallel
     if single_thread:
         # Process entries sequentially with a for-loop
@@ -248,6 +289,8 @@ def score_qa_results(
     scores = [r['score'] for r in results]
     stats = {
         "log_file": log_file,
+        "raw_records": raw_record_count,
+        "duplicate_records_ignored": raw_record_count - len(entries),
         'total_questions': len(results),
         'correct_answers': sum(scores),
         'accuracy': sum(scores) / len(scores) if scores else 0,
@@ -259,7 +302,11 @@ def score_qa_results(
     }
 
     # Save summary statistics
-    summary_file = os.path.join(output_dir, f"evaluation_summary_{base_filename}.json")
+    summary_file = bounded_artifact_path(
+        output_dir,
+        f"evaluation_summary_{base_filename}",
+        ".json",
+    )
     with open(summary_file, 'w') as f:
         json.dump(stats, f, indent=2)
 

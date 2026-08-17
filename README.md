@@ -1,174 +1,115 @@
-# Agent Distillation
+# Math Agent Distillation on smolagents 1.26
 
-<p align="center">
-  <img src="images/agent_distillation_entry.png" alt="Alt text" width="350"/>
-</p>
+This repository distills tool-using mathematical reasoning from a Qwen3.5-27B teacher into a Qwen3.5-0.8B student. The agent runtime is a maintained fork of `smolagents==1.26.0`, rather than the older framework snapshot shipped with the reference paper.
 
-`agent-distillation` is a library that supports **distillation** of large language agents into small langauge models, with just a few scripts!
+The current pipeline is:
 
-This library accompanies our academic paper, [**Distilling LLM Agents into Small Models with Retrieval and Code Tools**](https://arxiv.org/abs/2505.17612), where we demonstrate how small language models can learn to act like powerful LLM agents by mimicking their agentic behaviors, augmented with retrieval and code execution capabilities.
+```text
+MATH problems
+  -> Qwen3.5-27B + CodeAgent teacher
+  -> execution and answer grading
+  -> trajectory validation / token filtering
+  -> 1,646-example SFT dataset
+  -> QLoRA fine-tuning of Qwen3.5-0.8B
+  -> Math500 agent evaluation
+```
 
-Built on top of [`smolagents` v1.13.0.dev0](https://github.com/huggingface/smolagents), this library supercharges the agent training pipeline with essential utilities for logging, training, and benchmarking, all optimized for simplicity and reproducibility.
+The repository also contains an isolated research extension for student-state-aware trajectory repair. It does not alter the baseline teacher-generation or SFT paths.
 
-## 🔧 What This Library Offers
+## Repository layout
 
-In addition to the powerful capabilities of `smolagents`, this library introduces:
+- `smolagents-1.26.0-fork/`: vendored and modified smolagents v1.26.0 runtime.
+- `exps_research/`: experiment runners, trajectory processing, SFT, evaluation, and repair research.
+- `scripts/`: user-facing launchers and dataset utilities.
+- `data_processor/math_dataset/`: source math datasets used by the experiments.
+- `data_processor/processed/sft/`: final, versioned SFT dataset and its summary.
+- `docs/`: project structure and conventions.
 
-1. 📜 **Logging**: Seamlessly save agent run logs to create training-ready trajectories.
-2. 🎓 **Training**: Use [TRL](https://github.com/huggingface/trl)'s SFT trainer to train small agents that remain compatible with `smolagents`.
-3. 📊 **Benchmarking**: Evaluate your distilled agents on factual and mathematical reasoning benchmarks using a single script.
+Generated logs, checkpoints, virtual environments, model weights, private records, and legacy paper snapshots are intentionally excluded from Git.
 
-## Recent Updates
-- [2025.06] We upload the teacher agent trajectories (both [baseline](https://huggingface.co/datasets/agent-distillation/Qwen2.5-32B-Instruct_agent_trajectories_2k) and [first-thought prefix](https://huggingface.co/datasets/agent-distillation/Qwen2.5-32B-Instruct_agent_trajectories_2k_prefix) version) and the models including [agent-distilled Qwen2.5-1.5B-Instruct](https://huggingface.co/agent-distillation/agent_distilled_Qwen2.5-1.5B-Instruct) model on huggingface hub! Visit [https://huggingface.co/agent-distillation](https://huggingface.co/agent-distillation) for more.
-- [2025.05] We open-source the Agent Distillation codebase.
+## Setup
 
-## 📦 Contents
-
-1. [Installation](#installation)
-2. [Quickstart: Run the Distilled Agent](#quickstart-run-the-distilled-agent)
-3. [Quickstart: How to Distill Agents](#quickstart-how-to-distill-agents)
-4. [Acknowledgements](#acknowledgements)
-
-
-## 🛠 Installation
-
-To install with the required libraries:
+Python 3.11 is recommended.
 
 ```bash
-conda create -n agents python=3.12
-conda activate agents
-pip install -e .[distill]
+uv sync --python 3.11
 ```
 
-> Note: If you want to run benchmarking, place your OpenAI API key in a file at `keys/openai-key/key.env`. This is required for LLM-as-a-judge evaluation on factual reasoning benchmarks.
+Copy `.env.example` to `.env`, then add the API endpoint and key required by the selected teacher provider. Never commit `.env`.
 
-For accurate math evaluation, follow the below instruction to install accurate `latex2sympy` library. (reference: https://github.com/huggingface/search-and-learn)
+For student inference and training, pass the model path explicitly or define `AGENT_DISTILLATION_MODEL_PATH`:
+
+```powershell
+$env:AGENT_DISTILLATION_MODEL_PATH = "<local-model-directory>"
+```
 
 ```bash
-git clone https://github.com/huggingface/Qwen2.5-Math.git
-cd Qwen2.5-Math/evaluation/latex2sympy
-pip install -e .
+export AGENT_DISTILLATION_MODEL_PATH=/path/to/Qwen3.5-0.8B
 ```
 
-### ➕ Optional: Retriever Environment (used in our paper)
+This keeps Windows and Alibaba Cloud PAI DSW paths out of the code.
 
-Want to reproduce or extend our retriever setup? We follow the [Search-R1](https://github.com/PeterGriffinJin/Search-R1) environment.
+## Main commands
 
-Expand the section below for setup instructions.
-<details>
-<summary>Open for the detailed setup guideline.</summary>
+Generate teacher trajectories:
 
-1. Make a conda environment for the retriever.
+```powershell
+./scripts/inference/run_code_teacher_qwen35_27b_api.ps1
+```
+
+Train the student on the final 1,646-example dataset:
+
+```powershell
+./exps_research/scripts_train/finetune_sft_agent.ps1
+```
 
 ```bash
-conda create -n retriever python=3.10
-conda activate retriever
+bash exps_research/scripts_train/finetune_sft_agent.sh
 ```
 
-2. Install related libraries.
+Run the local Math500 baseline or fine-tuned evaluation:
+
+```powershell
+./scripts/inference/run_local_qwen35_baseline.ps1
+./scripts/inference/run_local_qwen35_finetuned.ps1 `
+  -AdapterPath "<adapter-directory>"
+```
+
+Linux/DSW equivalents are available beside the PowerShell launchers.
 
 ```bash
-conda install pytorch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 pytorch-cuda=12.1 -c pytorch -c nvidia
-pip install transformers datasets pyserini
-conda install -c pytorch -c nvidia faiss-gpu=1.8.0
-pip install uvicorn fastapi
+bash scripts/inference/run_local_qwen35_baseline.sh /path/to/Qwen3.5-0.8B
+bash scripts/inference/run_local_qwen35_finetuned.sh \
+  /path/to/adapter /path/to/Qwen3.5-0.8B
 ```
 
-3. Save the index and corpus from the repo.
+## Current protocol
+
+Teacher generation uses at most five agent steps and a 600-second per-problem timeout. Each model call starts with a 1,280-token output limit; only a detected truncation is retried with a 2,048-token limit. Training examples are filtered to at most 2,048 tokens per assistant turn and 4,096 tokens for the complete conversation.
+
+The default SFT configuration uses QLoRA, two epochs, learning rate `2e-4`, batch size 1, gradient accumulation 8, and sequence length 4,096. Launch-script arguments and Python defaults are kept aligned.
+
+## Training data
+
+The public training artifact is `data_processor/processed/sft/qwen35_27b_math_medium_hard_1646_v126.jsonl`.
+
+| Source | Accepted examples |
+| --- | ---: |
+| Original validated Medium + Hard trajectories | 1,576 |
+| Medium retry recoveries | 26 |
+| Hard retry recoveries | 44 |
+| Total | 1,646 |
+
+Five retry trajectories exceeded the configured length limits and were excluded. The merged dataset contains no duplicate problem IDs.
+
+## Tests
 
 ```bash
-save_path=./search/database/wikipedia
-mkdir -p $save_path
-python scripts/download.py --save_path $save_path
-cat $save_path/part_* > $save_path/e5_Flat.index
-gzip -d $save_path/wiki-18.jsonl.gz
+python -m unittest discover -s exps_research/smolagents_v126/tests -v
 ```
 
-</details>
+## Upstream and license
 
-## 🚀 Quickstart: Run the Distilled Agent
+The agent runtime is based on [huggingface/smolagents](https://github.com/huggingface/smolagents), tag `v1.26.0`. Project-specific changes are documented in `smolagents-1.26.0-fork/FORK_NOTES.md`; the upstream Apache-2.0 license is retained.
 
-(No Retriever Setup Required)
-
-You can quickly try out the distilled 1.5B agent from the Huggingface Hub without setting up a retriever, just use the search tool from smolagents!
-
-To get started, run the following script:
-```bash
-bash scripts/inference/serve_slm_no_retriever.sh
-# Then, in a separate terminal:
-python examples/quick_start.py
-```
-You can now type in any question or task you'd like to test with the *distilled* agent.
-
-> ⚠️ Note: This agent was trained using a Wikipedia-based retriever. Results may be less accurate when using a general search engine.
-
-## ⚗️ Quickstart: How to Distill Agents
-
-All scripts assume access to 4 GPUs.
-
-1. 🧪 Generate Trajectories from Teacher Agent
-
-```bash
-bash scripts/inference/run_agent_teacher_train.sh
-```
-
-2. 🎓 Train the Student Agent
-
-```bash
-bash scripts/training/train_agent.sh Qwen/Qwen2.5-1.5B-Instruct
-```
-
-3. ✅ Evaluate the Trained Agent on Benchmarks
-
-Runs with self-consistent action generation enabled by default:
-
-```bash
-bash scripts/inference/run_agent_student.sh Qwen/Qwen2.5-1.5B-Instruct training_outputs/qwen-1.5B-instruct/agent_baseline_qwen2.5_32B_teacher
-```
-
-Or test manually:
-
-```bash
-bash scripts/inference/serve_slm.sh
-# In a separate terminal:
-python examples/test_small_agent.py
-```
-
-### More on `smolagents`
-
-Curious about more capabilities? Check out the [original smolagents repository](https://github.com/huggingface/smolagents) for advanced usage and custom environments.
-
-## 🚧 Future Plan
-
-- [x] Release teacher trajectories and distilled small LMs as baselines.
-- [ ] Add detailed instructions for first-thought prefix.
-- [ ] Provide utilities for small LMs to use tools via MCP.
-
-## 🙏 Acknowledgements
-
-This project is made possible by the foundational work of the following open-source libraries:
-
-- [**smolagents**](https://github.com/huggingface/smolagents): Provides the core framework for building and running lightweight language agents, which we extend for distillation.
-
-- [**Search-R1**](https://github.com/PeterGriffinJin/Search-R1): Supplies a dense retrieval environment used in our retriever-based experiments.
-
-- [**TRL**](https://github.com/huggingface/trl): Offers the supervised fine-tuning framework we use to train distilled agents effectively.
-
-We sincerely thank the developers and maintainers of these projects.
-
-## ⚠️ Disclaimer
-This is not an official product of KRAFTON Inc. or DeepAuto.ai. It is released solely for research purposes.
-
-## Citation
-If you find our work useful, please cite our work:
-```
-@misc{kang2025distillingllmagent,
-      title={Distilling LLM Agent into Small Models with Retrieval and Code Tools}, 
-      author={Minki Kang and Jongwon Jeong and Seanie Lee and Jaewoong Cho and Sung Ju Hwang},
-      year={2025},
-      eprint={2505.17612},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2505.17612}, 
-}
-```
+This project was inspired by the experimental setup in *Agent Distillation: Training Smaller Language Models to Reason and Act Like Larger Language Models*. Its older framework snapshot is not used at runtime.

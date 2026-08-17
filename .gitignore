@@ -1,0 +1,62 @@
+# Secrets and machine-local configuration
+.env
+.env.*
+!.env.example
+keys/
+*.pem
+*.p12
+
+# Python environments, caches, and build artifacts
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Models, adapters, checkpoints, and experiment outputs
+training_outputs/
+checkpoints/
+logs/
+wandb/
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.bin
+
+# Historical conversations and locally archived upstream material
+record/
+_local/
+
+# Released paper artifacts are not required by the current math pipeline
+data_processor/teacher_trajectories/
+data_processor/qa_dataset/
+
+# The active fork is vendored as source + tests only
+smolagents-1.26.0-fork/.git/
+smolagents-1.26.0-fork/.github/
+smolagents-1.26.0-fork/docs/
+smolagents-1.26.0-fork/examples/
+smolagents-1.26.0-fork/AGENTS.md
+smolagents-1.26.0-fork/CODE_OF_CONDUCT.md
+smolagents-1.26.0-fork/CONTRIBUTING.md
+smolagents-1.26.0-fork/SECURITY.md
+smolagents-1.26.0-fork/Makefile
+smolagents-1.26.0-fork/e2b.toml
+
+# Editor, OS, and temporary files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
+*.out
+*.err
+*.tmp

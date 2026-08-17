@@ -35,7 +35,7 @@ def run_experiment():
 
     # Common arguments
     parser.add_argument("--data_path", type=str, required=True, help="Path to the dataset file")
-    parser.add_argument("--model_type", type=str, default="openai", choices=["openai", "vllm"],
+    parser.add_argument("--model_type", type=str, default="openai", choices=["openai", "transformers", "vllm"],
                       help="Type of model to use for generation")
     parser.add_argument("--model_id", type=str, help="Specific model ID to use (e.g., gpt-4o-mini, gpt-4o)")
     parser.add_argument("--parallel_workers", type=int, default=4, help="Maximum number of concurrent threads to use")
@@ -45,18 +45,33 @@ def run_experiment():
     parser.add_argument("--log_folder", type=str, help="Folder to save the results")
     parser.add_argument("--multithreading", action="store_true", help="Run in multithreading mode")
     parser.add_argument("--use_process_pool", action="store_true", help="Use ProcessPoolExecutor instead of ThreadPoolExecutor for more reliable timeouts")
+    parser.add_argument(
+        "--isolate_agent_processes",
+        action="store_true",
+        help="Run each Agent question in a disposable process that can be forcefully terminated",
+    )
+    parser.add_argument(
+        "--question_timeout_seconds",
+        type=float,
+        default=600,
+        help="Hard wall-clock timeout for one isolated Agent question (default: 600)",
+    )
     parser.add_argument("--use_single_endpoint", action="store_true", help="Use a single API endpoint (port 8000) for all workers instead of one per worker")
-    parser.add_argument('--api_base', type=str, help='API base URL for the model')
-    parser.add_argument('--api_key', type=str, help='API key for the model')
     parser.add_argument("--fine_tuned", action="store_true", help="whether using fine-tuned lora or not")
     parser.add_argument("--lora_folder", type=str, help="The folder for trained lora -- for saving corresponding logs")
     parser.add_argument("--verbose", action="store_true", help="Print verbose output during processing")
     parser.add_argument("--do_filtering", action="store_true", help="Save filtered trajectories also (for training dataset)")
+    parser.add_argument("--max_samples", type=int, help="Only process the first N samples")
 
     # Model args
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--max_tokens", type=int)
+    parser.add_argument(
+        "--retry_max_tokens",
+        type=int,
+        help="Retry a hard-truncated Agent run once with this output-token limit",
+    )
     parser.add_argument("--max_output_tokens", type=int)
     parser.add_argument("--n", type=int, default=1)
     parser.add_argument("--top_p", type=float)
@@ -69,7 +84,6 @@ def run_experiment():
     parser.add_argument("--suffix", type=str, help="suffix for saved filename")
 
     # Agent-specific arguments
-    parser.add_argument("--search_engine_type", type=str, default="wikipedia", help="Search engine for agent tool")
     parser.add_argument("--max_steps", type=int, default=5, help="Maximum number of steps for agent")
     parser.add_argument("--use_planning", action="store_true", help="Enable planning in agent")
     parser.add_argument("--prefix_memory", type=str, help="Path for prefix memory")
@@ -105,14 +119,29 @@ def run_experiment():
             config_table.add_row("Task Type", args.task_type)
             config_table.add_row("Add Think Token", "Yes" if args.add_think_token else "No")
         elif args.experiment_type == "agent":
-            config_table.add_row("Search Engine", args.search_engine_type)
+            config_table.add_row("Tools", "Python code execution only")
             config_table.add_row("Max Steps", str(args.max_steps))
+            config_table.add_row("Max Tokens", str(args.max_tokens))
+            config_table.add_row("Retry Max Tokens", str(args.retry_max_tokens or "disabled"))
+            config_table.add_row("Isolated Processes", "Yes" if args.isolate_agent_processes else "No")
+            if args.isolate_agent_processes:
+                config_table.add_row("Question Timeout", f"{args.question_timeout_seconds:g}s")
 
         console.print(config_table)
 
     # Validate required arguments based on experiment type
     if args.fine_tuned and not args.lora_folder:
         parser.error("--lora_folder is required when --fine_tuned is set")
+    if (
+        args.retry_max_tokens is not None
+        and args.max_tokens is not None
+        and args.retry_max_tokens <= args.max_tokens
+    ):
+        parser.error("--retry_max_tokens must be greater than --max_tokens")
+    if args.question_timeout_seconds <= 0:
+        parser.error("--question_timeout_seconds must be greater than zero")
+    if args.isolate_agent_processes and args.experiment_type != "agent":
+        parser.error("--isolate_agent_processes is only supported for agent experiments")
 
     if not args.task_type:
         # Auto-set task type for reasoning experiments if not provided
@@ -142,10 +171,6 @@ def run_experiment():
         "seed": args.seed,
     }
 
-    if args.api_base:
-        model_kwargs['api_base'] = args.api_base
-    if args.api_key:
-        model_kwargs['api_key'] = args.api_key
     if args.max_tokens:
         model_kwargs['max_tokens'] = args.max_tokens
     if args.max_output_tokens:
@@ -156,19 +181,20 @@ def run_experiment():
         model_kwargs['top_p'] = args.top_p
     if args.top_k:
         model_kwargs['top_k'] = args.top_k
-    if args.lora_folder and args.use_local_model:
-        model_kwargs['lora_folder'] = args.lora_folder
+    if args.lora_folder:
+        model_kwargs['lora_path'] = args.lora_folder
 
     # Additional experiment-specific args
     extra_kwargs = {}
     additional_postfix = []
 
     if args.experiment_type == "agent":
-        extra_kwargs["search_engine_type"] = args.search_engine_type
-        if args.search_engine_type != "wikipedia":
-            additional_postfix.append("duckduckgo")
+        additional_postfix.append("code_only")
         extra_kwargs["max_steps"] = args.max_steps
         extra_kwargs["use_planning"] = args.use_planning
+        extra_kwargs["retry_max_tokens"] = args.retry_max_tokens
+        extra_kwargs["isolate_agent_processes"] = args.isolate_agent_processes
+        extra_kwargs["question_timeout_seconds"] = args.question_timeout_seconds
         if args.use_planning:
             additional_postfix.append("planning")
 
@@ -210,6 +236,8 @@ def run_experiment():
         n=args.n,
         seed=args.seed,
         max_steps=args.max_steps if args.experiment_type == "agent" else None,
+        max_tokens=args.max_tokens,
+        retry_max_tokens=args.retry_max_tokens if args.experiment_type == "agent" else None,
         experiment_type=args.experiment_type,
         additional_postfix=additional_postfix
     )
@@ -233,6 +261,7 @@ def run_experiment():
         verbose=args.verbose,
         use_process_pool=args.use_process_pool,
         use_single_endpoint=args.use_single_endpoint,
+        max_samples=args.max_samples,
         **extra_kwargs
     )
 
@@ -250,8 +279,14 @@ def run_experiment():
         summary_table.add_row("Processed Questions", str(stats['processed_questions']))
         summary_table.add_row("Model Type", args.model_type)
         summary_table.add_row("Model ID", args.model_id or "default")
-        summary_table.add_row("Total Cost", f"${stats['costs']['total_cost']:.4f}")
-        summary_table.add_row("Average Cost per Question", f"${stats['costs']['average_cost_per_question']:.4f}")
+        if args.experiment_type == "agent":
+            token_usage = stats.get("token_usage", {})
+            summary_table.add_row("Input Tokens", str(token_usage.get("input_tokens", 0)))
+            summary_table.add_row("Output Tokens", str(token_usage.get("output_tokens", 0)))
+            summary_table.add_row("Total Tokens", str(token_usage.get("total_tokens", 0)))
+        else:
+            summary_table.add_row("Total Cost", f"${stats['costs']['total_cost']:.4f}")
+            summary_table.add_row("Average Cost per Question", f"${stats['costs']['average_cost_per_question']:.4f}")
 
         console.print(summary_table)
     else:
@@ -262,9 +297,16 @@ def run_experiment():
         print(f"Model Type: {args.model_type}")
         print(f"Model ID: {args.model_id or 'default'}")
         print(f"Debug Mode: {'Yes' if args.debug else 'No'}")
-        print(f"\nCost Summary:")
-        print(f"Total Cost: ${stats['costs']['total_cost']:.4f}")
-        print(f"Average Cost per Question: ${stats['costs']['average_cost_per_question']:.4f}")
+        if args.experiment_type == "agent":
+            token_usage = stats.get("token_usage", {})
+            print("\nToken Summary:")
+            print(f"Input Tokens: {token_usage.get('input_tokens', 0)}")
+            print(f"Output Tokens: {token_usage.get('output_tokens', 0)}")
+            print(f"Total Tokens: {token_usage.get('total_tokens', 0)}")
+        else:
+            print(f"\nCost Summary:")
+            print(f"Total Cost: ${stats['costs']['total_cost']:.4f}")
+            print(f"Average Cost per Question: ${stats['costs']['average_cost_per_question']:.4f}")
 
     # Score results for reasoning experiments
     single_thread = args.task_type in ["math", "mmlu"]

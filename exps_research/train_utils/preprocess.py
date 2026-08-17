@@ -1,7 +1,6 @@
 import os
 import json
 import yaml
-import importlib
 import re
 from datasets import Dataset
 from pathlib import Path
@@ -9,13 +8,22 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
 
-from smolagents import WikipediaRetrieverTool, FinalAnswerTool
-from smolagents.models import remove_tool_call_from_messages, get_clean_message_list
+from smolagents import FinalAnswerTool
 from smolagents.agents import populate_template
 
-PROMPT_TEMPLATES = yaml.safe_load(
-    importlib.resources.files("smolagents.prompts").joinpath("code_agent.yaml").read_text()
+from exps_research.train_utils.message_utils import (
+    get_clean_message_list,
+    prepare_sft_messages,
+    remove_tool_call_from_messages,
 )
+
+MATH_AGENT_PROMPT_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "smolagents_v126"
+    / "prompts"
+    / "math_code_agent.yaml"
+)
+PROMPT_TEMPLATES = yaml.safe_load(MATH_AGENT_PROMPT_PATH.read_text(encoding="utf-8"))
 INSTRUCTION1 = "\n\nIMPORTANT: Always provide a 'Thought:' sequence, and a 'Code:\n```py' sequence ending with '```<end_code>' sequence, else you will fail."
 INSTRUCTION2 = "\n\nIMPORTANT: Always provide a 'Thought:' sequence, and a 'Code:\n```py' sequence ending with '```<end_code>' sequence, else you will fail. For final answer in math problems, always return the answer in LaTex format."
 INSTRUCTION3 = "\n\nIMPORTANT: Always provide a 'Thought:' sequence, and a 'Code:\n```py' sequence ending with '```<end_code>' sequence, else you will fail. For math problems that are not multiple-choice, always output the final answer using LaTeX \\boxed{} format. Provide the exact value (e.g., \\boxed{\\frac{9}{14}}), not a decimal approximation (e.g., \\boxed{0.642857})."
@@ -55,8 +63,8 @@ def print_pretty_messages(messages):
 # Only used for CoT models
 def load_prompt() -> str:
     """Load the system prompt from YAML file"""
-    prompt_file = Path(__file__).parent.parent.parent / "src" / "smolagents" / "prompts" / "teacher_model.yaml"
-    with open(prompt_file, 'r') as f:
+    prompt_file = Path(__file__).resolve().parents[1] / "prompts" / "teacher_model.yaml"
+    with open(prompt_file, "r", encoding="utf-8") as f:
         prompt_data = yaml.safe_load(f)
     return prompt_data['system_prompt']
 
@@ -114,7 +122,7 @@ def load_file_from_path(file_path):
     """
     if os.path.exists(file_path):
         dataset = []
-        with open(file_path, 'r') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             for line in f:
                 dataset.append(json.loads(line))
         return dataset
@@ -153,66 +161,78 @@ def remove_last_user_message(
     return messages
 
 def clean_messages(messages):
-    messages = clean_roles(messages)
-    is_two_system = check_two_system_messages(messages)
-    if is_two_system:
-        import pdb; pdb.set_trace()
-    messages = remove_tool_call_from_messages(messages)
-    messages = get_clean_message_list(
-        messages,
-        role_conversions={
-            "tool-response": "user",
-            "tool-call": "assistant"
-        },
-        flatten_messages_as_text=True,
-    )
-    # messages = remove_instruction_from_user_message(messages)
-    messages = clean_user_message(messages)
-    messages = remove_last_user_message(messages)
-    return messages
+    return prepare_sft_messages(messages)
 
 # Preprocess logs to messages only
-def preprocess_logs(log_path):
-    prompt_template = PROMPT_TEMPLATES["system_prompt_short"]
+def preprocess_logs(log_path, print_first=True):
+    prompt_template = PROMPT_TEMPLATES["system_prompt"]
 
-    tools = [WikipediaRetrieverTool()]
+    # This project trains math agents that execute code, so retrieval is not
+    # part of the student interface. Keep only the tool used to return the
+    # final answer in the SFT system prompt.
+    tools = [FinalAnswerTool()]
     tools = {tool.name: tool for tool in tools}
-    tools.setdefault("final_answer", FinalAnswerTool())
 
     system_prompt = populate_template(
         prompt_template,
         variables={
-            "tools": tools
+            "tools": tools,
+            "managed_agents": {},
+            "authorized_imports": str([
+                "collections",
+                "datetime",
+                "fractions",
+                "itertools",
+                "math",
+                "numpy",
+                "numpy.linalg",
+                "queue",
+                "random",
+                "re",
+                "stat",
+                "statistics",
+                "sympy",
+                "time",
+                "unicodedata",
+            ]),
+            "custom_instructions": None,
+            "code_block_opening_tag": "<code>",
+            "code_block_closing_tag": "</code>",
         }
     )
 
     logs = load_file_from_path(log_path)
 
     dataset = []
-    n_planning = 0
     for i, log in enumerate(logs):
-        if not log["log_data"]:
+        log_data = log.get("log_data")
+        if log_data:
+            messages = log_data["messages"]
+        elif isinstance(log.get("messages"), list):
+            # Also accept materialized SFT JSONL produced by the offline
+            # preprocessing command. Re-running the normalization is
+            # intentional and idempotent.
+            messages = log["messages"]
+        else:
             continue
-        messages = log["log_data"]["messages"]
         messages = clean_messages(messages)
         messages[0]["content"] = system_prompt
 
-        dataset.append({"messages": messages})
-        if i == 0:
+        dataset.append(
+            {
+                "messages": messages,
+                # Inference explicitly disables Qwen's separate native
+                # <think> channel. Apply the same chat-template mode while
+                # tokenizing SFT data so training and evaluation match.
+                "chat_template_kwargs": {"enable_thinking": False},
+            }
+        )
+        if print_first and i == 0:
             print_pretty_messages(messages)
         # dataset.append(
         #     tokenizer.apply_chat_template(messages, tokenize=True, return_tensors="pt")
         # )
-        # Append additional messages
-        for step in log["log_data"]["original_memory"]["steps"]:
-            if len(step) > 0 and step.get("messages", None):
-                additional_messages = clean_messages(step["messages"])
-                # print("Additional messages...")
-                # additional_messages = print_pretty_messages(additional_messages)
-                dataset.append({"messages": additional_messages})
-                n_planning += 1
 
-    print("##### Planning data", n_planning)
     dataset = Dataset.from_list(dataset)
     return dataset
 
@@ -231,10 +251,7 @@ def preprocess_reward_dataset(log_path):
         messages = remove_tool_call_from_messages(messages)
         messages = get_clean_message_list(
             messages,
-            role_conversions={
-                "tool-response": "user",
-                "tool-call": "assistant"
-            },
+            role_conversions={"tool-response": "user", "tool-call": "assistant"},
             flatten_messages_as_text=True,
         )
         messages = remove_last_user_message(messages)
@@ -265,10 +282,7 @@ def preprocess_rollout_dataset(log_path):
         messages = remove_tool_call_from_messages(messages)
         messages = get_clean_message_list(
             messages,
-            role_conversions={
-                "tool-response": "user",
-                "tool-call": "assistant"
-            },
+            role_conversions={"tool-response": "user", "tool-call": "assistant"},
             flatten_messages_as_text=True,
         )
         messages = remove_last_user_message(messages)

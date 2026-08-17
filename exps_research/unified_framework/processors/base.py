@@ -4,13 +4,15 @@ Base experiment processor module
 
 from abc import ABC, abstractmethod
 from typing import Dict, List, Any, Optional
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, ProcessPoolExecutor, as_completed, wait
+from queue import Empty
 from tqdm import tqdm
 from copy import deepcopy
 import pickle
 import time
 import os
 import multiprocessing as mp
+import traceback
 
 from .cost_tracker import CostTracker
 from exps_research.unified_framework import setup_model
@@ -59,18 +61,18 @@ def process_entry_in_process(
     # Configure model parameters for this worker
     if use_local_model:
         model_kwargs_copy["local_device_id"] = str(worker_id)
-    else:
+    elif model_kwargs_copy.get("model_type") == "vllm":
         # Only modify API base if it's not explicitly set
         if use_single_endpoint:
             model_kwargs_copy["api_base"] = "http://0.0.0.0:8000/v1"
         else:
             model_kwargs_copy["api_base"] = f"http://0.0.0.0:{8000 + worker_id}/v1"
     
-    # Create model with the modified parameters
-    model = setup_model(**model_kwargs_copy)
-    
-    # Create a temporary processor instance
-    processor = processor_class(model_kwargs, **kwargs)
+    # Create a temporary processor instance, then let it construct the model.
+    # Besides avoiding duplicated setup logic, this keeps isolated workers
+    # testable with lightweight processor-specific model factories.
+    processor = processor_class(model_kwargs_copy, **kwargs)
+    model = processor.create_model(worker_id, use_local_model, use_single_endpoint)
     
     # Process the entry
     result = processor.process_entry(
@@ -81,6 +83,66 @@ def process_entry_in_process(
     )
     
     return result
+
+
+def process_entry_in_isolated_process(result_queue, *args, **kwargs):
+    """Run one entry in a disposable process and report its outcome."""
+    try:
+        result = process_entry_in_process(*args, **kwargs)
+        result_queue.put(("result", result))
+    except BaseException as exc:
+        result_queue.put(
+            (
+                "error",
+                {
+                    "error_type": type(exc).__name__,
+                    "message": str(exc),
+                    "traceback": traceback.format_exc(),
+                },
+            )
+        )
+    finally:
+        result_queue.close()
+        result_queue.join_thread()
+
+
+def _isolated_failure_result(
+    entry: Dict[str, Any],
+    model_id: str,
+    *,
+    state: str,
+    message: str,
+    timeout_seconds: Optional[float] = None,
+    child_traceback: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Create an observable failure row that resume logic will retry."""
+    source_metadata = {
+        key: entry[key]
+        for key in ("id", "dataset_name", "split", "level", "type")
+        if key in entry
+    }
+    metadata = {"state": state, "success": False, "source": source_metadata}
+    if timeout_seconds is not None:
+        metadata["timeout_seconds"] = timeout_seconds
+    if child_traceback:
+        metadata["child_traceback"] = child_traceback
+
+    return {
+        "model_id": model_id,
+        "question": entry.get("question"),
+        "generated_answer": None,
+        "true_answer": entry.get("answer"),
+        "error": message,
+        "log_data": {
+            "schema_version": "isolated-agent-failure-v1",
+            "trajectory_steps": [],
+            "metadata": metadata,
+        },
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "selected_input_tokens": 0,
+        "selected_output_tokens": 0,
+    }
 
 
 class ExperimentProcessor(ABC):
@@ -140,7 +202,7 @@ class ExperimentProcessor(ABC):
         
         if use_local_model:
             model_kwargs["local_device_id"] = str(worker_id)
-        else:
+        elif model_kwargs.get("model_type") == "vllm":
             # Only modify API base if it's not explicitly set
             if not model_kwargs.get('api_base'):
                 if use_single_endpoint:
@@ -173,6 +235,8 @@ class ExperimentProcessor(ABC):
         use_local_model: bool = False,
         use_process_pool: bool = True,  # Default to process pool for reliable timeouts
         use_single_endpoint: bool = False,  # Use a single API endpoint for all workers
+        isolate_agent_processes: bool = False,
+        question_timeout_seconds: float = 300,
         **kwargs
     ) -> List[Dict]:
         """
@@ -187,6 +251,8 @@ class ExperimentProcessor(ABC):
             use_process_pool: Whether to use ProcessPoolExecutor (True) or ThreadPoolExecutor (False)
                               ProcessPoolExecutor is recommended for reliable timeouts in Python code execution
             use_single_endpoint: Whether to use a single API endpoint (port 8000) for all workers
+            isolate_agent_processes: Run every entry in a disposable child process
+            question_timeout_seconds: Hard wall-clock limit for one isolated entry
             **kwargs: Additional experiment-specific parameters
             
         Returns:
@@ -198,6 +264,19 @@ class ExperimentProcessor(ABC):
         if debug:
             entries = entries[:10]
             # max_workers = 1
+
+        if isolate_agent_processes:
+            if question_timeout_seconds <= 0:
+                raise ValueError("question_timeout_seconds must be greater than zero")
+            return self._process_dataset_isolated(
+                entries,
+                output_file=output_file,
+                max_workers=max_workers,
+                use_local_model=use_local_model,
+                use_single_endpoint=use_single_endpoint,
+                question_timeout_seconds=question_timeout_seconds,
+                **kwargs,
+            )
         
         # Process sequentially if single worker or debug mode
         if max_workers <= 1:
@@ -299,40 +378,241 @@ class ExperimentProcessor(ABC):
             else:
                 # Thread-based parallelism (faster startup but less reliable timeouts)
                 models = self.create_models(max_workers, use_local_model, use_single_endpoint)
-                
+
                 with ThreadPoolExecutor(max_workers=max_workers) as executor:
-                    # Process function that selects the right model for each worker
+                    # Keep each model bound to one in-flight future at a time.
+                    # This avoids submitting the whole dataset up front and avoids
+                    # concurrent use of a single API client by multiple threads.
                     def process_func(entry, model_idx):
                         return self.process_entry(
-                            entry, 
+                            entry,
                             models[model_idx],
                             verbose_worker=(model_idx == 0),  # Only first worker shows output
                             **kwargs
                         )
-                    
-                    # Submit all tasks
-                    futures = []
-                    for i, entry in enumerate(entries):
-                        futures.append(executor.submit(process_func, entry, i % max_workers))
-            
-            # Common code for processing results from either executor
-            for future in tqdm(as_completed(futures), total=len(entries), desc=f"Processing questions"):
-                if self.cost_tracker.stop_requested:
-                    print(f"\nCost threshold reached. Stopping execution.")
-                    for f in futures:
-                        f.cancel()
-                    break
-                    
-                try:
-                    result = future.result()
-                    if result:
-                        results.append(result)
-                        if output_file:
-                            append_result(result, output_file)
-                        if self.track_cost and "cost" in result:
-                            self.cost_tracker.update_cost(result["cost"])
-                except Exception as e:
-                    print(f"Error processing entry: {e}")
-                    continue
+
+                    next_entry_index = 0
+                    in_flight = {}
+                    initial_slots = min(max_workers, len(entries))
+                    for model_idx in range(initial_slots):
+                        future = executor.submit(process_func, entries[next_entry_index], model_idx)
+                        in_flight[future] = model_idx
+                        next_entry_index += 1
+
+                    with tqdm(total=len(entries), desc="Processing questions") as pbar:
+                        while in_flight:
+                            done_futures, _ = wait(in_flight, return_when=FIRST_COMPLETED)
+                            for future in done_futures:
+                                model_idx = in_flight.pop(future)
+                                try:
+                                    result = future.result()
+                                    if result:
+                                        results.append(result)
+                                        if output_file:
+                                            append_result(result, output_file)
+                                        if self.track_cost and "cost" in result:
+                                            self.cost_tracker.update_cost(result["cost"])
+                                except Exception as e:
+                                    print(f"Error processing entry: {e}")
+                                finally:
+                                    pbar.update(1)
+
+                                if self.cost_tracker.stop_requested:
+                                    continue
+                                if next_entry_index < len(entries):
+                                    replacement = executor.submit(
+                                        process_func,
+                                        entries[next_entry_index],
+                                        model_idx,
+                                    )
+                                    in_flight[replacement] = model_idx
+                                    next_entry_index += 1
+
+                            if self.cost_tracker.stop_requested:
+                                print("\nCost threshold reached. Stopping execution.")
+                                for future in in_flight:
+                                    future.cancel()
+                                break
         
-        return results 
+        return results
+
+    def _process_dataset_isolated(
+        self,
+        entries: List[Dict],
+        *,
+        output_file: Optional[str],
+        max_workers: int,
+        use_local_model: bool,
+        use_single_endpoint: bool,
+        question_timeout_seconds: float,
+        **kwargs,
+    ) -> List[Dict]:
+        """Process entries in killable, one-question child processes."""
+        if not entries:
+            return []
+
+        max_workers = max(1, max_workers)
+        context = mp.get_context("spawn")
+        processor_class_module = self.__class__.__module__
+        processor_class_name = self.__class__.__name__
+        pending_index = 0
+        launched_count = 0
+        in_flight = {}
+        results = []
+
+        print(
+            f"Processing {len(entries)} questions with {max_workers} isolated "
+            f"processes (hard timeout={question_timeout_seconds:g}s)"
+        )
+
+        def launch(entry):
+            nonlocal launched_count
+            worker_id = launched_count % max_workers
+            launched_count += 1
+            result_queue = context.Queue(maxsize=1)
+            process = context.Process(
+                target=process_entry_in_isolated_process,
+                args=(
+                    result_queue,
+                    entry,
+                    worker_id,
+                    self.model_kwargs,
+                    use_local_model,
+                    worker_id == 0,
+                    processor_class_module,
+                    processor_class_name,
+                    use_single_endpoint,
+                ),
+                kwargs={k: v for k, v in kwargs.items() if k != "self"},
+                daemon=False,
+            )
+            process.start()
+            in_flight[process.pid] = {
+                "process": process,
+                "queue": result_queue,
+                "entry": entry,
+                "started_at": time.monotonic(),
+            }
+
+        def save_result(result):
+            if not result:
+                return
+            results.append(result)
+            if output_file:
+                append_result(result, output_file)
+            if self.track_cost and "cost" in result:
+                self.cost_tracker.update_cost(result["cost"])
+
+        def close_job(job, *, terminate=False):
+            process = job["process"]
+            if terminate and process.is_alive():
+                process.terminate()
+            process.join(timeout=5)
+            if process.is_alive():
+                process.kill()
+                process.join(timeout=5)
+            job["queue"].close()
+
+        def save_child_error(entry, payload):
+            save_result(
+                _isolated_failure_result(
+                    entry,
+                    self.model_kwargs.get("model_id", "unknown"),
+                    state="child_process_error",
+                    message=(
+                        f"{payload.get('error_type', 'Error')}: "
+                        f"{payload.get('message', '')}"
+                    ),
+                    child_traceback=payload.get("traceback"),
+                )
+            )
+
+        try:
+            with tqdm(total=len(entries), desc="Processing questions") as pbar:
+                while pending_index < len(entries) or in_flight:
+                    while (
+                        pending_index < len(entries)
+                        and len(in_flight) < max_workers
+                        and not self.cost_tracker.stop_requested
+                    ):
+                        launch(entries[pending_index])
+                        pending_index += 1
+
+                    made_progress = False
+                    now = time.monotonic()
+                    for pid, job in list(in_flight.items()):
+                        process = job["process"]
+                        result_queue = job["queue"]
+                        try:
+                            message = result_queue.get_nowait()
+                        except Empty:
+                            message = None
+
+                        if message is not None:
+                            kind, payload = message
+                            close_job(job)
+                            if kind == "result":
+                                save_result(payload)
+                            else:
+                                save_child_error(job["entry"], payload)
+                            del in_flight[pid]
+                            pbar.update(1)
+                            made_progress = True
+                            continue
+
+                        elapsed = now - job["started_at"]
+                        if elapsed >= question_timeout_seconds:
+                            close_job(job, terminate=True)
+                            save_result(
+                                _isolated_failure_result(
+                                    job["entry"],
+                                    self.model_kwargs.get("model_id", "unknown"),
+                                    state="execution_timeout",
+                                    message=(
+                                        "Question exceeded the hard execution timeout "
+                                        f"of {question_timeout_seconds:g} seconds"
+                                    ),
+                                    timeout_seconds=question_timeout_seconds,
+                                )
+                            )
+                            del in_flight[pid]
+                            pbar.update(1)
+                            made_progress = True
+                            continue
+
+                        if not process.is_alive():
+                            try:
+                                kind, payload = result_queue.get(timeout=0.2)
+                            except Empty:
+                                kind, payload = "missing", None
+                            close_job(job)
+                            if kind == "result":
+                                save_result(payload)
+                            elif kind == "error":
+                                save_child_error(job["entry"], payload)
+                            else:
+                                save_result(
+                                    _isolated_failure_result(
+                                        job["entry"],
+                                        self.model_kwargs.get("model_id", "unknown"),
+                                        state="child_process_error",
+                                        message=(
+                                            "Isolated worker exited without returning a result "
+                                            f"(exit code {process.exitcode})"
+                                        ),
+                                    )
+                                )
+                            del in_flight[pid]
+                            pbar.update(1)
+                            made_progress = True
+
+                    if self.cost_tracker.stop_requested:
+                        print("\nCost threshold reached. Stopping execution.")
+                        break
+                    if not made_progress:
+                        time.sleep(0.05)
+        finally:
+            for job in in_flight.values():
+                close_job(job, terminate=True)
+
+        return results
