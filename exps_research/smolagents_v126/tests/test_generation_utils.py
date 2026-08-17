@@ -259,6 +259,35 @@ class GenerationUtilsTest(unittest.TestCase):
 
         self.assertEqual(answered, {"done"})
 
+    def test_strict_resume_skips_every_complete_record(self):
+        failed = {
+            "question": "failed once",
+            "generated_answer": None,
+            "error": "timeout",
+            "log_data": None,
+        }
+        successful = {
+            "question": "done",
+            "generated_answer": "4",
+            "log_data": {
+                "metadata": {"state": "success"},
+                "trajectory_steps": [],
+            },
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result_file = Path(temp_dir) / "results.jsonl"
+            result_file.write_text(
+                "\n".join(json.dumps(item) for item in (failed, successful)) + "\n",
+                encoding="utf-8",
+            )
+            answered = get_answered_questions(
+                str(result_file),
+                require_successful_agent_run=False,
+            )
+
+        self.assertEqual(answered, {"failed once", "done"})
+
     def test_output_name_contains_generation_limit(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             dataset_dir = Path(temp_dir) / "train"

@@ -4,6 +4,18 @@ from exps_research.unified_framework.score_answers import select_attempt_per_que
 
 
 class ScoreResumeTest(unittest.TestCase):
+    def test_strict_benchmark_keeps_first_attempt(self):
+        entries = [
+            {"question": "q1", "generated_answer": None, "error": "timeout"},
+            {"question": "q2", "generated_answer": "first"},
+            {"question": "q1", "generated_answer": "later success"},
+            {"question": "q2", "generated_answer": "later answer"},
+        ]
+
+        selected = select_attempt_per_question(entries, attempt_selection="first")
+
+        self.assertEqual(selected, [entries[0], entries[1]])
+
     def test_prefers_successful_retry_over_stale_failure(self):
         entries = [
             {"question": "q1", "generated_answer": None, "error": "timeout"},

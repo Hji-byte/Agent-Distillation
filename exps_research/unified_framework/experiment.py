@@ -72,6 +72,12 @@ def process_qa_experiment(
     Returns:
         Dictionary with experiment statistics
     """
+    # Student benchmarks use one recorded attempt per question. Teacher-data
+    # generation keeps the historical behavior of retrying failed runs.
+    one_attempt_per_question = bool(
+        extra_kwargs.pop("one_attempt_per_question", False)
+    )
+
     # Load dataset
     entries = load_dataset(dataset_file)
 
@@ -89,7 +95,9 @@ def process_qa_experiment(
     answered_questions = (
         get_answered_questions(
             output_file,
-            require_successful_agent_run=experiment_type == "agent",
+            require_successful_agent_run=(
+                experiment_type == "agent" and not one_attempt_per_question
+            ),
         )
         if output_file
         else set()

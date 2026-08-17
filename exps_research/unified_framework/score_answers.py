@@ -24,15 +24,21 @@ class ResponseFormat(BaseModel):
     score: int
 
 
-def select_attempt_per_question(entries: List[Dict]) -> List[Dict]:
+def select_attempt_per_question(
+    entries: List[Dict],
+    attempt_selection: str = "prefer_success",
+) -> List[Dict]:
     """Select one record per question for resume-safe evaluation.
 
-    A resumed run intentionally retries failed questions by appending a new
-    record to the same JSONL file. Prefer the latest successful record; if a
-    question never succeeded, keep its latest failure. This prevents an old
-    failed attempt and its successful retry from both entering the accuracy
-    denominator.
+    ``first`` implements a strict one-attempt benchmark and ignores every
+    later record for the same question. ``prefer_success`` supports teacher
+    data generation, where failed runs may intentionally be retried: prefer a
+    successful record, otherwise keep the latest failure.
     """
+    if attempt_selection not in {"first", "prefer_success"}:
+        raise ValueError(
+            "attempt_selection must be 'first' or 'prefer_success'"
+        )
     selected = {}
     question_order = []
 
@@ -46,6 +52,9 @@ def select_attempt_per_question(entries: List[Dict]) -> List[Dict]:
         if question not in selected:
             question_order.append(question)
             selected[question] = entry
+            continue
+
+        if attempt_selection == "first":
             continue
 
         previous = selected[question]
@@ -211,7 +220,8 @@ def score_qa_results(
     max_workers: int = 4,
     task_type: str = "fact",
     do_extract_answer: bool = False,
-    single_thread: bool = False
+    single_thread: bool = False,
+    attempt_selection: str = "prefer_success",
 ) -> Dict:
     """
     Score all QA results in the given folder using multiple threads
@@ -245,7 +255,10 @@ def score_qa_results(
                 continue # Invalid entry
             entries.append(entry)
     raw_record_count = len(entries)
-    entries = select_attempt_per_question(entries)
+    entries = select_attempt_per_question(
+        entries,
+        attempt_selection=attempt_selection,
+    )
 
     # Mathematical answers are graded deterministically and do not need an
     # LLM judge. Only factual tasks create scoring model clients.
@@ -324,6 +337,12 @@ if __name__ == "__main__":
     parser.add_argument('--max_workers', type=int, default=8,
                       help='Maximum number of concurrent threads to use')
     parser.add_argument('--single_thread', action='store_true')
+    parser.add_argument(
+        '--attempt_selection',
+        choices=['first', 'prefer_success'],
+        default='prefer_success',
+        help='How to choose among duplicate records for the same question.',
+    )
 
     args = parser.parse_args()
 
@@ -340,7 +359,8 @@ if __name__ == "__main__":
             max_workers=args.max_workers,
             task_type=args.task_type,
             single_thread=args.single_thread,
-            do_extract_answer=args.do_extract_answer
+            do_extract_answer=args.do_extract_answer,
+            attempt_selection=args.attempt_selection,
         )
         print(f"Accuracy: {stats['accuracy']:.2%}")
         print(f"Correct: {stats['correct_answers']}/{stats['total_questions']}")

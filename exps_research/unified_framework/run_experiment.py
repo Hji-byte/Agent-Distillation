@@ -82,6 +82,15 @@ def run_experiment():
     parser.add_argument("--experiment_type", type=str, choices=["agent", "reasoning"], required=True,
                       help="Type of experiment to run")
     parser.add_argument("--suffix", type=str, help="suffix for saved filename")
+    parser.add_argument(
+        "--one_attempt_per_question",
+        action="store_true",
+        help=(
+            "Treat every complete JSONL record as final when resuming and score "
+            "only the first record for each question. Use this for strict student "
+            "benchmarks; leave disabled for retryable teacher-data generation."
+        ),
+    )
 
     # Agent-specific arguments
     parser.add_argument("--max_steps", type=int, default=5, help="Maximum number of steps for agent")
@@ -124,6 +133,10 @@ def run_experiment():
             config_table.add_row("Max Tokens", str(args.max_tokens))
             config_table.add_row("Retry Max Tokens", str(args.retry_max_tokens or "disabled"))
             config_table.add_row("Isolated Processes", "Yes" if args.isolate_agent_processes else "No")
+            config_table.add_row(
+                "Attempt Policy",
+                "first recorded attempt" if args.one_attempt_per_question else "retry failed questions",
+            )
             if args.isolate_agent_processes:
                 config_table.add_row("Question Timeout", f"{args.question_timeout_seconds:g}s")
 
@@ -195,6 +208,7 @@ def run_experiment():
         extra_kwargs["retry_max_tokens"] = args.retry_max_tokens
         extra_kwargs["isolate_agent_processes"] = args.isolate_agent_processes
         extra_kwargs["question_timeout_seconds"] = args.question_timeout_seconds
+        extra_kwargs["one_attempt_per_question"] = args.one_attempt_per_question
         if args.use_planning:
             additional_postfix.append("planning")
 
@@ -320,7 +334,10 @@ def run_experiment():
         max_workers=4,
         task_type=args.task_type,
         single_thread=single_thread,
-        do_extract_answer=do_extract_answer
+        do_extract_answer=do_extract_answer,
+        attempt_selection=(
+            "first" if args.one_attempt_per_question else "prefer_success"
+        ),
     )
 
     if RICH_AVAILABLE:

@@ -39,4 +39,5 @@ fi
     --n 1 \
     --temperature 0.0 \
     --seed 42 \
+    --one_attempt_per_question \
     --suffix v126_baseline
