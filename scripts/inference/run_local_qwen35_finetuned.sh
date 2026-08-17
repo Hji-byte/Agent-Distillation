@@ -15,8 +15,7 @@ adapter_path="${1:-}"
 model_path="${2:-${AGENT_DISTILLATION_MODEL_PATH:-}}"
 data_path="${3:-data_processor/math_dataset/test/math_500_20250414.json}"
 max_samples="${4:-500}"
-max_tokens="${5:-1280}"
-retry_max_tokens="${6:-2048}"
+max_tokens="${5:-2048}"
 
 if [[ -z "$adapter_path" || ! -f "$adapter_path/adapter_config.json" ]]; then
     echo "Argument 1 must be a LoRA adapter directory containing adapter_config.json." >&2
@@ -24,10 +23,6 @@ if [[ -z "$adapter_path" || ! -f "$adapter_path/adapter_config.json" ]]; then
 fi
 if [[ -z "$model_path" ]]; then
     echo "Model path is required. Pass it as argument 2 or set AGENT_DISTILLATION_MODEL_PATH." >&2
-    exit 2
-fi
-if (( retry_max_tokens <= max_tokens )); then
-    echo "retry_max_tokens must be greater than max_tokens." >&2
     exit 2
 fi
 if [[ ! -f "$data_path" ]]; then
@@ -43,7 +38,6 @@ fi
     --fine_tuned \
     --lora_folder "$adapter_path" \
     --max_tokens "$max_tokens" \
-    --retry_max_tokens "$retry_max_tokens" \
     --max_steps 5 \
     --max_samples "$max_samples" \
     --task_type math \

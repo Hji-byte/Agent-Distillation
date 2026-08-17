@@ -13,10 +13,7 @@ param(
     [int]$MaxSteps = 5,
 
     [ValidateRange(64, 8192)]
-    [int]$MaxTokens = 1280,
-
-    [ValidateRange(64, 8192)]
-    [int]$RetryMaxTokens = 2048,
+    [int]$MaxTokens = 2048,
 
     [string]$Suffix = "v126_sft_qlora",
 
@@ -39,9 +36,6 @@ if (-not (Test-Path -LiteralPath $pythonPath)) {
 if ([string]::IsNullOrWhiteSpace($ModelPath)) {
     throw "Model path is required. Pass -ModelPath or set AGENT_DISTILLATION_MODEL_PATH."
 }
-if ($RetryMaxTokens -le $MaxTokens) {
-    throw "RetryMaxTokens must be greater than MaxTokens."
-}
 if (-not [System.IO.Path]::IsPathRooted($DataPath)) {
     $DataPath = Join-Path $projectRoot $DataPath
 }
@@ -61,7 +55,6 @@ $arguments = @(
     "--fine_tuned",
     "--lora_folder", $AdapterPath,
     "--max_tokens", $MaxTokens,
-    "--retry_max_tokens", $RetryMaxTokens,
     "--max_steps", $MaxSteps,
     "--max_samples", $MaxSamples,
     "--task_type", "math",
@@ -78,7 +71,7 @@ if ($VerboseOutput) {
 Write-Host "Evaluating base checkpoint: $ModelPath"
 Write-Host "Loading LoRA adapter: $AdapterPath"
 Write-Host "Dataset: $DataPath ($MaxSamples samples)"
-Write-Host "Generation budget: $MaxTokens tokens; retry on hard truncation: $RetryMaxTokens tokens"
+Write-Host "Generation budget: $MaxTokens tokens; hard-truncation retry disabled"
 
 Push-Location $projectRoot
 try {

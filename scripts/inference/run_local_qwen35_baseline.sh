@@ -14,16 +14,11 @@ fi
 model_path="${1:-${AGENT_DISTILLATION_MODEL_PATH:-}}"
 data_path="${2:-data_processor/math_dataset/test/math_500_20250414.json}"
 max_samples="${3:-500}"
-max_tokens="${4:-1280}"
-retry_max_tokens="${5:-2048}"
-log_folder="${6:-logs/qa_results/transformers/qwen3.5-0.8B_v126_baseline}"
+max_tokens="${4:-2048}"
+log_folder="${5:-logs/qa_results/transformers/qwen3.5-0.8B_v126_baseline}"
 
 if [[ -z "$model_path" ]]; then
     echo "Model path is required. Pass it as argument 1 or set AGENT_DISTILLATION_MODEL_PATH." >&2
-    exit 2
-fi
-if (( retry_max_tokens <= max_tokens )); then
-    echo "retry_max_tokens must be greater than max_tokens." >&2
     exit 2
 fi
 if [[ ! -f "$data_path" ]]; then
@@ -38,7 +33,6 @@ fi
     --model_id "$model_path" \
     --log_folder "$log_folder" \
     --max_tokens "$max_tokens" \
-    --retry_max_tokens "$retry_max_tokens" \
     --max_steps 5 \
     --max_samples "$max_samples" \
     --task_type math \
