@@ -45,6 +45,15 @@ def _complete_action(output: Any) -> bool:
     return bool(_THOUGHT_RE.search(text) and _CODE_RE.search(text))
 
 
+def _forced_max_steps_fallback(step: dict[str, Any]) -> bool:
+    """Identify smolagents' post-budget plain-text fallback, not an agent action."""
+    return (
+        step.get("model_output") is None
+        and step.get("code_action") is None
+        and _error_kind(step.get("error")) == "max_steps"
+    )
+
+
 def _pure_final_answer(code: Any) -> bool:
     """Return whether code only submits an already-computed value."""
     if not code:
@@ -67,6 +76,8 @@ def classify_failure(entry: dict[str, Any]) -> str:
     log_data = entry.get("log_data") or {}
     steps = log_data.get("trajectory_steps") or []
     for step in steps:
+        if _forced_max_steps_fallback(step):
+            continue
         if not _complete_action(step.get("model_output")):
             return "incomplete_action_format"
         if kind := _error_kind(step.get("error")):
@@ -95,7 +106,12 @@ def error_aware_backward_candidates(entry: dict[str, Any]) -> list[RepairCandida
         return []
 
     explicit: list[tuple[int, str]] = []
-    for index, step in enumerate(steps):
+    repairable_steps = [
+        (index, step)
+        for index, step in enumerate(steps)
+        if not _forced_max_steps_fallback(step)
+    ]
+    for index, step in repairable_steps:
         if not _complete_action(step.get("model_output")):
             explicit.append((index, "incomplete_action_format"))
         elif kind := _error_kind(step.get("error")):
@@ -109,14 +125,26 @@ def error_aware_backward_candidates(entry: dict[str, Any]) -> list[RepairCandida
         for index, kind in reversed(explicit):
             ordered.append((index, kind, "explicit_framework_error"))
         earliest_error = min(index for index, _ in explicit)
-        for index in range(earliest_error - 1, -1, -1):
-            ordered.append((index, overall_kind, "backward_fallback"))
+        for index, _ in reversed(repairable_steps):
+            if index < earliest_error:
+                ordered.append((index, overall_kind, "backward_fallback"))
     else:
-        indices = list(range(len(steps) - 1, -1, -1))
-        if overall_kind == "wrong_answer" and _pure_final_answer(steps[-1].get("code_action")):
-            indices = list(range(len(steps) - 2, -1, -1)) + [len(steps) - 1]
+        indices = [index for index, _ in reversed(repairable_steps)]
+        last_repairable_index = repairable_steps[-1][0] if repairable_steps else None
+        if (
+            overall_kind == "wrong_answer"
+            and last_repairable_index is not None
+            and _pure_final_answer(steps[last_repairable_index].get("code_action"))
+        ):
+            indices = [index for index in indices if index != last_repairable_index] + [
+                last_repairable_index
+            ]
         for position, index in enumerate(indices):
-            reason = "answer_submission_fallback" if position == len(indices) - 1 and index == len(steps) - 1 else "backward_search"
+            reason = (
+                "answer_submission_fallback"
+                if position == len(indices) - 1 and index == last_repairable_index
+                else "backward_search"
+            )
             ordered.append((index, overall_kind, reason))
 
     candidates: list[RepairCandidate] = []

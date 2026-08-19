@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from copy import deepcopy
 from typing import Any
 
@@ -10,16 +11,12 @@ from smolagents.models import ChatMessage
 from exps_research.train_utils.message_utils import prepare_sft_messages
 
 
-def content_text(content: Any) -> str:
-    if content is None:
-        return ""
-    if isinstance(content, str):
-        return content
-    if isinstance(content, list):
-        return "".join(content_text(block) for block in content)
-    if isinstance(content, dict):
-        return str(content.get("text", content.get("content", "")))
-    return str(content)
+REPAIR_PROMPT_VERSION = "trajectory-prefix-only-v1"
+
+
+def repair_prompt_sha256() -> str:
+    """Hash the intentionally empty additional repair instruction."""
+    return hashlib.sha256(b"").hexdigest()
 
 
 def prefix_before_assistant_turn(
@@ -54,58 +51,12 @@ def to_chat_messages(messages: list[dict[str, Any]]) -> list[ChatMessage]:
     return normalized
 
 
-def repair_instruction(
-    *,
-    failure_kind: str,
-    failed_output: Any,
-    failed_observation: Any,
-) -> str:
-    return f"""The student failed at the current agent step.
-
-Failure type: {failure_kind}
-
-Student's rejected current action:
-<rejected_action>
-{content_text(failed_output)}
-</rejected_action>
-
-Observation or framework error associated with that action:
-<rejected_observation>
-{content_text(failed_observation)}
-</rejected_observation>
-
-Replace only this current assistant action. Preserve the task and interaction
-state before it. Do not restart the whole solution, do not provide later
-steps, and do not mention that you are correcting the student.
-
-Output exactly one complete action in this form:
-Thought: <concise reasoning for this action>
-<code>
-# executable Python action
-</code>"""
-
-
 def build_teacher_repair_messages(
     *,
     prefix: list[dict[str, Any]],
-    failure_kind: str,
-    failed_output: Any,
-    failed_observation: Any,
 ) -> list[ChatMessage]:
-    messages = to_chat_messages(prefix)
-    messages.append(
-        ChatMessage.from_dict(
-            {
-                "role": "user",
-                "content": repair_instruction(
-                    failure_kind=failure_kind,
-                    failed_output=failed_output,
-                    failed_observation=failed_observation,
-                ),
-            }
-        )
-    )
-    return messages
+    """Use exactly the trajectory prefix; diagnostics stay outside teacher context."""
+    return to_chat_messages(prefix)
 
 
 def build_repair_sft_messages(
@@ -117,10 +68,10 @@ def build_repair_sft_messages(
 
 
 __all__ = [
+    "REPAIR_PROMPT_VERSION",
     "build_repair_sft_messages",
     "build_teacher_repair_messages",
-    "content_text",
     "prefix_before_assistant_turn",
-    "repair_instruction",
+    "repair_prompt_sha256",
     "to_chat_messages",
 ]

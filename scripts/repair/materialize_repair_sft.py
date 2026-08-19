@@ -16,7 +16,7 @@ from exps_research.repair.sft import materialize_repair_jsonl
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", required=True, help="local-repair-v1 attempt JSONL")
+    parser.add_argument("--input", required=True, help="local-repair-v1/v2 attempt JSONL")
     parser.add_argument("--output", required=True, help="local-repair-sft-v1 JSONL")
     args = parser.parse_args()
     count = materialize_repair_jsonl(args.input, args.output)

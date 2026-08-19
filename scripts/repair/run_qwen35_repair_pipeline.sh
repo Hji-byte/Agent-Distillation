@@ -20,11 +20,17 @@ data_path="${3:-$project_root/data_processor/math_dataset/train/math_repair_smok
 max_samples="${4:-50}"
 student_max_tokens="${STUDENT_MAX_TOKENS:-2048}"
 teacher_model_id="${REPAIR_TEACHER_MODEL_ID:-qwen3.5-27b}"
-teacher_max_tokens="${REPAIR_TEACHER_MAX_TOKENS:-1280}"
-continuation_max_tokens="${REPAIR_CONTINUATION_MAX_TOKENS:-1024}"
+teacher_max_tokens="${REPAIR_TEACHER_MAX_TOKENS:-2048}"
+continuation_max_tokens="${REPAIR_CONTINUATION_MAX_TOKENS:-2048}"
 max_candidates="${REPAIR_MAX_CANDIDATES:-5}"
 max_continuation_steps="${REPAIR_MAX_CONTINUATION_STEPS:-4}"
 repair_max_entries="${REPAIR_MAX_ENTRIES:--1}"
+run_tag="${REPAIR_RUN_TAG:-repair-v2}"
+
+if [[ ! "$run_tag" =~ ^[A-Za-z0-9._-]+$ ]]; then
+    echo "REPAIR_RUN_TAG may contain only letters, digits, dot, underscore, and hyphen." >&2
+    exit 2
+fi
 
 if [[ -z "$adapter_path" || ! -f "$adapter_path/adapter_config.json" ]]; then
     echo "Argument 1 must be the S0 LoRA directory containing adapter_config.json." >&2
@@ -42,6 +48,23 @@ if ! [[ "$max_samples" =~ ^[1-9][0-9]*$ ]]; then
     echo "Argument 4 (max_samples) must be a positive integer." >&2
     exit 2
 fi
+for token_setting in "$student_max_tokens" "$teacher_max_tokens" "$continuation_max_tokens"; do
+    if ! [[ "$token_setting" =~ ^[1-9][0-9]*$ ]]; then
+        echo "All generation token limits must be positive integers." >&2
+        exit 2
+    fi
+done
+if ! [[ "$repair_max_entries" =~ ^(-1|[1-9][0-9]*)$ ]]; then
+    echo "REPAIR_MAX_ENTRIES must be -1 (all failures) or a positive integer." >&2
+    exit 2
+fi
+
+echo "[preflight] Checking Python dependencies, CUDA, model, adapter, and dataset"
+"$python_bin" "$project_root/scripts/repair/preflight_repair_run.py" \
+    --adapter "$adapter_path" \
+    --model "$model_path" \
+    --dataset "$data_path" \
+    --max_samples "$max_samples"
 
 # setup_model loads project_root/.env itself. This accepts either that file or
 # exported variables without ever printing the secret key.
@@ -75,12 +98,14 @@ print(bounded_artifact_path(sys.argv[1], sys.argv[2], "_scored.jsonl"))
 ' "$evaluation_dir/evaluations" "$evaluation_base"
 )"
 
-repair_dir="$adapter_path/repair_results/${dataset_stem}"
+repair_dir="$adapter_path/repair_results/${dataset_stem}/${run_tag}"
 attempts_file="$repair_dir/${teacher_name}_local_repair_attempts.jsonl"
 verified_sft_file="$repair_dir/${teacher_name}_verified_repair_sft.jsonl"
+run_manifest_file="$repair_dir/run_manifest.json"
+summary_file="$repair_dir/repair_summary.json"
 mkdir -p "$repair_dir"
 
-echo "[1/3] Running or resuming local S0 evaluation on: $data_path"
+echo "[1/4] Running or resuming local S0 evaluation on: $data_path"
 bash "$project_root/scripts/inference/run_local_qwen35_finetuned.sh" \
     "$adapter_path" \
     "$model_path" \
@@ -93,10 +118,13 @@ if [[ ! -f "$scored_file" ]]; then
     exit 2
 fi
 
-echo "[2/3] Repairing scored S0 failures with on-demand $teacher_model_id API calls"
+echo "[2/4] Repairing scored S0 failures with on-demand $teacher_model_id API calls"
 "$python_bin" -u "$project_root/scripts/repair/generate_local_repairs.py" \
     --input "$scored_file" \
     --output "$attempts_file" \
+    --run_tag "$run_tag" \
+    --run_manifest "$run_manifest_file" \
+    --dataset_path "$data_path" \
     --teacher_model_id "$teacher_model_id" \
     --teacher_max_tokens "$teacher_max_tokens" \
     --continuation_model_type transformers \
@@ -109,14 +137,31 @@ echo "[2/3] Repairing scored S0 failures with on-demand $teacher_model_id API ca
     --max_format_retries 1 \
     --execution_timeout_seconds 30 \
     --seed 42 \
+    --student_evaluation_max_tokens "$student_max_tokens" \
+    --student_evaluation_max_steps 5 \
+    --student_evaluation_max_samples "$max_samples" \
     --resume
 
-echo "[3/3] Materializing only counterfactually verified repair targets"
+echo "[3/4] Materializing only counterfactually verified repair targets"
 "$python_bin" "$project_root/scripts/repair/materialize_repair_sft.py" \
     --input "$attempts_file" \
     --output "$verified_sft_file"
+
+echo "[4/4] Writing run-level repair statistics"
+summary_args=(
+    --scored "$scored_file" \
+    --attempts "$attempts_file" \
+    --output "$summary_file" \
+    --max_entries "$repair_max_entries"
+)
+if [[ "$repair_max_entries" == "-1" ]]; then
+    summary_args+=(--require_complete)
+fi
+"$python_bin" "$project_root/scripts/repair/summarize_repair_run.py" "${summary_args[@]}"
 
 echo "Repair pipeline complete."
 echo "S0 scored trajectories: $scored_file"
 echo "All repair attempts:    $attempts_file"
 echo "Verified repair SFT:    $verified_sft_file"
+echo "Run manifest:           $run_manifest_file"
+echo "Repair summary:         $summary_file"

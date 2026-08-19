@@ -99,12 +99,14 @@ class RepairPipeline:
         teacher_model: Model,
         continuation_model: Model,
         config: RepairConfig | None = None,
+        experiment_config: dict[str, Any] | None = None,
     ):
         self.config = config or RepairConfig()
         self.teacher = StrictActionGenerator(teacher_model, self.config.max_format_retries)
         self.continuation = StrictActionGenerator(continuation_model, self.config.max_format_retries)
         self.teacher_model_id = getattr(teacher_model, "model_id", type(teacher_model).__name__)
         self.continuation_model_id = getattr(continuation_model, "model_id", type(continuation_model).__name__)
+        self.experiment_config = dict(experiment_config or {})
 
     def _verify(
         self,
@@ -128,6 +130,8 @@ class RepairPipeline:
                 "correct": correct,
                 "final_answer": str(repaired_execution.output),
                 "trace": trace,
+                "verification_mode": "teacher_terminal",
+                "continuation_step_count": 0,
             }
 
         messages = to_chat_messages(prefix)
@@ -147,6 +151,8 @@ class RepairPipeline:
                     "final_answer": None,
                     "trace": trace,
                     "rejection_reason": f"continuation_execution_error: {error}",
+                    "verification_mode": "student_continuation",
+                    "continuation_step_count": index,
                 }
             trace.append(
                 {
@@ -160,6 +166,8 @@ class RepairPipeline:
                     "correct": _grade_math(executed.output, gold_answer),
                     "final_answer": str(executed.output),
                     "trace": trace,
+                    "verification_mode": "student_continuation",
+                    "continuation_step_count": index,
                 }
             _append_execution_messages(
                 messages,
@@ -172,6 +180,8 @@ class RepairPipeline:
             "final_answer": None,
             "trace": trace,
             "rejection_reason": "continuation_reached_step_limit",
+            "verification_mode": "student_continuation",
+            "continuation_step_count": self.config.max_continuation_steps,
         }
 
     def repair_entry(self, entry: dict[str, Any]) -> dict[str, Any]:
@@ -188,7 +198,7 @@ class RepairPipeline:
 
         candidates = error_aware_backward_candidates(entry)[: self.config.max_candidates]
         outcome: dict[str, Any] = {
-            "schema_version": "local-repair-v1",
+            "schema_version": "local-repair-v2",
             "repair_id": _stable_id(entry),
             "created_at": datetime.now().isoformat(timespec="seconds"),
             "question": entry.get("question"),
@@ -200,13 +210,18 @@ class RepairPipeline:
             "teacher_model_id": self.teacher_model_id,
             "continuation_model_id": self.continuation_model_id,
             "config": asdict(self.config),
+            "experiment_config": self.experiment_config,
             "attempts": [],
             "accepted": False,
         }
 
         for candidate in candidates:
             step = steps[candidate.step_index]
-            attempt: dict[str, Any] = {"candidate": candidate.dict(), "accepted": False}
+            attempt: dict[str, Any] = {
+                "candidate": candidate.dict(),
+                "accepted": False,
+                "original_step_is_final": bool(step.get("is_final_answer")),
+            }
             try:
                 prefix = prefix_before_assistant_turn(messages, candidate.assistant_turn_index)
                 replay = IsolatedReplay(
@@ -218,14 +233,12 @@ class RepairPipeline:
 
                 teacher_messages = build_teacher_repair_messages(
                     prefix=prefix,
-                    failure_kind=candidate.failure_kind,
-                    failed_output=step.get("model_output"),
-                    failed_observation=step.get("error") or step.get("observations"),
                 )
                 repaired = self.teacher.generate(teacher_messages)
                 attempt["teacher_action"] = repaired.dict()
                 repaired_execution = replay.execute_code(repaired.code_action)
                 attempt["teacher_execution"] = repaired_execution.dict()
+                attempt["repaired_step_is_final"] = bool(repaired_execution.is_final_answer)
                 verification = self._verify(
                     prefix=prefix,
                     repaired_action=repaired,
@@ -243,6 +256,8 @@ class RepairPipeline:
                     outcome["accepted"] = True
                     outcome["selected_step_index"] = candidate.step_index
                     outcome["selected_attempt_index"] = len(outcome["attempts"])
+                    outcome["verification_mode"] = verification["verification_mode"]
+                    outcome["continuation_step_count"] = verification["continuation_step_count"]
                     outcome["attempts"].append(attempt)
                     break
             except Exception as error:

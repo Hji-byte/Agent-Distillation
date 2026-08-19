@@ -25,6 +25,11 @@ def accepted_repair_example(outcome: dict[str, Any]) -> dict[str, Any] | None:
             "repair_step_index": outcome["selected_step_index"],
             "teacher_model_id": outcome["teacher_model_id"],
             "continuation_model_id": outcome["continuation_model_id"],
+            "verification_mode": outcome.get("verification_mode"),
+            "continuation_step_count": outcome.get("continuation_step_count"),
+            "original_step_is_final": attempt.get("original_step_is_final"),
+            "repaired_step_is_final": attempt.get("repaired_step_is_final"),
+            "run_tag": (outcome.get("experiment_config") or {}).get("run_tag"),
         },
     }
 

@@ -1,6 +1,7 @@
 import json
 
 from scripts.repair.generate_local_repairs import (
+    write_run_manifest,
     load_completed,
     truncate_incomplete_jsonl_tail,
 )
@@ -35,3 +36,16 @@ def test_retryable_attempt_is_not_treated_as_completed(tmp_path):
         encoding="utf-8",
     )
     assert load_completed(path) == {"done"}
+
+
+def test_run_manifest_refuses_configuration_drift(tmp_path):
+    path = tmp_path / "run_manifest.json"
+    write_run_manifest(path, {"run_tag": "v2", "seed": 42})
+    write_run_manifest(path, {"run_tag": "v2", "seed": 42})
+
+    try:
+        write_run_manifest(path, {"run_tag": "v2", "seed": 7})
+    except ValueError as error:
+        assert "different settings" in str(error)
+    else:
+        raise AssertionError("configuration drift should be rejected")

@@ -65,6 +65,35 @@ class RepairLocalizationTest(unittest.TestCase):
         self.assertEqual(classify_failure(entry), "incomplete_action_format")
         self.assertEqual(error_aware_backward_candidates(entry)[0].step_index, 0)
 
+    def test_forced_max_steps_fallback_is_not_a_repair_candidate(self):
+        entry = {
+            "score": 0,
+            "log_data": {
+                "metadata": {"state": "max_steps_error"},
+                "trajectory_steps": [
+                    step("x = 4", turn=0),
+                    step("y = x + 1", turn=1),
+                    {
+                        "assistant_turn_index": None,
+                        "model_output": None,
+                        "code_action": None,
+                        "observations": None,
+                        "error": {
+                            "type": "AgentMaxStepsError",
+                            "message": "Reached max steps.",
+                        },
+                        "is_final_answer": False,
+                    },
+                ],
+            },
+        }
+
+        candidates = error_aware_backward_candidates(entry)
+
+        self.assertEqual(classify_failure(entry), "max_steps")
+        self.assertEqual([candidate.step_index for candidate in candidates], [1, 0])
+        self.assertNotIn(2, [candidate.step_index for candidate in candidates])
+
 
 if __name__ == "__main__":
     unittest.main()
