@@ -1,0 +1,12 @@
+{
+  "log_file": "logs/qa_results/transformers/qwen3.5-0.8B_v126_baseline/math_500_20250414_test/Qwen3.5-0.8B_temp=0.0_seed=42_type=agent_steps=5_max_tokens=2048_code_only_v126_baseline.jsonl",
+  "raw_records": 500,
+  "duplicate_records_ignored": 0,
+  "total_questions": 500,
+  "correct_answers": 160,
+  "accuracy": 0.32,
+  "costs": {
+    "total_cost": 0.0,
+    "average_cost_per_question": 0.0
+  }
+}
