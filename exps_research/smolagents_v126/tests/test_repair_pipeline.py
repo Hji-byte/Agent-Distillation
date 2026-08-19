@@ -192,6 +192,31 @@ class RepairPipelineTest(unittest.TestCase):
             "the complete <code>...</code> action. Do not discuss the correction.",
         )
 
+    def test_successful_format_retry_preserves_failed_and_valid_generations(self):
+        teacher = SequenceModel(
+            "teacher",
+            ["<code>\nx = 5\n</code>", "Thought: correct x\n<code>\nx = 5\n</code>"],
+        )
+        pipeline = RepairPipeline(
+            teacher_model=teacher,
+            continuation_model=SequenceModel(
+                "student", ["Thought: submit x\n<code>\nfinal_answer(x)\n</code>"]
+            ),
+            config=RepairConfig(max_candidates=1, max_continuation_steps=1),
+        )
+
+        outcome = pipeline.repair_entry(failed_two_step_entry())
+
+        self.assertTrue(outcome["accepted"])
+        action = outcome["attempts"][0]["teacher_action"]
+        self.assertEqual(action["format_retry_count"], 1)
+        self.assertEqual(len(action["generation_attempts"]), 2)
+        self.assertFalse(action["generation_attempts"][0]["valid_action"])
+        self.assertEqual(action["generation_attempts"][0]["finish_reason"], "length")
+        self.assertTrue(action["generation_attempts"][1]["valid_action"])
+        self.assertEqual(action["generation_attempts"][1]["finish_reason"], "stop")
+        self.assertIsNone(action["generation_attempts"][1]["parse_error"])
+
 
 if __name__ == "__main__":
     unittest.main()

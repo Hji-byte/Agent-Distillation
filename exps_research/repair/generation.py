@@ -17,6 +17,7 @@ class GeneratedAction:
     format_retry_count: int
     input_tokens: int
     output_tokens: int
+    generation_attempts: list[dict[str, Any]]
 
     def dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -97,29 +98,33 @@ class StrictActionGenerator:
             if "<code>" in text and not text.rstrip().endswith("</code>"):
                 text = text.rstrip() + "\n</code>"
                 closing_tag_restored = True
+            generation_attempt = {
+                "attempt_index": attempt,
+                "raw_model_output": raw_text,
+                "model_output": text,
+                "closing_tag_restored": closing_tag_restored,
+                "finish_reason": self._finish_reason(response),
+                "parse_error": None,
+                "valid_action": False,
+                "input_tokens": response.token_usage.input_tokens if response.token_usage else 0,
+                "output_tokens": response.token_usage.output_tokens if response.token_usage else 0,
+            }
             try:
                 code = parse_action(text)
+                generation_attempt["valid_action"] = True
+                generation_attempts.append(generation_attempt)
                 return GeneratedAction(
                     model_output=text,
                     code_action=code,
                     format_retry_count=attempt,
                     input_tokens=total_input,
                     output_tokens=total_output,
+                    generation_attempts=generation_attempts,
                 )
             except Exception as error:
                 last_error = error
-                generation_attempts.append(
-                    {
-                        "attempt_index": attempt,
-                        "raw_model_output": raw_text,
-                        "model_output": text,
-                        "closing_tag_restored": closing_tag_restored,
-                        "finish_reason": self._finish_reason(response),
-                        "parse_error": f"{type(error).__name__}: {error}",
-                        "input_tokens": response.token_usage.input_tokens if response.token_usage else 0,
-                        "output_tokens": response.token_usage.output_tokens if response.token_usage else 0,
-                    }
-                )
+                generation_attempt["parse_error"] = f"{type(error).__name__}: {error}"
+                generation_attempts.append(generation_attempt)
                 if attempt >= self.max_format_retries:
                     break
                 request_messages = list(messages) + [
