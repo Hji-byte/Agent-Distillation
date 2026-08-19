@@ -1,5 +1,6 @@
 import hashlib
 import unittest
+from types import SimpleNamespace
 
 from smolagents.models import ChatMessage, MessageRole, Model
 from smolagents.monitoring import TokenUsage
@@ -23,6 +24,9 @@ class SequenceModel(Model):
         return ChatMessage(
             role=MessageRole.ASSISTANT,
             content=self.outputs.pop(0),
+            raw=SimpleNamespace(
+                choices=[SimpleNamespace(finish_reason="length" if len(self.calls) == 1 else "stop")]
+            ),
             token_usage=TokenUsage(input_tokens=10, output_tokens=5),
         )
 
@@ -152,7 +156,7 @@ class RepairPipelineTest(unittest.TestCase):
         self.assertTrue(outcome["attempts"][0]["retryable_error"])
 
     def test_teacher_format_failure_preserves_outputs_tokens_and_is_retryable(self):
-        teacher = SequenceModel("teacher", ["code only", "still missing thought"])
+        teacher = SequenceModel("teacher", ["<code>\nprint(1)", "<code>\nprint(2)"])
         pipeline = RepairPipeline(
             teacher_model=teacher,
             continuation_model=SequenceModel("student", []),
@@ -170,10 +174,23 @@ class RepairPipelineTest(unittest.TestCase):
         self.assertEqual(failure["input_tokens"], 20)
         self.assertEqual(failure["output_tokens"], 10)
         self.assertEqual(
-            [item["model_output"] for item in failure["generation_attempts"]],
-            ["code only", "still missing thought"],
+            [item["raw_model_output"] for item in failure["generation_attempts"]],
+            ["<code>\nprint(1)", "<code>\nprint(2)"],
         )
+        self.assertEqual(
+            [item["finish_reason"] for item in failure["generation_attempts"]],
+            ["length", "stop"],
+        )
+        self.assertTrue(all(item["closing_tag_restored"] for item in failure["generation_attempts"]))
+        self.assertTrue(all(item["model_output"].endswith("</code>") for item in failure["generation_attempts"]))
         self.assertIn("missing a non-empty Thought", failure["generation_attempts"][0]["parse_error"])
+        retry_prompt = teacher.calls[1][-1].content[0]["text"]
+        self.assertEqual(
+            retry_prompt,
+            "Your previous action omitted the mandatory non-empty line beginning exactly `Thought:`. "
+            "Regenerate only the current assistant action. Start with `Thought: <reasoning>`, then provide "
+            "the complete <code>...</code> action. Do not discuss the correction.",
+        )
 
 
 if __name__ == "__main__":

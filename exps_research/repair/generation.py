@@ -89,11 +89,14 @@ class StrictActionGenerator:
             if response.token_usage:
                 total_input += response.token_usage.input_tokens
                 total_output += response.token_usage.output_tokens
-            text = str(response.content or "")
+            raw_text = str(response.content or "")
+            text = raw_text
             # Native CodeAgent also restores the closing stop tag after model
             # generation. Only do this when an opening tag actually exists.
+            closing_tag_restored = False
             if "<code>" in text and not text.rstrip().endswith("</code>"):
                 text = text.rstrip() + "\n</code>"
+                closing_tag_restored = True
             try:
                 code = parse_action(text)
                 return GeneratedAction(
@@ -108,7 +111,10 @@ class StrictActionGenerator:
                 generation_attempts.append(
                     {
                         "attempt_index": attempt,
+                        "raw_model_output": raw_text,
                         "model_output": text,
+                        "closing_tag_restored": closing_tag_restored,
+                        "finish_reason": self._finish_reason(response),
                         "parse_error": f"{type(error).__name__}: {error}",
                         "input_tokens": response.token_usage.input_tokens if response.token_usage else 0,
                         "output_tokens": response.token_usage.output_tokens if response.token_usage else 0,
@@ -120,11 +126,17 @@ class StrictActionGenerator:
                     ChatMessage(role=MessageRole.ASSISTANT, content=text),
                     ChatMessage(
                         role=MessageRole.USER,
-                        content=(
-                            "Regenerate only the current action. Output a non-empty `Thought:` line "
-                            "followed by exactly one complete `<code>...</code>` block. Do not explain "
-                            "the format correction."
-                        ),
+                        content=[
+                            {
+                                "type": "text",
+                                "text": (
+                                    "Your previous action omitted the mandatory non-empty line beginning exactly "
+                                    "`Thought:`. Regenerate only the current assistant action. "
+                                    "Start with `Thought: <reasoning>`, then provide the complete "
+                                    "<code>...</code> action. Do not discuss the correction."
+                                ),
+                            }
+                        ],
                     ),
                 ]
 
@@ -133,6 +145,15 @@ class StrictActionGenerator:
             generation_attempts=generation_attempts,
             generation_source=self.generation_source,
         )
+
+    @staticmethod
+    def _finish_reason(response: ChatMessage) -> str | None:
+        """Extract OpenAI-compatible termination metadata without storing raw API objects."""
+        raw = getattr(response, "raw", None)
+        choices = getattr(raw, "choices", None)
+        if not choices:
+            return None
+        return getattr(choices[0], "finish_reason", None)
 
 
 __all__ = ["ActionGenerationError", "GeneratedAction", "StrictActionGenerator"]
