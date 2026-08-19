@@ -1,0 +1,12 @@
+{
+  "log_file": "/mnt/workspace/Agent-Distillation/training_outputs/Qwen3.5-0.8B/agent_baseline_2epochs_qlora/qa_results/math_500_20250414_test/Qwen3.5-0.8B_temp=0.0_n=1_seed=42_type=agent_steps=5_max_tokens=2048_code_only_v126_sft_qlora.jsonl",
+  "raw_records": 500,
+  "duplicate_records_ignored": 0,
+  "total_questions": 500,
+  "correct_answers": 179,
+  "accuracy": 0.358,
+  "costs": {
+    "total_cost": 0.0,
+    "average_cost_per_question": 0.0
+  }
+}
