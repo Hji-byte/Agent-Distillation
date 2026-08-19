@@ -151,6 +151,30 @@ class RepairPipelineTest(unittest.TestCase):
         self.assertTrue(outcome["retryable_error"])
         self.assertTrue(outcome["attempts"][0]["retryable_error"])
 
+    def test_teacher_format_failure_preserves_outputs_tokens_and_is_retryable(self):
+        teacher = SequenceModel("teacher", ["code only", "still missing thought"])
+        pipeline = RepairPipeline(
+            teacher_model=teacher,
+            continuation_model=SequenceModel("student", []),
+            config=RepairConfig(max_candidates=1, max_format_retries=1),
+        )
+
+        outcome = pipeline.repair_entry(failed_two_step_entry())
+
+        self.assertFalse(outcome["accepted"])
+        self.assertTrue(outcome["retryable_error"])
+        attempt = outcome["attempts"][0]
+        self.assertTrue(attempt["retryable_error"])
+        failure = attempt["teacher_generation_failure"]
+        self.assertEqual(failure["format_retry_count"], 1)
+        self.assertEqual(failure["input_tokens"], 20)
+        self.assertEqual(failure["output_tokens"], 10)
+        self.assertEqual(
+            [item["model_output"] for item in failure["generation_attempts"]],
+            ["code only", "still missing thought"],
+        )
+        self.assertIn("missing a non-empty Thought", failure["generation_attempts"][0]["parse_error"])
+
 
 if __name__ == "__main__":
     unittest.main()

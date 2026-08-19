@@ -13,7 +13,7 @@ from exps_research.unified_framework.math_utils.qwen_math_grader import math_equ
 from exps_research.unified_framework.math_utils.qwen_math_parser import extract_answer
 
 from .execution import DEFAULT_REPAIR_IMPORTS, IsolatedReplay
-from .generation import StrictActionGenerator
+from .generation import ActionGenerationError, StrictActionGenerator
 from .localization import classify_failure, error_aware_backward_candidates
 from .messages import (
     build_repair_sft_messages,
@@ -102,8 +102,16 @@ class RepairPipeline:
         experiment_config: dict[str, Any] | None = None,
     ):
         self.config = config or RepairConfig()
-        self.teacher = StrictActionGenerator(teacher_model, self.config.max_format_retries)
-        self.continuation = StrictActionGenerator(continuation_model, self.config.max_format_retries)
+        self.teacher = StrictActionGenerator(
+            teacher_model,
+            self.config.max_format_retries,
+            generation_source="teacher",
+        )
+        self.continuation = StrictActionGenerator(
+            continuation_model,
+            self.config.max_format_retries,
+            generation_source="continuation",
+        )
         self.teacher_model_id = getattr(teacher_model, "model_id", type(teacher_model).__name__)
         self.continuation_model_id = getattr(continuation_model, "model_id", type(continuation_model).__name__)
         self.experiment_config = dict(experiment_config or {})
@@ -262,7 +270,9 @@ class RepairPipeline:
                     break
             except Exception as error:
                 attempt["rejection_reason"] = f"{type(error).__name__}: {error}"
-                if _is_retryable_infrastructure_error(error):
+                if isinstance(error, ActionGenerationError):
+                    attempt[f"{error.generation_source}_generation_failure"] = error.dict()
+                if isinstance(error, ActionGenerationError) or _is_retryable_infrastructure_error(error):
                     attempt["retryable_error"] = True
                     outcome["attempts"].append(attempt)
                     outcome["retryable_error"] = True

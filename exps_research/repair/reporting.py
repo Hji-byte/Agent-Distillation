@@ -74,11 +74,21 @@ def summarize_repair_run(
         for attempt in attempted_candidates
         if attempt.get("teacher_action")
     ]
+    teacher_generation_failures = [
+        attempt["teacher_generation_failure"]
+        for attempt in attempted_candidates
+        if attempt.get("teacher_generation_failure")
+    ]
     continuation_actions = [
         trace["action"]
         for attempt in attempted_candidates
         for trace in (attempt.get("verification") or {}).get("trace", [])
         if trace.get("source") == "continuation_policy" and trace.get("action")
+    ]
+    continuation_generation_failures = [
+        attempt["continuation_generation_failure"]
+        for attempt in attempted_candidates
+        if attempt.get("continuation_generation_failure")
     ]
     mode_counts = {"teacher_terminal": 0, "student_continuation": 0}
     for row in accepted:
@@ -122,16 +132,28 @@ def summarize_repair_run(
             ),
         },
         "retries": {
-            "teacher_format_retries": total(teacher_actions, "format_retry_count"),
-            "continuation_format_retries": total(continuation_actions, "format_retry_count"),
+            "teacher_format_retries": total(
+                teacher_actions + teacher_generation_failures, "format_retry_count"
+            ),
+            "continuation_format_retries": total(
+                continuation_actions + continuation_generation_failures, "format_retry_count"
+            ),
         },
         "token_usage": {
             "s0_evaluation_input_tokens": sum(int(row.get("input_tokens") or 0) for row in scored),
             "s0_evaluation_output_tokens": sum(int(row.get("output_tokens") or 0) for row in scored),
-            "teacher_input_tokens": total(teacher_actions, "input_tokens"),
-            "teacher_output_tokens": total(teacher_actions, "output_tokens"),
-            "continuation_input_tokens": total(continuation_actions, "input_tokens"),
-            "continuation_output_tokens": total(continuation_actions, "output_tokens"),
+            "teacher_input_tokens": total(
+                teacher_actions + teacher_generation_failures, "input_tokens"
+            ),
+            "teacher_output_tokens": total(
+                teacher_actions + teacher_generation_failures, "output_tokens"
+            ),
+            "continuation_input_tokens": total(
+                continuation_actions + continuation_generation_failures, "input_tokens"
+            ),
+            "continuation_output_tokens": total(
+                continuation_actions + continuation_generation_failures, "output_tokens"
+            ),
         },
     }
 

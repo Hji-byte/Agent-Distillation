@@ -68,7 +68,16 @@ def test_summarize_repair_run_counts_modes_retries_and_tokens(tmp_path):
                 "repair_id": "failed-2",
                 "accepted": False,
                 "retryable_error": True,
-                "attempts": [],
+                "attempts": [
+                    {
+                        "teacher_generation_failure": {
+                            "format_retry_count": 1,
+                            "input_tokens": 12,
+                            "output_tokens": 6,
+                            "generation_attempts": [],
+                        }
+                    }
+                ],
             },
         ],
     )
@@ -89,9 +98,10 @@ def test_summarize_repair_run_counts_modes_retries_and_tokens(tmp_path):
     assert summary["repair"]["remaining_repair_ids"] == ["failed-2"]
     assert summary["repair"]["completion_mode"]["student_continuation"] == 1
     assert summary["repair"]["average_continuation_steps_accepted"] == 2
-    assert summary["retries"]["teacher_format_retries"] == 1
+    assert summary["retries"]["teacher_format_retries"] == 2
     assert summary["retries"]["continuation_format_retries"] == 1
-    assert summary["token_usage"]["teacher_input_tokens"] == 20
+    assert summary["token_usage"]["teacher_input_tokens"] == 32
+    assert summary["token_usage"]["teacher_output_tokens"] == 16
     assert summary["token_usage"]["continuation_output_tokens"] == 3
     assert summary["token_usage"]["s0_evaluation_input_tokens"] == 60
     assert summary["token_usage"]["s0_evaluation_output_tokens"] == 12
