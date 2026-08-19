@@ -1,0 +1,12 @@
+{
+  "baseline_file": "experiment_results/math500/qwen3.5-0.8B_baseline/Qwen3.5-0.8B_temp=0.0_seed=42_type=agent_steps=5_max_tokens=2048_code_only_v126_baseline_scored.jsonl",
+  "framework_rerun_file": "experiment_results/math500/qwen3.5-0.8B_baseline_framework_rerun/Qwen3.5-0.8B_temp=0.0_seed=42_type=agent_steps=5_m_4021c0765be3_scored.jsonl",
+  "output_file": "experiment_results/math500/qwen3.5-0.8B_baseline_corrected/Qwen3.5-0.8B_temp=0.0_seed=42_type=agent_steps=5_max_tokens=2048_code_only_v126_baseline_corrected_scored.jsonl",
+  "raw_records": 500,
+  "duplicate_records_ignored": 0,
+  "replaced_framework_errors": 7,
+  "remaining_framework_errors": 0,
+  "total_questions": 500,
+  "correct_answers": 162,
+  "accuracy": 0.324
+}
