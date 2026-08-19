@@ -48,6 +48,27 @@ def _grade_math(answer: Any, gold: Any) -> bool:
     return bool(math_equal(parsed, str(gold), timeout=True))
 
 
+def _is_retryable_infrastructure_error(error: Exception) -> bool:
+    """Keep transient API/GPU/system failures out of scientific rejections."""
+    module = type(error).__module__.split(".", 1)[0]
+    if module in {"openai", "httpx", "httpcore", "requests"}:
+        return True
+    if isinstance(error, (ConnectionError, TimeoutError, OSError)):
+        return True
+    text = f"{type(error).__name__}: {error}".lower()
+    return any(
+        marker in text
+        for marker in (
+            "out of memory",
+            "cuda error",
+            "rate limit",
+            "connection reset",
+            "connection refused",
+            "timed out",
+        )
+    )
+
+
 def _append_execution_messages(
     messages: list[ChatMessage],
     *,
@@ -226,6 +247,12 @@ class RepairPipeline:
                     break
             except Exception as error:
                 attempt["rejection_reason"] = f"{type(error).__name__}: {error}"
+                if _is_retryable_infrastructure_error(error):
+                    attempt["retryable_error"] = True
+                    outcome["attempts"].append(attempt)
+                    outcome["retryable_error"] = True
+                    outcome["rejection_reason"] = attempt["rejection_reason"]
+                    return outcome
             outcome["attempts"].append(attempt)
 
         if not outcome["accepted"]:

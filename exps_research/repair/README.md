@@ -27,6 +27,38 @@ baseline teacher generation or baseline SFT entry points.
 
 ## Commands
 
+Create fixed, mutually disjoint smoke (50) and formal (500) repair splits from
+the official `EleutherAI/hendrycks_math` train split. This excludes all 2,000
+teacher-candidate questions and Math500, records the resolved source revision,
+and writes an overlap audit:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\repair\prepare_repair_split.py
+```
+
+On the GPU server, run or resume the complete 50-question smoke pipeline. The
+27B teacher is called through the DashScope-compatible API only for candidate
+replacement actions; the trained local S0 is always the continuation policy:
+
+```bash
+export AGENT_DISTILLATION_MODEL_PATH=/mnt/workspace/models/Qwen3.5-0.8B
+export S0_ADAPTER_PATH=/mnt/workspace/Agent-Distillation/training_outputs/Qwen3.5-0.8B/agent_baseline_2epochs_qlora
+bash scripts/repair/run_qwen35_repair_pipeline.sh
+```
+
+The project `.env` (or exported environment) must provide
+`DASHSCOPE_API_KEY` and `DASHSCOPE_BASE_URL`. Re-running the same command
+resumes both the one-attempt S0 evaluation and repair generation. To run the
+formal split after smoke validation, pass the formal dataset and 500 samples:
+
+```bash
+bash scripts/repair/run_qwen35_repair_pipeline.sh \
+  "$S0_ADAPTER_PATH" \
+  "$AGENT_DISTILLATION_MODEL_PATH" \
+  data_processor/math_dataset/train/math_repair_train_500_seed42.json \
+  500
+```
+
 Generate repairs with the trained local student as continuation policy:
 
 ```powershell

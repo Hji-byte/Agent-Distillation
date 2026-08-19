@@ -21,6 +21,13 @@ class SequenceModel(Model):
         )
 
 
+class ConnectionFailingModel(Model):
+    model_id = "unavailable-teacher"
+
+    def generate(self, messages, stop_sequences=None, **kwargs):
+        raise ConnectionError("temporary API outage")
+
+
 def failed_two_step_entry():
     return {
         "question": "What is 2 + 3?",
@@ -81,6 +88,17 @@ class RepairPipelineTest(unittest.TestCase):
         self.assertNotIn("rejected_action", str(attempt["sft_messages"]))
         self.assertEqual(len(teacher.calls), 1)
         self.assertEqual(len(student.calls), 1)
+
+    def test_api_failure_is_retryable_not_a_scientific_rejection(self):
+        pipeline = RepairPipeline(
+            teacher_model=ConnectionFailingModel(),
+            continuation_model=SequenceModel("student", []),
+            config=RepairConfig(max_candidates=2),
+        )
+        outcome = pipeline.repair_entry(failed_two_step_entry())
+        self.assertFalse(outcome["accepted"])
+        self.assertTrue(outcome["retryable_error"])
+        self.assertTrue(outcome["attempts"][0]["retryable_error"])
 
 
 if __name__ == "__main__":

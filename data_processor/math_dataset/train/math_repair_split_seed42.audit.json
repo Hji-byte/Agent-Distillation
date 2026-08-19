@@ -1,0 +1,203 @@
+{
+    "schema_version": "math-repair-split-audit-v1",
+    "source_dataset": "EleutherAI/hendrycks_math",
+    "source_revision": "21a5633873b6a120296cce3e2df9d5550074f4a3",
+    "official_train_rows": 7500,
+    "official_train_unique_questions": 7499,
+    "official_duplicate_question_rows": 1,
+    "teacher_candidate_files": [
+        "data_processor/math_dataset/train/math_medium_1000_20250430.json",
+        "data_processor/math_dataset/train/math_1000_20250414.json"
+    ],
+    "teacher_candidate_unique_questions": 2000,
+    "teacher_candidates_found_in_official_train": 2000,
+    "math500_file": "data_processor/math_dataset/test/math_500_20250414.json",
+    "math500_unique_questions": 500,
+    "math500_questions_found_in_official_train": 0,
+    "teacher_math500_overlap": 0,
+    "official_unknown_level_rows": 2,
+    "official_unextractable_answer_rows": 2,
+    "eligible_level_2_to_5_after_exclusion": 4933,
+    "eligible_distribution": {
+        "levels": {
+            "Level 2": 912,
+            "Level 3": 1028,
+            "Level 4": 1258,
+            "Level 5": 1735
+        },
+        "subjects": {
+            "Algebra": 1124,
+            "Counting & Probability": 515,
+            "Geometry": 615,
+            "Intermediate Algebra": 888,
+            "Number Theory": 582,
+            "Prealgebra": 713,
+            "Precalculus": 496
+        },
+        "level_by_subject": {
+            "Level 2": {
+                "Algebra": 240,
+                "Counting & Probability": 85,
+                "Geometry": 77,
+                "Intermediate Algebra": 113,
+                "Number Theory": 86,
+                "Prealgebra": 203,
+                "Precalculus": 108
+            },
+            "Level 3": {
+                "Algebra": 252,
+                "Counting & Probability": 104,
+                "Geometry": 81,
+                "Intermediate Algebra": 200,
+                "Number Theory": 125,
+                "Prealgebra": 156,
+                "Precalculus": 110
+            },
+            "Level 4": {
+                "Algebra": 295,
+                "Counting & Probability": 129,
+                "Geometry": 132,
+                "Intermediate Algebra": 255,
+                "Number Theory": 132,
+                "Prealgebra": 174,
+                "Precalculus": 141
+            },
+            "Level 5": {
+                "Algebra": 337,
+                "Counting & Probability": 197,
+                "Geometry": 325,
+                "Intermediate Algebra": 320,
+                "Number Theory": 239,
+                "Prealgebra": 180,
+                "Precalculus": 137
+            }
+        }
+    },
+    "formal": {
+        "path": "data_processor/math_dataset/train/math_repair_train_500_seed42.json",
+        "count": 500,
+        "sha256": "b4749b82a0161f59dfec23858999193ce61bb114405762b632c9407804998182",
+        "distribution": {
+            "levels": {
+                "Level 2": 100,
+                "Level 3": 100,
+                "Level 4": 150,
+                "Level 5": 150
+            },
+            "subjects": {
+                "Algebra": 74,
+                "Counting & Probability": 74,
+                "Geometry": 72,
+                "Intermediate Algebra": 70,
+                "Number Theory": 70,
+                "Prealgebra": 70,
+                "Precalculus": 70
+            },
+            "level_by_subject": {
+                "Level 2": {
+                    "Algebra": 15,
+                    "Counting & Probability": 15,
+                    "Geometry": 14,
+                    "Intermediate Algebra": 14,
+                    "Number Theory": 14,
+                    "Prealgebra": 14,
+                    "Precalculus": 14
+                },
+                "Level 3": {
+                    "Algebra": 15,
+                    "Counting & Probability": 15,
+                    "Geometry": 14,
+                    "Intermediate Algebra": 14,
+                    "Number Theory": 14,
+                    "Prealgebra": 14,
+                    "Precalculus": 14
+                },
+                "Level 4": {
+                    "Algebra": 22,
+                    "Counting & Probability": 22,
+                    "Geometry": 22,
+                    "Intermediate Algebra": 21,
+                    "Number Theory": 21,
+                    "Prealgebra": 21,
+                    "Precalculus": 21
+                },
+                "Level 5": {
+                    "Algebra": 22,
+                    "Counting & Probability": 22,
+                    "Geometry": 22,
+                    "Intermediate Algebra": 21,
+                    "Number Theory": 21,
+                    "Prealgebra": 21,
+                    "Precalculus": 21
+                }
+            }
+        }
+    },
+    "smoke": {
+        "path": "data_processor/math_dataset/train/math_repair_smoke_50_seed42.json",
+        "count": 50,
+        "sha256": "a974e6c27663a00941635985d840488cfea8618e5dd58425328fba657087ca51",
+        "distribution": {
+            "levels": {
+                "Level 2": 10,
+                "Level 3": 10,
+                "Level 4": 15,
+                "Level 5": 15
+            },
+            "subjects": {
+                "Algebra": 6,
+                "Counting & Probability": 8,
+                "Geometry": 10,
+                "Intermediate Algebra": 8,
+                "Number Theory": 6,
+                "Prealgebra": 6,
+                "Precalculus": 6
+            },
+            "level_by_subject": {
+                "Level 2": {
+                    "Algebra": 1,
+                    "Counting & Probability": 2,
+                    "Geometry": 2,
+                    "Intermediate Algebra": 2,
+                    "Number Theory": 1,
+                    "Prealgebra": 1,
+                    "Precalculus": 1
+                },
+                "Level 3": {
+                    "Algebra": 1,
+                    "Counting & Probability": 2,
+                    "Geometry": 2,
+                    "Intermediate Algebra": 2,
+                    "Number Theory": 1,
+                    "Prealgebra": 1,
+                    "Precalculus": 1
+                },
+                "Level 4": {
+                    "Algebra": 2,
+                    "Counting & Probability": 2,
+                    "Geometry": 3,
+                    "Intermediate Algebra": 2,
+                    "Number Theory": 2,
+                    "Prealgebra": 2,
+                    "Precalculus": 2
+                },
+                "Level 5": {
+                    "Algebra": 2,
+                    "Counting & Probability": 2,
+                    "Geometry": 3,
+                    "Intermediate Algebra": 2,
+                    "Number Theory": 2,
+                    "Prealgebra": 2,
+                    "Precalculus": 2
+                }
+            }
+        }
+    },
+    "overlap_checks": {
+        "formal_vs_smoke": 0,
+        "formal_vs_teacher_candidates": 0,
+        "formal_vs_math500": 0,
+        "smoke_vs_teacher_candidates": 0,
+        "smoke_vs_math500": 0
+    }
+}
