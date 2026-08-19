@@ -831,6 +831,31 @@ def test_get_clean_message_list_flatten_messages_as_text():
     assert result[0]["content"] == "Hello!\nHow are you?"
 
 
+def test_get_clean_message_list_normalizes_plain_text_content():
+    messages = [
+        ChatMessage(role=MessageRole.USER, content="Hello!"),
+        ChatMessage(role=MessageRole.USER, content=["How are you?", "Still there?"]),
+    ]
+
+    flattened = get_clean_message_list(messages, flatten_messages_as_text=True)
+    structured = get_clean_message_list(messages, flatten_messages_as_text=False)
+
+    assert flattened == [
+        {"role": MessageRole.USER, "content": "Hello!\nHow are you?\nStill there?"}
+    ]
+    assert structured == [
+        {
+            "role": MessageRole.USER,
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Hello!\nHow are you?\nStill there?",
+                },
+            ],
+        }
+    ]
+
+
 @pytest.mark.parametrize(
     "model_class, model_kwargs, patching, expected_flatten_messages_as_text",
     [

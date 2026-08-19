@@ -350,6 +350,36 @@ def get_clean_message_list(
     for message in message_list:
         if isinstance(message, dict):
             message = ChatMessage.from_dict(message)
+
+        # Local Transformers backends may return plain text content, while
+        # memory steps normally use OpenAI-style content blocks. Normalize
+        # both representations before indexing blocks below. Without this,
+        # a string (or a list containing strings) can reach
+        # ``message.content[0]["text"]`` and fail with
+        # ``TypeError: string indices must be integers, not 'str'``.
+        if message.content is None:
+            message.content = [{"type": "text", "text": ""}]
+        elif isinstance(message.content, str):
+            message.content = [{"type": "text", "text": message.content}]
+        elif isinstance(message.content, list):
+            normalized_content = []
+            for element in message.content:
+                if isinstance(element, str):
+                    normalized_content.append({"type": "text", "text": element})
+                elif isinstance(element, dict):
+                    normalized_content.append(element)
+                else:
+                    raise TypeError(
+                        "Message content blocks must be strings or dictionaries, "
+                        f"got {type(element).__name__}"
+                    )
+            message.content = normalized_content
+        else:
+            raise TypeError(
+                "Message content must be text or a list of content blocks, "
+                f"got {type(message.content).__name__}"
+            )
+
         role = message.role
         if role not in MessageRole.roles():
             raise ValueError(f"Incorrect role {role}, only {MessageRole.roles()} are supported for now.")
@@ -375,7 +405,12 @@ def get_clean_message_list(
         if len(output_message_list) > 0 and message.role == output_message_list[-1]["role"]:
             assert isinstance(message.content, list), "Error: wrong content:" + str(message.content)
             if flatten_messages_as_text:
-                output_message_list[-1]["content"] += "\n" + message.content[0]["text"]
+                text = "\n".join(
+                    str(element.get("text", ""))
+                    for element in message.content
+                    if element.get("type") == "text"
+                )
+                output_message_list[-1]["content"] += "\n" + text
             else:
                 for el in message.content:
                     if el["type"] == "text" and output_message_list[-1]["content"][-1]["type"] == "text":
@@ -385,7 +420,11 @@ def get_clean_message_list(
                         output_message_list[-1]["content"].append(el)
         else:
             if flatten_messages_as_text:
-                content = message.content[0]["text"]
+                content = "\n".join(
+                    str(element.get("text", ""))
+                    for element in message.content
+                    if element.get("type") == "text"
+                )
             else:
                 content = message.content
             output_message_list.append(

@@ -3,6 +3,7 @@ Agent experiment processor for tool-based experiments
 """
 
 import hashlib
+import traceback
 from pathlib import Path
 from typing import Dict, Any
 
@@ -289,6 +290,7 @@ class AgentExperimentProcessor(ExperimentProcessor):
                 "selected_output_tokens": token_usage["output_tokens"],
             }
         except Exception as e:
+            error_traceback = traceback.format_exc()
             # Only print errors for the verbose worker
             if should_show_output:
                 if RICH_AVAILABLE:
@@ -303,6 +305,8 @@ class AgentExperimentProcessor(ExperimentProcessor):
                 "generated_answer": None,
                 "true_answer": entry.get("answer", None),
                 "error": str(e),
+                "error_type": type(e).__name__,
+                "error_traceback": error_traceback,
                 "log_data": None,
                 "input_tokens": 0,
                 "output_tokens": 0,
