@@ -1,0 +1,44 @@
+{
+  "schema_version": "local-repair-summary-v1",
+  "s0": {
+    "total": 50,
+    "correct": 15,
+    "failed": 35,
+    "normal_success_correct": 14,
+    "max_steps_fallback_correct": 1
+  },
+  "repair": {
+    "completion_status": "incomplete_retryable_errors",
+    "expected_failures": 35,
+    "processed": 35,
+    "raw_attempt_records": 39,
+    "completed": 32,
+    "remaining": 3,
+    "remaining_repair_ids": [
+      "18",
+      "37",
+      "43"
+    ],
+    "accepted": 30,
+    "scientific_rejected": 2,
+    "retryable_error": 3,
+    "average_candidates_attempted": 1.9714285714285715,
+    "completion_mode": {
+      "teacher_terminal": 2,
+      "student_continuation": 28
+    },
+    "average_continuation_steps_accepted": 1.0333333333333334
+  },
+  "retries": {
+    "teacher_format_retries": 23,
+    "continuation_format_retries": 0
+  },
+  "token_usage": {
+    "s0_evaluation_input_tokens": 454579,
+    "s0_evaluation_output_tokens": 94511,
+    "teacher_input_tokens": 112631,
+    "teacher_output_tokens": 38855,
+    "continuation_input_tokens": 113967,
+    "continuation_output_tokens": 12719
+  }
+}

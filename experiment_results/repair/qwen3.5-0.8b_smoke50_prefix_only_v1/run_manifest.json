@@ -1,0 +1,76 @@
+{
+  "schema_version": "local-repair-run-v1",
+  "created_at": "2026-08-19T19:54:40",
+  "experiment_config": {
+    "run_tag": "prefix_only_v1_smoke50_final",
+    "code": {
+      "commit": "a1febceba04b7800da1977cc8f53dfc360c59ba1",
+      "branch": "main",
+      "tracked_files_dirty": true
+    },
+    "runtime": {
+      "python": "3.11.11",
+      "platform": "Linux-5.10.134-18.0.12.lifsea8.x86_64-x86_64-with-glibc2.35",
+      "packages": {
+        "torch": "2.13.0+cu126",
+        "transformers": "5.15.0",
+        "peft": "0.20.0",
+        "smolagents": "1.26.0",
+        "openai": "2.53.0"
+      }
+    },
+    "teacher": {
+      "model_type": "openai",
+      "model_id": "qwen3.5-27b",
+      "max_tokens": 2048,
+      "temperature": 0.0,
+      "seed": 42,
+      "n": 1
+    },
+    "continuation": {
+      "model_type": "transformers",
+      "model_id": "/mnt/workspace/models/Qwen3.5-0.8B",
+      "lora_path": "/mnt/workspace/Agent-Distillation/training_outputs/Qwen3.5-0.8B/agent_baseline_2epochs_qlora",
+      "max_tokens": 2048,
+      "temperature": 0.0,
+      "seed": 42,
+      "n": 1
+    },
+    "student_evaluation": {
+      "model_id": "/mnt/workspace/models/Qwen3.5-0.8B",
+      "lora_path": "/mnt/workspace/Agent-Distillation/training_outputs/Qwen3.5-0.8B/agent_baseline_2epochs_qlora",
+      "max_tokens": 2048,
+      "max_steps": 5,
+      "temperature": 0.0,
+      "seed": 42,
+      "n": 1,
+      "max_samples": 50,
+      "protocol": "agent_steps=5_code_only_v126_sft_qlora"
+    },
+    "repair": {
+      "max_candidates": 5,
+      "max_continuation_steps": 4,
+      "max_format_retries": 1,
+      "execution_timeout_seconds": 30,
+      "max_entries": -1
+    },
+    "prompt": {
+      "version": "trajectory-prefix-only-v1",
+      "mode": "trajectory_prefix_only",
+      "additional_instruction": null,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "inputs": {
+      "scored_trajectories_path": "/mnt/workspace/Agent-Distillation/training_outputs/Qwen3.5-0.8B/agent_baseline_2epochs_qlora/qa_results/math_repair_smoke_50_seed42_train/evaluations/Qwen3.5-0.8B_temp=0.0_n=1_seed=42_type=agent_steps=5_max_tokens=_5603fffcac0a_scored.jsonl",
+      "scored_trajectories_sha256": "5bd23a77a58f2d5d40ed860077346ccf19a53582a0de111d6587840ff484b1c7",
+      "dataset_path": "/mnt/workspace/Agent-Distillation/data_processor/math_dataset/train/math_repair_smoke_50_seed42.json",
+      "dataset_sha256": "a974e6c27663a00941635985d840488cfea8618e5dd58425328fba657087ca51"
+    },
+    "artifacts": {
+      "base_model_config_sha256": "b90b86f35c8e6925ef74ee04d0e758f0a845c83a42089ad82bbaa948de9b4204",
+      "lora_adapter_config_sha256": "f45aae14231c87fefd9eb06242c1cd4b993755b18c9eb07665bdf1e99a53f940",
+      "lora_weights_file": "/mnt/workspace/Agent-Distillation/training_outputs/Qwen3.5-0.8B/agent_baseline_2epochs_qlora/adapter_model.safetensors",
+      "lora_weights_sha256": "bc80538fb3812598b41098f07dcb1dd98457a085bbc955474037110bd00528cc"
+    }
+  }
+}
