@@ -83,6 +83,11 @@ def merge_sft_files(
         "max_length": max_length,
         "max_assistant_tokens": max_assistant_tokens,
         "tokenizer_path": tokenizer_path,
+        "token_limits_validated": False,
+        "token_limit_note": (
+            "This merger only deduplicates rows. Run filter_sft_by_token_limits.py "
+            "before training to enforce the recorded limits."
+        ),
     }
     output_path.with_suffix(".summary.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2),

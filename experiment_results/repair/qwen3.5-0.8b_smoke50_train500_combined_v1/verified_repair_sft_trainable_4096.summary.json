@@ -1,0 +1,135 @@
+{
+  "schema_version": "token-limit-filter-v1",
+  "input_path": "E:\\agent_distillation\\experiment_results\\repair\\qwen3.5-0.8b_smoke50_train500_combined_v1\\verified_repair_sft.jsonl",
+  "input_sha256": "a65a46f71f7877e71e4ac7a9988bc12eb4010bc34fd73457abe08f6e77fd46fc",
+  "output_path": "E:\\agent_distillation\\experiment_results\\repair\\qwen3.5-0.8b_smoke50_train500_combined_v1\\verified_repair_sft_trainable_4096.jsonl",
+  "output_sha256": "838bb2e3125dbf78d554d6c33defa8312b773819a87e722b90b10d22a22c0031",
+  "tokenizer_path": "E:\\modelscope\\qwen3.5-0.8B",
+  "max_length": 4096,
+  "max_assistant_tokens": 2048,
+  "input_rows": 277,
+  "kept_rows": 266,
+  "dropped_rows": 11,
+  "kept_by_run_tag": {
+    "prefix_only_v1_formal500": 237,
+    "prefix_only_v1_smoke50_final": 29
+  },
+  "dropped_by_run_tag": {
+    "prefix_only_v1_formal500": 10,
+    "prefix_only_v1_smoke50_final": 1
+  },
+  "dropped": [
+    {
+      "row_index": 15,
+      "repair_id": "29",
+      "run_tag": "prefix_only_v1_smoke50_final",
+      "sequence_length": 3817,
+      "max_assistant_tokens": 2051,
+      "reasons": [
+        "assistant_length"
+      ]
+    },
+    {
+      "row_index": 51,
+      "repair_id": "53",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 4475,
+      "max_assistant_tokens": 671,
+      "reasons": [
+        "sequence_length"
+      ]
+    },
+    {
+      "row_index": 94,
+      "repair_id": "147",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 4518,
+      "max_assistant_tokens": 2049,
+      "reasons": [
+        "sequence_length",
+        "assistant_length"
+      ]
+    },
+    {
+      "row_index": 97,
+      "repair_id": "156",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 3562,
+      "max_assistant_tokens": 2051,
+      "reasons": [
+        "assistant_length"
+      ]
+    },
+    {
+      "row_index": 100,
+      "repair_id": "164",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 3983,
+      "max_assistant_tokens": 2051,
+      "reasons": [
+        "assistant_length"
+      ]
+    },
+    {
+      "row_index": 205,
+      "repair_id": "372",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 4245,
+      "max_assistant_tokens": 1911,
+      "reasons": [
+        "sequence_length"
+      ]
+    },
+    {
+      "row_index": 212,
+      "repair_id": "390",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 7437,
+      "max_assistant_tokens": 1451,
+      "reasons": [
+        "sequence_length"
+      ]
+    },
+    {
+      "row_index": 219,
+      "repair_id": "401",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 3689,
+      "max_assistant_tokens": 2051,
+      "reasons": [
+        "assistant_length"
+      ]
+    },
+    {
+      "row_index": 222,
+      "repair_id": "412",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 4894,
+      "max_assistant_tokens": 758,
+      "reasons": [
+        "sequence_length"
+      ]
+    },
+    {
+      "row_index": 264,
+      "repair_id": "471",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 4541,
+      "max_assistant_tokens": 582,
+      "reasons": [
+        "sequence_length"
+      ]
+    },
+    {
+      "row_index": 269,
+      "repair_id": "483",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 10963,
+      "max_assistant_tokens": 2051,
+      "reasons": [
+        "sequence_length",
+        "assistant_length"
+      ]
+    }
+  ]
+}

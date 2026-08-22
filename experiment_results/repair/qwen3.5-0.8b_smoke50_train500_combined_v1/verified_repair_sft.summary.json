@@ -1,0 +1,32 @@
+{
+  "schema_version": "merged-sft-v1",
+  "output_path": "E:\\agent_distillation\\experiment_results\\repair\\qwen3.5-0.8b_smoke50_train500_combined_v1\\verified_repair_sft.jsonl",
+  "order": [
+    "smoke50",
+    "formal500"
+  ],
+  "sources": [
+    {
+      "label": "smoke50",
+      "path": "E:\\agent_distillation\\experiment_results\\repair\\qwen3.5-0.8b_smoke50_prefix_only_v1\\verified_repair_sft.jsonl",
+      "input_rows": 30,
+      "kept_rows": 30,
+      "duplicate_tasks": 0
+    },
+    {
+      "label": "formal500",
+      "path": "E:\\agent_distillation\\experiment_results\\repair\\qwen3.5-0.8b_train500_prefix_only_v1\\verified_repair_sft.jsonl",
+      "input_rows": 247,
+      "kept_rows": 247,
+      "duplicate_tasks": 0
+    }
+  ],
+  "total_input_rows": 277,
+  "total_duplicate_tasks": 0,
+  "total_kept": 277,
+  "max_length": 4096,
+  "max_assistant_tokens": 2048,
+  "tokenizer_path": "E:\\modelscope\\qwen3.5-0.8B",
+  "token_limits_validated": false,
+  "token_limit_note": "This merger only deduplicates rows. Run filter_sft_by_token_limits.py before training to enforce the recorded limits."
+}

@@ -28,9 +28,13 @@ baseline teacher generation or baseline SFT entry points.
    recorded explicitly.
 7. `materialize_repair_sft.py` emits only accepted samples. The rejected
    student action and repair instruction are never placed in the SFT messages.
-8. `finetune_verified_repairs.py` masks all prefix tokens with `-100`; only the
-   final repaired assistant turn contributes loss. It writes a new `S1`
-   adapter and refuses to overwrite the supplied `S0` adapter directory.
+8. `finetune_verified_repairs.py` provides two registered experiments:
+   - `mixed_retrain`: start from the base model and jointly train the ordinary
+     1,646 trajectories plus verified repairs;
+   - `incremental_repair`: continue S0 using verified repairs only.
+   Ordinary trajectories supervise every teacher assistant turn. Repair
+   trajectories supervise only the final replacement action. Both modes write
+   a new adapter and never overwrite S0.
 
 ## Commands
 
@@ -120,15 +124,81 @@ Materialize verified targets:
   --output <verified_repair_sft.jsonl>
 ```
 
-Continue the baseline adapter into a separate `S1` adapter:
+The checked-in training input combines accepted smoke and formal repairs and
+then applies the exact Qwen3.5 tokenizer limits. It contains 266 verified rows:
 
-```powershell
-.\.venv\Scripts\python.exe scripts\repair\finetune_verified_repairs.py `
-  --model_name <Qwen3.5-0.8B_model_directory> `
-  --student_lora <S0_adapter> `
-  --train_filepath <verified_repair_sft.jsonl> `
-  --output_dir <new_S1_adapter>
+```text
+experiment_results/repair/qwen3.5-0.8b_smoke50_train500_combined_v1/verified_repair_sft_trainable_4096.jsonl
 ```
+
+The unfiltered 277-row file is retained for audit only and must not be passed
+to the trainer: 11 rows exceed either the 4,096-token conversation limit or
+the 2,048-token assistant-action limit.
+
+Before a formal run, exercise both training modes for two optimizer steps with
+the same 4-bit QLoRA path used by the formal experiments. The smoke outputs
+use a timestamped directory under `training_outputs/.../repair_training_smoke`
+and never overwrite S0 or a formal adapter:
+
+```bash
+export AGENT_DISTILLATION_MODEL_PATH=/mnt/workspace/models/Qwen3.5-0.8B
+export S0_ADAPTER_PATH=/mnt/workspace/Agent-Distillation/training_outputs/Qwen3.5-0.8B/agent_baseline_2epochs_qlora
+
+bash scripts/repair/smoke_test_repair_training.sh \
+  "$AGENT_DISTILLATION_MODEL_PATH" \
+  "$S0_ADAPTER_PATH"
+```
+
+Successful completion prints `Both QLoRA repair-training smoke tests
+completed.` To rerun it, simply repeat the command; the timestamp produces a
+new isolated output directory.
+
+Train the main mixed-retraining experiment (`Base -> 1646 + repair`). This mode
+must not receive an S0 adapter:
+
+```bash
+"$PWD/.venv/bin/python" -u scripts/repair/finetune_verified_repairs.py \
+  --experiment_mode mixed_retrain \
+  --model_name "$AGENT_DISTILLATION_MODEL_PATH" \
+  --baseline_filepath data_processor/processed/sft/qwen35_27b_math_medium_hard_1646_v126.jsonl \
+  --repair_filepath experiment_results/repair/qwen3.5-0.8b_smoke50_train500_combined_v1/verified_repair_sft_trainable_4096.jsonl \
+  --output_dir training_outputs/Qwen3.5-0.8B/repair_mixed_retrain
+```
+
+Train the incremental ablation (`S0 -> repair-only`). This mode requires S0
+and rejects a baseline trajectory file:
+
+```bash
+"$PWD/.venv/bin/python" -u scripts/repair/finetune_verified_repairs.py \
+  --experiment_mode incremental_repair \
+  --model_name "$AGENT_DISTILLATION_MODEL_PATH" \
+  --student_lora "$S0_ADAPTER_PATH" \
+  --repair_filepath experiment_results/repair/qwen3.5-0.8b_smoke50_train500_combined_v1/verified_repair_sft_trainable_4096.jsonl \
+  --output_dir training_outputs/Qwen3.5-0.8B/repair_incremental
+```
+
+The trainer also accepts repeated `--repair_filepath` arguments and checks
+duplicate tasks across every input. The registered experiment commands above
+use the frozen, filtered combined artifact so their exact 266-row input hash is
+reproducible.
+
+The defaults intentionally differ by experiment: mixed retraining uses the
+baseline schedule (2 epochs, learning rate `2e-4`), while incremental repair
+uses 1 epoch and learning rate `5e-5`. Both use total sequence length 4,096,
+assistant-content limit 2,048 and effective batch size 8. Mixed retraining saves
+every 25 optimizer steps. Incremental repair saves every 5 steps because its
+one-epoch run has only about 34 optimizer steps. Overlength examples fail
+preflight instead of being silently truncated. To resume after shutdown, repeat
+the same command with `--resume_from_checkpoint latest`; the saved manifest
+rejects changed inputs, settings, Git commit, or tracked code diff.
+
+Qwen3.5 loss masks are derived from assistant boundaries in one complete
+ChatML render. The trainer does not render partial prefixes, because Qwen3.5
+can insert empty thinking tags when the same assistant message is rendered as
+the final turn. The preflight manifest records input hashes, base-weight and
+adapter hashes, tokenizer/chat-template hashes, effective inherited or new LoRA
+settings, precision, optimizer, package versions, supervised-token statistics,
+Git status/diff, and final training steps and metrics.
 
 The repair split must not overlap the original teacher-training questions or
 Math500. Gold answers are used only by the verifier and are not included in the

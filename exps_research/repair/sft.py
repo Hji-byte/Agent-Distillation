@@ -1,4 +1,4 @@
-"""Materialization and last-assistant-only loss masks for repair SFT."""
+"""Materialization and supervision-aware loss masks for repair experiments."""
 
 from __future__ import annotations
 
@@ -72,36 +72,180 @@ def _apply_template(tokenizer, messages, *, add_generation_prompt: bool) -> list
     return list(encoded)
 
 
+def _content_token_length(tokenizer, content: str) -> int:
+    encoded = tokenizer(content, add_special_tokens=False)
+    if isinstance(encoded, Mapping):
+        encoded = encoded["input_ids"]
+    return len(encoded)
+
+
+def _token_id(tokenizer, token: str) -> int:
+    token_id = tokenizer.convert_tokens_to_ids(token)
+    if token_id is None or token_id == getattr(tokenizer, "unk_token_id", None):
+        raise ValueError(f"Tokenizer does not define the required ChatML token {token!r}")
+    return int(token_id)
+
+
+def _chatml_assistant_spans(
+    tokenizer,
+    full_ids: list[int],
+    messages: list[dict[str, str]],
+) -> dict[int, tuple[int, int]]:
+    """Locate assistant bodies in one fully rendered ChatML conversation.
+
+    Rendering message prefixes is not reliable for Qwen3.5: a turn rendered as
+    the final assistant turn can receive empty ``<think>`` tags that are absent
+    when the same turn is rendered inside the complete trajectory. Instead we
+    render once and align each ChatML message header with the source role.
+    """
+    im_start_id = _token_id(tokenizer, "<|im_start|>")
+    im_end_id = _token_id(tokenizer, "<|im_end|>")
+    message_starts = [index for index, token_id in enumerate(full_ids) if token_id == im_start_id]
+    if len(message_starts) != len(messages):
+        raise ValueError(
+            "ChatML message boundary count differs from the source trajectory; "
+            "a message may contain an unescaped <|im_start|> token"
+        )
+
+    spans: dict[int, tuple[int, int]] = {}
+    for message_index, (message, start) in enumerate(zip(messages, message_starts, strict=True)):
+        role = message.get("role")
+        role_ids = tokenizer.encode(str(role), add_special_tokens=False)
+        if not role_ids:
+            raise ValueError(f"Tokenizer produced no role tokens for message role {role!r}")
+        role_start = start + 1
+        if full_ids[role_start : role_start + len(role_ids)] != list(role_ids):
+            raise ValueError(
+                f"Rendered ChatML role at message {message_index} does not match {role!r}"
+            )
+        if role != "assistant":
+            continue
+
+        body_start = role_start + len(role_ids)
+        # Qwen ChatML places a newline between the role header and content. It
+        # belongs to the template, not the supervised assistant action.
+        newline_ids = tokenizer.encode("\n", add_special_tokens=False)
+        if newline_ids and full_ids[body_start : body_start + len(newline_ids)] == list(newline_ids):
+            body_start += len(newline_ids)
+        next_start = (
+            message_starts[message_index + 1]
+            if message_index + 1 < len(message_starts)
+            else len(full_ids)
+        )
+        end_markers = [
+            index for index in range(body_start, next_start) if full_ids[index] == im_end_id
+        ]
+        if len(end_markers) != 1:
+            raise ValueError(
+                f"Assistant message {message_index} must contain exactly one <|im_end|> boundary"
+            )
+        # Include <|im_end|> in the target, matching the original multi-turn
+        # baseline collator and teaching the model when to end an action.
+        spans[message_index] = (body_start, end_markers[0] + 1)
+    return spans
+
+
 def tokenize_last_assistant_only(
     tokenizer,
     messages: list[dict[str, str]],
     *,
-    max_length: int = 2048,
-) -> dict[str, list[int]]:
-    """Tokenize a repair example and mask every token before the final target.
+    max_length: int = 4096,
+    max_assistant_tokens: int = 2048,
+) -> dict[str, Any]:
+    """Tokenize a repair example and supervise only its final assistant turn."""
+    return tokenize_supervised_messages(
+        tokenizer,
+        messages,
+        supervision="last_assistant_only",
+        max_length=max_length,
+        max_assistant_tokens=max_assistant_tokens,
+    )
 
-    Earlier student assistant actions remain visible context but receive label
-    ``-100``. Left truncation preserves the repaired target at sequence end.
+
+def tokenize_all_assistant_turns(
+    tokenizer,
+    messages: list[dict[str, str]],
+    *,
+    max_length: int = 4096,
+    max_assistant_tokens: int = 2048,
+) -> dict[str, Any]:
+    """Tokenize an ordinary teacher trajectory and supervise every assistant turn."""
+    return tokenize_supervised_messages(
+        tokenizer,
+        messages,
+        supervision="all_assistant_turns",
+        max_length=max_length,
+        max_assistant_tokens=max_assistant_tokens,
+    )
+
+
+def tokenize_supervised_messages(
+    tokenizer,
+    messages: list[dict[str, str]],
+    *,
+    supervision: str,
+    max_length: int = 4096,
+    max_assistant_tokens: int = 2048,
+) -> dict[str, Any]:
+    """Tokenize one trajectory without silently truncating supervised content.
+
+    ``all_assistant_turns`` reproduces ordinary Agent Distillation supervision:
+    every teacher assistant action receives loss while system, user, and
+    observation turns remain context only. ``last_assistant_only`` is used by
+    local repair examples, where only the replacement action receives loss.
     """
+    if supervision not in {"all_assistant_turns", "last_assistant_only"}:
+        raise ValueError(f"Unsupported supervision mode: {supervision}")
     if not messages or messages[-1].get("role") != "assistant":
-        raise ValueError("Repair SFT messages must end with the repaired assistant action")
-    full_ids = _apply_template(tokenizer, messages, add_generation_prompt=False)
-    prompt_ids = _apply_template(tokenizer, messages[:-1], add_generation_prompt=True)
-    if full_ids[: len(prompt_ids)] != prompt_ids:
-        raise ValueError("Tokenizer chat template does not preserve the prompt as a prefix of the full repair sample")
-    labels = [-100] * len(prompt_ids) + full_ids[len(prompt_ids) :]
+        raise ValueError("SFT messages must end with an assistant action")
     if max_length <= 0:
         raise ValueError("max_length must be positive")
+    if max_assistant_tokens <= 0:
+        raise ValueError("max_assistant_tokens must be positive")
+
+    full_ids = _apply_template(tokenizer, messages, add_generation_prompt=False)
     if len(full_ids) > max_length:
-        offset = len(full_ids) - max_length
-        full_ids = full_ids[offset:]
-        labels = labels[offset:]
+        raise ValueError(
+            f"Tokenized sequence has {len(full_ids)} tokens, exceeding max_length={max_length}; "
+            "refusing to train on a silently truncated trajectory"
+        )
+
+    assistant_indices = [
+        index for index, message in enumerate(messages) if message.get("role") == "assistant"
+    ]
+    if not assistant_indices:
+        raise ValueError("SFT messages do not contain an assistant action")
+    supervised_indices = (
+        assistant_indices if supervision == "all_assistant_turns" else assistant_indices[-1:]
+    )
+    assistant_spans = _chatml_assistant_spans(tokenizer, full_ids, messages)
+    if set(assistant_spans) != set(assistant_indices):
+        raise ValueError("Rendered assistant boundaries do not match the source trajectory")
+
+    labels = [-100] * len(full_ids)
+    supervised_lengths: list[int] = []
+    for message_index in supervised_indices:
+        target_start, target_end = assistant_spans[message_index]
+        labeled_length = target_end - target_start
+        if labeled_length <= 0:
+            raise ValueError("Assistant target is empty after applying the chat template")
+        content_length = _content_token_length(tokenizer, messages[message_index]["content"])
+        if content_length > max_assistant_tokens:
+            raise ValueError(
+                f"Assistant content has {content_length} tokens, exceeding "
+                f"max_assistant_tokens={max_assistant_tokens}"
+            )
+        labels[target_start:target_end] = full_ids[target_start:target_end]
+        supervised_lengths.append(labeled_length)
+
     if not any(label != -100 for label in labels):
-        raise ValueError("Repair target was fully truncated")
+        raise ValueError("No assistant tokens were selected for supervision")
     return {
         "input_ids": full_ids,
         "attention_mask": [1] * len(full_ids),
         "labels": labels,
+        "sequence_length": len(full_ids),
+        "supervised_token_count": sum(supervised_lengths),
     }
 
 
@@ -109,5 +253,7 @@ __all__ = [
     "accepted_repair_example",
     "materialize_accepted_repairs",
     "materialize_repair_jsonl",
+    "tokenize_all_assistant_turns",
     "tokenize_last_assistant_only",
+    "tokenize_supervised_messages",
 ]
