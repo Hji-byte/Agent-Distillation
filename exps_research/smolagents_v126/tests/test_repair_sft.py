@@ -4,6 +4,7 @@ from exps_research.repair.sft import (
     materialize_accepted_repairs,
     tokenize_all_assistant_turns,
     tokenize_last_assistant_only,
+    tokenize_supervised_messages,
 )
 
 
@@ -135,6 +136,28 @@ class RepairSftTest(unittest.TestCase):
         labeled_values = [label for label in tokenized["labels"] if label != -100]
         self.assertNotIn(len("old"), labeled_values)
         self.assertIn(len("fixed"), labeled_values)
+
+    def test_recovery_suffix_masks_prefix_and_trains_all_recovery_turns(self):
+        messages = [
+            {"role": "system", "content": "s"},
+            {"role": "user", "content": "q"},
+            {"role": "assistant", "content": "old"},
+            {"role": "user", "content": "old observation"},
+            {"role": "assistant", "content": "correction"},
+            {"role": "user", "content": "new observation"},
+            {"role": "assistant", "content": "final"},
+        ]
+        tokenized = tokenize_supervised_messages(
+            FakeTokenizer(),
+            messages,
+            supervision="assistant_suffix",
+            supervised_assistant_start_index=1,
+            max_length=64,
+        )
+        labeled_values = [label for label in tokenized["labels"] if label != -100]
+        self.assertNotIn(len("old"), labeled_values)
+        self.assertIn(len("correction"), labeled_values)
+        self.assertIn(len("final"), labeled_values)
 
     def test_refuses_sequence_truncation(self):
         messages = [

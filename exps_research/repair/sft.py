@@ -184,6 +184,7 @@ def tokenize_supervised_messages(
     messages: list[dict[str, str]],
     *,
     supervision: str,
+    supervised_assistant_start_index: int | None = None,
     max_length: int = 4096,
     max_assistant_tokens: int = 2048,
 ) -> dict[str, Any]:
@@ -192,9 +193,15 @@ def tokenize_supervised_messages(
     ``all_assistant_turns`` reproduces ordinary Agent Distillation supervision:
     every teacher assistant action receives loss while system, user, and
     observation turns remain context only. ``last_assistant_only`` is used by
-    local repair examples, where only the replacement action receives loss.
+    legacy one-step repair examples. ``assistant_suffix`` keeps earlier student
+    actions as masked context and supervises the correction plus every later
+    assistant action through the terminal answer.
     """
-    if supervision not in {"all_assistant_turns", "last_assistant_only"}:
+    if supervision not in {
+        "all_assistant_turns",
+        "last_assistant_only",
+        "assistant_suffix",
+    }:
         raise ValueError(f"Unsupported supervision mode: {supervision}")
     if not messages or messages[-1].get("role") != "assistant":
         raise ValueError("SFT messages must end with an assistant action")
@@ -215,9 +222,28 @@ def tokenize_supervised_messages(
     ]
     if not assistant_indices:
         raise ValueError("SFT messages do not contain an assistant action")
-    supervised_indices = (
-        assistant_indices if supervision == "all_assistant_turns" else assistant_indices[-1:]
-    )
+    if supervision == "all_assistant_turns":
+        if supervised_assistant_start_index is not None:
+            raise ValueError(
+                "supervised_assistant_start_index is only valid for assistant_suffix"
+            )
+        supervised_indices = assistant_indices
+    elif supervision == "last_assistant_only":
+        if supervised_assistant_start_index is not None:
+            raise ValueError(
+                "supervised_assistant_start_index is only valid for assistant_suffix"
+            )
+        supervised_indices = assistant_indices[-1:]
+    else:
+        if supervised_assistant_start_index is None:
+            raise ValueError(
+                "assistant_suffix requires supervised_assistant_start_index"
+            )
+        if not 0 <= supervised_assistant_start_index < len(assistant_indices):
+            raise ValueError(
+                "supervised_assistant_start_index must select an existing assistant turn"
+            )
+        supervised_indices = assistant_indices[supervised_assistant_start_index:]
     assistant_spans = _chatml_assistant_spans(tokenizer, full_ids, messages)
     if set(assistant_spans) != set(assistant_indices):
         raise ValueError("Rendered assistant boundaries do not match the source trajectory")

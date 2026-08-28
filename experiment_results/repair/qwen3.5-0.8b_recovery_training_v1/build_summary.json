@@ -1,0 +1,66 @@
+{
+  "schema_version": "recovery-training-build-v1",
+  "status": "complete",
+  "eligible_repairs_path": "E:\\agent_distillation\\experiment_results\\repair\\qwen3.5-0.8b_smoke50_train500_combined_v1\\verified_repair_sft.jsonl",
+  "eligible_repairs_sha256": "a65a46f71f7877e71e4ac7a9988bc12eb4010bc34fd73457abe08f6e77fd46fc",
+  "repair_inputs": [
+    {
+      "run_tag": "prefix_only_v1_formal500",
+      "path": "E:\\agent_distillation\\experiment_results\\repair\\qwen3.5-0.8b_train500_prefix_only_v1\\repair_attempts.jsonl",
+      "sha256": "0e4723301b9dfa694dd4c6e4a3bcc03abc53a779febafe2714e18e34a1ac382e"
+    },
+    {
+      "run_tag": "prefix_only_v1_smoke50_final",
+      "path": "E:\\agent_distillation\\experiment_results\\repair\\qwen3.5-0.8b_smoke50_prefix_only_v1\\repair_attempts.jsonl",
+      "sha256": "dfb708143a6afdcaf90e431ffa1ad6c8746bfdbe1da17b2cd0f872917f17c007"
+    }
+  ],
+  "success_inputs": [
+    {
+      "label": "formal500",
+      "path": "E:\\agent_distillation\\experiment_results\\repair\\qwen3.5-0.8b_train500_prefix_only_v1\\s0_scored.jsonl",
+      "sha256": "5878826dbceac4d93146f2982ac9b219c719a514b0e06ee2e7b3e0909a8fb092"
+    },
+    {
+      "label": "smoke50",
+      "path": "E:\\agent_distillation\\experiment_results\\repair\\qwen3.5-0.8b_smoke50_prefix_only_v1\\s0_scored.jsonl",
+      "sha256": "5bd23a77a58f2d5d40ed860077346ccf19a53582a0de111d6587840ff484b1c7"
+    }
+  ],
+  "counts": {
+    "repaired_success": 277,
+    "self_success": 155,
+    "combined": 432,
+    "self_success_rejections": {
+      "incorrect": 389,
+      "invalid_trajectory": 2,
+      "state:max_steps_error": 4
+    }
+  },
+  "repair_failure_kinds": {
+    "execution_error": 66,
+    "incomplete_action_format": 23,
+    "max_steps": 23,
+    "other_error": 5,
+    "parsing_error": 14,
+    "wrong_answer": 146
+  },
+  "repair_verification_modes": {
+    "student_continuation": 252,
+    "teacher_terminal": 25
+  },
+  "outputs": {
+    "repair": {
+      "path": "E:\\agent_distillation\\experiment_results\\repair\\qwen3.5-0.8b_recovery_training_v1\\repaired_success_full_suffix.jsonl",
+      "sha256": "6a4ce82037e794cab5029b256afe4e7e0002061876d6ed250b9b236bccdf118c"
+    },
+    "self_success": {
+      "path": "E:\\agent_distillation\\experiment_results\\repair\\qwen3.5-0.8b_recovery_training_v1\\self_success_natural.jsonl",
+      "sha256": "34e2743654e2642fd6bdad5bc0ed5705a6b0d9a02d98f88028153f3fceaa5459"
+    },
+    "combined": {
+      "path": "E:\\agent_distillation\\experiment_results\\repair\\qwen3.5-0.8b_recovery_training_v1\\onpolicy_success_combined.jsonl",
+      "sha256": "0283e78fffcf3f5de0870bb814e8840cec68ac38889152107a522574e4b65b1f"
+    }
+  }
+}

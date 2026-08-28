@@ -1,0 +1,216 @@
+{
+  "schema_version": "token-limit-filter-v1",
+  "input_path": "E:\\agent_distillation\\experiment_results\\repair\\qwen3.5-0.8b_recovery_training_v1\\onpolicy_success_combined.jsonl",
+  "input_sha256": "0283e78fffcf3f5de0870bb814e8840cec68ac38889152107a522574e4b65b1f",
+  "output_path": "E:\\agent_distillation\\experiment_results\\repair\\qwen3.5-0.8b_recovery_training_v1\\onpolicy_success_combined_trainable_4096.jsonl",
+  "output_sha256": "926a624a9078f3bb5f4e1d623251392dccc02c9a6758ffaa39a949ac2306b955",
+  "tokenizer_path": "E:\\modelscope\\qwen3.5-0.8B",
+  "max_length": 4096,
+  "max_assistant_tokens": 2048,
+  "input_rows": 432,
+  "kept_rows": 416,
+  "dropped_rows": 16,
+  "kept_by_run_tag": {
+    "prefix_only_v1_formal500": 235,
+    "prefix_only_v1_smoke50_final": 29,
+    "unknown": 152
+  },
+  "dropped_by_run_tag": {
+    "prefix_only_v1_formal500": 12,
+    "prefix_only_v1_smoke50_final": 1,
+    "unknown": 3
+  },
+  "kept_by_source": {
+    "repaired_success": 264,
+    "self_success": 152
+  },
+  "dropped_by_source": {
+    "repaired_success": 13,
+    "self_success": 3
+  },
+  "supervised_tokens_by_source": {
+    "repaired_success": 200508,
+    "self_success": 87746
+  },
+  "sequence_length_min": 1161,
+  "sequence_length_mean": 1918.6514423076924,
+  "sequence_length_max": 4089,
+  "dropped": [
+    {
+      "row_index": 26,
+      "repair_id": "147",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 4518,
+      "max_assistant_tokens": 1388,
+      "reasons": [
+        "sequence_length"
+      ],
+      "validation_error": "Tokenized sequence has 4518 tokens, exceeding max_length=4096; refusing to train on a silently truncated trajectory"
+    },
+    {
+      "row_index": 30,
+      "repair_id": "156",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 3739,
+      "max_assistant_tokens": 2051,
+      "reasons": [
+        "assistant_length"
+      ],
+      "validation_error": "Assistant content has 2051 tokens, exceeding max_assistant_tokens=2048"
+    },
+    {
+      "row_index": 33,
+      "repair_id": "164",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 4402,
+      "max_assistant_tokens": 874,
+      "reasons": [
+        "sequence_length"
+      ],
+      "validation_error": "Tokenized sequence has 4402 tokens, exceeding max_length=4096; refusing to train on a silently truncated trajectory"
+    },
+    {
+      "row_index": 84,
+      "repair_id": "269",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 4098,
+      "max_assistant_tokens": 1218,
+      "reasons": [
+        "sequence_length"
+      ],
+      "validation_error": "Tokenized sequence has 4098 tokens, exceeding max_length=4096; refusing to train on a silently truncated trajectory"
+    },
+    {
+      "row_index": 150,
+      "repair_id": "372",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 4521,
+      "max_assistant_tokens": 575,
+      "reasons": [
+        "sequence_length"
+      ],
+      "validation_error": "Tokenized sequence has 4521 tokens, exceeding max_length=4096; refusing to train on a silently truncated trajectory"
+    },
+    {
+      "row_index": 155,
+      "repair_id": "382",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 13633,
+      "max_assistant_tokens": 1549,
+      "reasons": [
+        "sequence_length"
+      ],
+      "validation_error": "Tokenized sequence has 13633 tokens, exceeding max_length=4096; refusing to train on a silently truncated trajectory"
+    },
+    {
+      "row_index": 158,
+      "repair_id": "390",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 7437,
+      "max_assistant_tokens": 397,
+      "reasons": [
+        "sequence_length"
+      ],
+      "validation_error": "Tokenized sequence has 7437 tokens, exceeding max_length=4096; refusing to train on a silently truncated trajectory"
+    },
+    {
+      "row_index": 160,
+      "repair_id": "392",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 4491,
+      "max_assistant_tokens": 1420,
+      "reasons": [
+        "sequence_length"
+      ],
+      "validation_error": "Tokenized sequence has 4491 tokens, exceeding max_length=4096; refusing to train on a silently truncated trajectory"
+    },
+    {
+      "row_index": 170,
+      "repair_id": "412",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 4894,
+      "max_assistant_tokens": 84,
+      "reasons": [
+        "sequence_length"
+      ],
+      "validation_error": "Tokenized sequence has 4894 tokens, exceeding max_length=4096; refusing to train on a silently truncated trajectory"
+    },
+    {
+      "row_index": 210,
+      "repair_id": "471",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 5106,
+      "max_assistant_tokens": 396,
+      "reasons": [
+        "sequence_length"
+      ],
+      "validation_error": "Tokenized sequence has 5106 tokens, exceeding max_length=4096; refusing to train on a silently truncated trajectory"
+    },
+    {
+      "row_index": 216,
+      "repair_id": "483",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 11459,
+      "max_assistant_tokens": 770,
+      "reasons": [
+        "sequence_length"
+      ],
+      "validation_error": "Tokenized sequence has 11459 tokens, exceeding max_length=4096; refusing to train on a silently truncated trajectory"
+    },
+    {
+      "row_index": 226,
+      "repair_id": "53",
+      "run_tag": "prefix_only_v1_formal500",
+      "sequence_length": 4742,
+      "max_assistant_tokens": 671,
+      "reasons": [
+        "sequence_length"
+      ],
+      "validation_error": "Tokenized sequence has 4742 tokens, exceeding max_length=4096; refusing to train on a silently truncated trajectory"
+    },
+    {
+      "row_index": 272,
+      "repair_id": "47",
+      "run_tag": "prefix_only_v1_smoke50_final",
+      "sequence_length": 4871,
+      "max_assistant_tokens": 659,
+      "reasons": [
+        "sequence_length"
+      ],
+      "validation_error": "Tokenized sequence has 4871 tokens, exceeding max_length=4096; refusing to train on a silently truncated trajectory"
+    },
+    {
+      "row_index": 313,
+      "repair_id": null,
+      "run_tag": "unknown",
+      "sequence_length": 4656,
+      "max_assistant_tokens": 1110,
+      "reasons": [
+        "sequence_length"
+      ],
+      "validation_error": "Tokenized sequence has 4656 tokens, exceeding max_length=4096; refusing to train on a silently truncated trajectory"
+    },
+    {
+      "row_index": 400,
+      "repair_id": null,
+      "run_tag": "unknown",
+      "sequence_length": 4654,
+      "max_assistant_tokens": 1606,
+      "reasons": [
+        "sequence_length"
+      ],
+      "validation_error": "Tokenized sequence has 4654 tokens, exceeding max_length=4096; refusing to train on a silently truncated trajectory"
+    },
+    {
+      "row_index": 403,
+      "repair_id": null,
+      "run_tag": "unknown",
+      "sequence_length": 4588,
+      "max_assistant_tokens": 1789,
+      "reasons": [
+        "sequence_length"
+      ],
+      "validation_error": "Tokenized sequence has 4588 tokens, exceeding max_length=4096; refusing to train on a silently truncated trajectory"
+    }
+  ]
+}

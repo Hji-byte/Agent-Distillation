@@ -17,7 +17,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from exps_research.repair.sft import _apply_template, _content_token_length  # noqa: E402
+from exps_research.repair.sft import (  # noqa: E402
+    _apply_template,
+    _content_token_length,
+    tokenize_supervised_messages,
+)
 
 
 def _sha256(path: Path) -> str:
@@ -46,27 +50,60 @@ def filter_sft_by_token_limits(
     dropped: list[dict[str, Any]] = []
     kept_by_run_tag: Counter[str] = Counter()
     dropped_by_run_tag: Counter[str] = Counter()
+    kept_by_source: Counter[str] = Counter()
+    dropped_by_source: Counter[str] = Counter()
+    supervised_tokens_by_source: Counter[str] = Counter()
+    kept_sequence_lengths: list[int] = []
 
     for row_index, row in enumerate(rows, start=1):
         messages = row.get("messages")
         if not isinstance(messages, list):
             raise ValueError(f"Invalid SFT row at {input_path}:{row_index}")
         sequence_length = len(_apply_template(tokenizer, messages, add_generation_prompt=False))
+        assistant_messages = [
+            message for message in messages if message.get("role") == "assistant"
+        ]
         assistant_lengths = [
             _content_token_length(tokenizer, message["content"])
-            for message in messages
-            if message.get("role") == "assistant"
+            for message in assistant_messages
         ]
-        largest_assistant = max(assistant_lengths, default=0)
+        supervision = row.get("supervision") or "all_assistant_turns"
+        supervised_start = row.get("supervised_assistant_start_index")
+        if supervision == "all_assistant_turns":
+            supervised_lengths = assistant_lengths
+        elif supervision == "last_assistant_only":
+            supervised_lengths = assistant_lengths[-1:]
+        elif supervision == "assistant_suffix" and isinstance(supervised_start, int):
+            supervised_lengths = assistant_lengths[supervised_start:]
+        else:
+            supervised_lengths = []
+        largest_assistant = max(supervised_lengths, default=0)
         metadata = row.get("metadata") or {}
         run_tag = str(metadata.get("run_tag") or "unknown")
+        source = str(metadata.get("source") or run_tag)
         reasons = []
         if sequence_length > max_length:
             reasons.append("sequence_length")
         if largest_assistant > max_assistant_tokens:
             reasons.append("assistant_length")
+        try:
+            encoded = tokenize_supervised_messages(
+                tokenizer,
+                messages,
+                supervision=supervision,
+                supervised_assistant_start_index=supervised_start,
+                max_length=max_length,
+                max_assistant_tokens=max_assistant_tokens,
+            )
+        except ValueError as error:
+            if not reasons:
+                reasons.append("invalid_supervision")
+            validation_error = str(error)
+        else:
+            validation_error = None
         if reasons:
             dropped_by_run_tag[run_tag] += 1
+            dropped_by_source[source] += 1
             dropped.append(
                 {
                     "row_index": row_index,
@@ -75,10 +112,14 @@ def filter_sft_by_token_limits(
                     "sequence_length": sequence_length,
                     "max_assistant_tokens": largest_assistant,
                     "reasons": reasons,
+                    "validation_error": validation_error,
                 }
             )
         else:
             kept_by_run_tag[run_tag] += 1
+            kept_by_source[source] += 1
+            supervised_tokens_by_source[source] += int(encoded["supervised_token_count"])
+            kept_sequence_lengths.append(int(encoded["sequence_length"]))
             kept.append(row)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -102,6 +143,16 @@ def filter_sft_by_token_limits(
         "dropped_rows": len(dropped),
         "kept_by_run_tag": dict(sorted(kept_by_run_tag.items())),
         "dropped_by_run_tag": dict(sorted(dropped_by_run_tag.items())),
+        "kept_by_source": dict(sorted(kept_by_source.items())),
+        "dropped_by_source": dict(sorted(dropped_by_source.items())),
+        "supervised_tokens_by_source": dict(sorted(supervised_tokens_by_source.items())),
+        "sequence_length_min": min(kept_sequence_lengths, default=None),
+        "sequence_length_mean": (
+            sum(kept_sequence_lengths) / len(kept_sequence_lengths)
+            if kept_sequence_lengths
+            else None
+        ),
+        "sequence_length_max": max(kept_sequence_lengths, default=None),
         "dropped": dropped,
     }
     output_path.with_suffix(".summary.json").write_text(

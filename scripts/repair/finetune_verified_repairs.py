@@ -200,11 +200,15 @@ def _read_jsonl(path: Path, *, source: str, supervision: str) -> list[dict[str, 
             if not isinstance(row, dict) or not isinstance(row.get("messages"), list):
                 raise ValueError(f"Invalid SFT row at {path}:{line_number}")
             declared = row.get("supervision")
-            if source == "repair" and declared != "last_assistant_only":
+            if source == "repair" and declared not in {
+                "last_assistant_only",
+                "assistant_suffix",
+                "all_assistant_turns",
+            }:
                 raise ValueError(
-                    f"Repair row at {path}:{line_number} must declare last_assistant_only supervision"
+                    f"Repair row at {path}:{line_number} must declare a supported supervision mode"
                 )
-            if source == "repair":
+            if source == "repair" and declared == "last_assistant_only":
                 assistant_count = sum(
                     message.get("role") == "assistant" for message in row["messages"]
                 )
@@ -214,6 +218,18 @@ def _read_jsonl(path: Path, *, source: str, supervision: str) -> list[dict[str, 
                         f"Repair row at {path}:{line_number} declares target assistant "
                         f"index {target_index!r}, but the final assistant index is {assistant_count - 1}"
                     )
+            supervised_start = row.get("supervised_assistant_start_index")
+            if source == "repair" and declared == "assistant_suffix":
+                assistant_count = sum(
+                    message.get("role") == "assistant" for message in row["messages"]
+                )
+                if not isinstance(supervised_start, int) or not (
+                    0 <= supervised_start < assistant_count
+                ):
+                    raise ValueError(
+                        f"Repair row at {path}:{line_number} has invalid supervised assistant "
+                        f"start index {supervised_start!r} for {assistant_count} assistant turns"
+                    )
             if source == "baseline" and declared not in {None, "all_assistant_turns"}:
                 raise ValueError(
                     f"Baseline row at {path}:{line_number} has incompatible supervision={declared!r}"
@@ -222,7 +238,8 @@ def _read_jsonl(path: Path, *, source: str, supervision: str) -> list[dict[str, 
                 {
                     "messages": row["messages"],
                     "source": source,
-                    "supervision": supervision,
+                    "supervision": declared or supervision,
+                    "supervised_assistant_start_index": supervised_start,
                     "source_path": str(path.resolve()),
                     "source_line": line_number,
                 }
@@ -310,6 +327,9 @@ def tokenize_experiment_rows(
                 tokenizer,
                 row["messages"],
                 supervision=row["supervision"],
+                supervised_assistant_start_index=row.get(
+                    "supervised_assistant_start_index"
+                ),
                 max_length=max_length,
                 max_assistant_tokens=max_assistant_tokens,
             )

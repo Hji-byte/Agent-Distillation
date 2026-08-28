@@ -26,6 +26,20 @@ def _write(path: Path, *, task: str, repair: bool) -> None:
     path.write_text(json.dumps(row) + "\n", encoding="utf-8")
 
 
+def _write_recovery(path: Path, *, task: str) -> None:
+    row = {
+        "messages": [
+            {"role": "user", "content": task},
+            {"role": "assistant", "content": "old"},
+            {"role": "user", "content": "observation"},
+            {"role": "assistant", "content": "fixed"},
+        ],
+        "supervision": "assistant_suffix",
+        "supervised_assistant_start_index": 1,
+    }
+    path.write_text(json.dumps(row) + "\n", encoding="utf-8")
+
+
 def test_mixed_retrain_combines_both_supervision_types() -> None:
     with TemporaryDirectory() as temp_dir:
         root = Path(temp_dir)
@@ -69,6 +83,31 @@ def test_incremental_repair_requires_s0_and_rejects_baseline() -> None:
                 repair_filepaths=[repair],
                 student_lora=None,
             )
+
+
+def test_incremental_repair_accepts_recovery_suffix_and_self_success() -> None:
+    with TemporaryDirectory() as temp_dir:
+        root = Path(temp_dir)
+        recovery = root / "recovery.jsonl"
+        success = root / "success.jsonl"
+        _write_recovery(recovery, task="repair task")
+        _write(success, task="success task", repair=False)
+        success_row = json.loads(success.read_text(encoding="utf-8"))
+        success_row["supervision"] = "all_assistant_turns"
+        success.write_text(json.dumps(success_row) + "\n", encoding="utf-8")
+
+        rows = load_experiment_rows(
+            experiment_mode="incremental_repair",
+            baseline_filepath=None,
+            repair_filepaths=[recovery, success],
+            student_lora=root / "s0",
+        )
+
+        assert [row["supervision"] for row in rows] == [
+            "assistant_suffix",
+            "all_assistant_turns",
+        ]
+        assert rows[0]["supervised_assistant_start_index"] == 1
 
 
 def test_mixed_retrain_rejects_s0_and_duplicate_tasks() -> None:
