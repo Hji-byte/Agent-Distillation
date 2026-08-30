@@ -33,6 +33,32 @@ def find_majority_and_first_index(lst):
         if val in majority_candidates:
             return val, idx
 
+
+def _get_token_counts(model, response=None):
+    """Read per-response usage from current smolagents, with legacy fallback."""
+    responses = response if isinstance(response, list) else [response]
+    usages = [
+        getattr(item, "token_usage", None)
+        for item in responses
+        if item is not None
+    ]
+    usages = [usage for usage in usages if usage is not None]
+    if usages:
+        return {
+            "input_token_count": sum(
+                int(getattr(usage, "input_tokens", 0)) for usage in usages
+            ),
+            "output_token_count": sum(
+                int(getattr(usage, "output_tokens", 0)) for usage in usages
+            ),
+        }
+
+    legacy_getter = getattr(model, "get_token_counts", None)
+    if callable(legacy_getter):
+        return legacy_getter()
+
+    return {"input_token_count": 0, "output_token_count": 0}
+
 class ReasoningExperimentProcessor(ExperimentProcessor):
     """
     Processor for reasoning experiments
@@ -224,7 +250,7 @@ class ReasoningExperimentProcessor(ExperimentProcessor):
                 final_response = response[final_index].content
 
             # Get token counts and calculate cost
-            token_counts = model.get_token_counts()
+            token_counts = _get_token_counts(model, response)
             cost = calculate_cost(
                 token_counts["input_token_count"],
                 token_counts["output_token_count"],
@@ -255,7 +281,9 @@ class ReasoningExperimentProcessor(ExperimentProcessor):
             return result
 
         # Return error result if all attempts fail
-        token_counts = model.get_token_counts() if 'response' in locals() else {"input_token_count": 0, "output_token_count": 0}
+        token_counts = _get_token_counts(
+            model, response if 'response' in locals() else None
+        )
         cost = calculate_cost(token_counts["input_token_count"], token_counts["output_token_count"], model.model_id)
 
         if should_show_output:
