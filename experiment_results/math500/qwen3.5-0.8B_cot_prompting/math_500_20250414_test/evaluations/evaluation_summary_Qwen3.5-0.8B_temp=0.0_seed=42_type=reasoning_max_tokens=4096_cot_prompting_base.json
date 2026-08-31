@@ -1,0 +1,12 @@
+{
+  "log_file": "logs/qa_results/transformers/qwen3.5-0.8B_cot_prompting/math_500_20250414_test/Qwen3.5-0.8B_temp=0.0_seed=42_type=reasoning_max_tokens=4096_cot_prompting_base.jsonl",
+  "raw_records": 500,
+  "duplicate_records_ignored": 0,
+  "total_questions": 500,
+  "correct_answers": 212,
+  "accuracy": 0.424,
+  "costs": {
+    "total_cost": 0.0,
+    "average_cost_per_question": 0.0
+  }
+}
