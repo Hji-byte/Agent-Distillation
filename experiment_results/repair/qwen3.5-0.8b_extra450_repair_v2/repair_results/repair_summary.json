@@ -1,0 +1,64 @@
+{
+  "schema_version": "local-repair-summary-v1",
+  "s0": {
+    "total": 450,
+    "correct": 133,
+    "failed": 317,
+    "normal_success_correct": 131,
+    "max_steps_fallback_correct": 2
+  },
+  "repair": {
+    "completion_status": "incomplete_retryable_errors",
+    "expected_failures": 317,
+    "processed": 317,
+    "raw_attempt_records": 346,
+    "completed": 294,
+    "remaining": 23,
+    "remaining_repair_ids": [
+      "135",
+      "147",
+      "151",
+      "175",
+      "182",
+      "186",
+      "192",
+      "237",
+      "256",
+      "295",
+      "314",
+      "322",
+      "323",
+      "330",
+      "342",
+      "353",
+      "370",
+      "371",
+      "39",
+      "399",
+      "441",
+      "443",
+      "448"
+    ],
+    "accepted": 227,
+    "scientific_rejected": 67,
+    "retryable_error": 23,
+    "average_candidates_attempted": 2.444794952681388,
+    "completion_mode": {
+      "teacher_terminal": 23,
+      "student_continuation": 204
+    },
+    "average_continuation_steps_accepted": 0.973568281938326
+  },
+  "retries": {
+    "teacher_format_retries": 202,
+    "continuation_format_retries": 7
+  },
+  "token_usage": {
+    "s0_evaluation_input_tokens": 5625825,
+    "s0_evaluation_output_tokens": 1075196,
+    "teacher_input_tokens": 1205534,
+    "teacher_output_tokens": 400103,
+    "continuation_input_tokens": 1317073,
+    "continuation_output_tokens": 144996
+  }
+}

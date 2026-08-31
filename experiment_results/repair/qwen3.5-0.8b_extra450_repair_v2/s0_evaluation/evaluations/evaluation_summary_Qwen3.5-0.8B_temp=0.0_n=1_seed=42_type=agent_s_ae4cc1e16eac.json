@@ -1,0 +1,12 @@
+{
+  "log_file": "training_outputs/Qwen3.5-0.8B/agent_baseline_2epochs_qlora/qa_results/math_repair_train_extra_450_seed43_train/Qwen3.5-0.8B_temp=0.0_n=1_seed=42_type=agent_steps=5_max_tokens=2048_code_only_v126_sft_qlora.jsonl",
+  "raw_records": 450,
+  "duplicate_records_ignored": 0,
+  "total_questions": 450,
+  "correct_answers": 133,
+  "accuracy": 0.29555555555555557,
+  "costs": {
+    "total_cost": 0.0,
+    "average_cost_per_question": 0.0
+  }
+}
