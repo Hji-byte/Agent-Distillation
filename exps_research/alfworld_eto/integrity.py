@@ -13,16 +13,16 @@ EXPECTED_COMMIT = "a2fc5da38f8d00cfaf3f9b6370d586eebaf72904"
 # environment behavior, and task split. The adapter refuses to run if any of
 # them changes, so an experiment cannot silently drift from ETO.
 PROTECTED_FILES = {
-    "eval_agent/main.py": "dd1e3d698c9331e13dfed47c1846accf341abad0505c5807841eead62005d396",
-    "eval_agent/agents/base.py": "69724877b39b45f05b95e182303cc30168badf020a731457178b29e2bcc466dc",
-    "eval_agent/agents/openai_lm_agent.py": "659b88c205628f95e15264ab4a573f2c3870beaca14bd68b7f3563afb1ec053f",
-    "eval_agent/envs/alfworld_env.py": "f7a2557cde8bab40c84180fc3940d2bb210d17a326a237c2c0d358f3bff95ff2",
-    "eval_agent/tasks/alfworld.py": "f4f5c0da5f182e1889303f03093cf850fbc3120d2994bb0f8cb1502cc67c1d20",
-    "eval_agent/prompt/templates.py": "f2204ef5d7556ebabd8e3b5fc9b73b13a3659e7bb1c2ffb3d61a6c39d4f66f5c",
-    "eval_agent/prompt/instructions/alfworld_inst.txt": "91cc0e094d79f493790feb3412cc7e742cbe9ff407c0d58004fc72178f076f1a",
-    "eval_agent/prompt/icl_examples/alfworld_icl.json": "e7280370ceec44a5d929ef26ccf33136d61f3d26d575c1a0edd091efb3d65cb0",
-    "eval_agent/configs/task/alfworld.json": "27a4faa6cc773f14d40948a5942159a27ee106b360c29174a3c38697e1f59e3b",
-    "eval_agent/data/alfworld/base_config.yaml": "ca587cad8c2683b4fb48ed6704ae0daf6037b8f323565d71d8cd12180ff0f700",
+    "eval_agent/main.py": "04fd0ef3097e1c29c2e3065d589226594b6ead0984de9bdb39b891cb23005bbe",
+    "eval_agent/agents/base.py": "af3ea2732a81a2b6dde709a39f5e871789c0201ab5ff8803d51f54f117f898b2",
+    "eval_agent/agents/openai_lm_agent.py": "fda87bf2ae6371e5f9947e5c6ee90c0a3bdd78b0c427a74ea35fe63871e28d1e",
+    "eval_agent/envs/alfworld_env.py": "84b5c69bf44a91107e2a99d2b4d6119f4441474ba8317d7a79b9bdb5691ad026",
+    "eval_agent/tasks/alfworld.py": "5db72e36d0c37a3ea246397a8c2f581b30b701ee5b12ef0f025f213e7b3a5125",
+    "eval_agent/prompt/templates.py": "6ef8c35ee92daff6f1f8e0e12a3e581384de05ab5630c59d75d774013022f702",
+    "eval_agent/prompt/instructions/alfworld_inst.txt": "ed99085b2fcef955363a031d274e9ffcc7a312c8350776f7464b4a8fb9ae85d7",
+    "eval_agent/prompt/icl_examples/alfworld_icl.json": "06b00f15c320c484d86fffcfaedcd057eb7cca544b452683cac9f8b9a5d2ff55",
+    "eval_agent/configs/task/alfworld.json": "9f9bcdafdf84a550be30b926b597ebe196b5a675804f4f50b6d4eef37ec52190",
+    "eval_agent/data/alfworld/base_config.yaml": "d95e445ae3b3fc1f277a6ebd613678bf2c46a39a4975d8a12a85d642e8d40016",
 }
 
 DATA_DIRECTORIES = (
@@ -33,11 +33,10 @@ DATA_DIRECTORIES = (
 
 
 def sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+    # Git may check text files out with CRLF on Windows and LF on Linux.
+    # Normalize line endings so integrity protects content across platforms.
+    content = path.read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(content).hexdigest()
 
 
 def verify_upstream(eto_root: Path, *, require_data: bool = False) -> dict:

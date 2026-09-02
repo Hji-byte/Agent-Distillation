@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from exps_research.alfworld_eto.integrity import EXPECTED_COMMIT, verify_upstream
+from exps_research.alfworld_eto.integrity import EXPECTED_COMMIT, sha256_file, verify_upstream
 from exps_research.alfworld_eto.legacy_openai import install_legacy_openai_module
 from exps_research.alfworld_eto.openai_compat_server import make_handler
 from exps_research.alfworld_eto.openai_compat_server import DEFAULT_STOP, normalize_stops
@@ -52,6 +52,14 @@ def test_downloaded_upstream_is_exact_when_present():
     assert report["status"] == "ok", report["errors"]
     assert report["commit"] == EXPECTED_COMMIT
     assert report["protected_files_checked"] == 10
+
+
+def test_integrity_hash_is_line_ending_independent(tmp_path):
+    lf_path = tmp_path / "lf.txt"
+    crlf_path = tmp_path / "crlf.txt"
+    lf_path.write_bytes(b"first\nsecond\n")
+    crlf_path.write_bytes(b"first\r\nsecond\r\n")
+    assert sha256_file(lf_path) == sha256_file(crlf_path)
 
 
 def test_legacy_eto_client_round_trips_through_local_server():
