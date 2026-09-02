@@ -1,0 +1,15 @@
+name: agent-distillation-alfworld
+
+services:
+  alfworld:
+    build:
+      context: ../..
+      dockerfile: docker/alfworld/Dockerfile
+    working_dir: /workspace
+    volumes:
+      - ../..:/workspace
+    environment:
+      PYTHONPATH: /workspace
+      ALFWORLD_API_KEY: ${ALFWORLD_API_KEY:-}
+      ALFWORLD_API_BASE: ${ALFWORLD_API_BASE:-https://dashscope.aliyuncs.com/compatible-mode/v1}
+      ALFWORLD_TEACHER_MODEL: ${ALFWORLD_TEACHER_MODEL:-qwen3.5-27b}

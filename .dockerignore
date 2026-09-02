@@ -1,0 +1,6 @@
+**
+!docker/
+!docker/alfworld/
+!docker/alfworld/Dockerfile
+!requirements/
+!requirements/alfworld-eto.txt

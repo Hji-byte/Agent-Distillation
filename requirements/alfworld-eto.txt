@@ -1,0 +1,8 @@
+# Runtime dependencies needed in addition to the main project environment.
+# ETO's unused WebShop, ScienceWorld, and FastChat imports are isolated by the
+# compatibility runner, so their large dependency stacks are intentionally not installed.
+alfworld
+textworld[pddl]>=1.6.1
+gdown
+backoff
+colorama>=0.4.6
