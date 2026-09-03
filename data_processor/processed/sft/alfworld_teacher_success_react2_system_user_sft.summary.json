@@ -1,0 +1,11 @@
+{
+  "schema_version": "alfworld-teacher-sft-v1",
+  "source": "1777 teacher trajectories generated with the original ETO multi-turn runtime and deterministically normalized to the system-user training format",
+  "input_records": 1777,
+  "successful_sft_rows": 1642,
+  "excluded_failed_rows": 135,
+  "terminal_observations_removed": 1642,
+  "supervised_assistant_turns": 20385,
+  "supervision": "all_assistant_turns",
+  "complete_source_trajectories_modified": false
+}

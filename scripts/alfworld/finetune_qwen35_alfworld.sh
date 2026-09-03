@@ -13,7 +13,7 @@ if [[ ! -x "$python_bin" ]]; then
 fi
 
 model="${1:-}"
-datapath="${2:-_local/training_data/alfworld/alfworld_teacher_success_react2_system_user_sft.jsonl}"
+datapath="${2:-data_processor/processed/sft/alfworld_teacher_success_react2_system_user_sft.jsonl}"
 postfix="${3:-alfworld_teacher_sft_qlora}"
 epochs="${4:-2}"
 
