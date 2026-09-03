@@ -30,6 +30,9 @@ name, so earlier one-shot trajectories are never silently mixed with it.
 - dependency/data setup and reproducible launchers.
 
 The HTTP endpoint is local (`127.0.0.1`): it does not call OpenAI or send trajectories off-machine.
+For Qwen3.5 generation, the endpoint explicitly stops on the chat tokenizer's
+`<|im_end|>` token. This prevents a fine-tuned model from continuing past its
+assistant response into serialized `user` role markers.
 
 ## Windows Docker (recommended for this computer)
 

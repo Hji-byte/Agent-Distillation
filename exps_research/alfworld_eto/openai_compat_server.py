@@ -24,6 +24,24 @@ def normalize_stops(value: Any) -> list[str]:
     raise ValueError("stop must be a string, a list of strings, or null")
 
 
+def resolve_chat_termination_token_ids(model: Any) -> tuple[Any, Any]:
+    """Use the chat tokenizer's terminator instead of the base model config EOS."""
+    tokenizer = getattr(model, "tokenizer", None)
+    if tokenizer is None:
+        processor = getattr(model, "processor", None)
+        tokenizer = getattr(processor, "tokenizer", None)
+    if tokenizer is None:
+        raise RuntimeError("Local model does not expose a tokenizer")
+
+    eos_token_id = getattr(tokenizer, "eos_token_id", None)
+    if eos_token_id is None:
+        raise RuntimeError("Local tokenizer does not define eos_token_id")
+    pad_token_id = getattr(tokenizer, "pad_token_id", None)
+    if pad_token_id is None:
+        pad_token_id = eos_token_id[0] if isinstance(eos_token_id, list) else eos_token_id
+    return eos_token_id, pad_token_id
+
+
 class QwenTransformersBackend:
     def __init__(
         self,
@@ -46,6 +64,7 @@ class QwenTransformersBackend:
             temperature=0.0,
             seed=seed,
         )
+        self.eos_token_id, self.pad_token_id = resolve_chat_termination_token_ids(self.model)
 
     def generate(
         self,
@@ -60,7 +79,15 @@ class QwenTransformersBackend:
         if max_tokens <= 0 or max_tokens > self.max_request_tokens:
             raise ValueError(f"max_tokens must be between 1 and {self.max_request_tokens}")
 
-        generation_kwargs: dict[str, Any] = {"max_new_tokens": max_tokens}
+        # Qwen3.5's base model config may name <|endoftext|> as EOS while its
+        # chat tokenizer closes assistant turns with <|im_end|>.  Passing the
+        # tokenizer IDs explicitly prevents generation from continuing into a
+        # synthetic next `user` turn after a complete Thought/Action response.
+        generation_kwargs: dict[str, Any] = {
+            "max_new_tokens": max_tokens,
+            "eos_token_id": self.eos_token_id,
+            "pad_token_id": self.pad_token_id,
+        }
         if temperature <= 0:
             generation_kwargs["do_sample"] = False
         else:

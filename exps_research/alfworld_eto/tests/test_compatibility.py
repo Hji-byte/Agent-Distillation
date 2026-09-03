@@ -12,8 +12,13 @@ import pytest
 
 from exps_research.alfworld_eto.integrity import EXPECTED_COMMIT, sha256_file, verify_upstream
 from exps_research.alfworld_eto.legacy_openai import install_legacy_openai_module
-from exps_research.alfworld_eto.openai_compat_server import make_handler
-from exps_research.alfworld_eto.openai_compat_server import DEFAULT_STOP, normalize_stops
+from exps_research.alfworld_eto.openai_compat_server import (
+    DEFAULT_STOP,
+    QwenTransformersBackend,
+    make_handler,
+    normalize_stops,
+    resolve_chat_termination_token_ids,
+)
 from exps_research.alfworld_eto.optional_imports import install_unused_component_stubs
 from exps_research.alfworld_eto.run_upstream import write_runtime_model_config
 from exps_research.alfworld_eto.react_prompting import (
@@ -38,6 +43,37 @@ def test_normalize_stops_preserves_eto_stop_words():
     assert normalize_stops(["A", "B"]) == ["A", "B"]
     with pytest.raises(ValueError):
         normalize_stops([1])
+
+
+def test_local_backend_stops_at_chat_tokenizer_eos():
+    class FakeTokenizer:
+        eos_token_id = 248046  # Qwen3.5 <|im_end|>
+        pad_token_id = 248044  # Qwen3.5 <|endoftext|>
+
+    class FakeModel:
+        processor = types.SimpleNamespace(tokenizer=FakeTokenizer())
+
+        def generate(self, messages, **kwargs):
+            assert messages == [{"role": "user", "content": "Task"}]
+            assert kwargs["eos_token_id"] == 248046
+            assert kwargs["pad_token_id"] == 248044
+            return types.SimpleNamespace(content="Thought: done\nAction: look")
+
+    backend = object.__new__(QwenTransformersBackend)
+    backend.max_request_tokens = 512
+    backend.lock = threading.Lock()
+    backend.model = FakeModel()
+    backend.eos_token_id, backend.pad_token_id = resolve_chat_termination_token_ids(
+        backend.model
+    )
+
+    output = backend.generate(
+        [{"role": "user", "content": "Task"}],
+        max_tokens=512,
+        temperature=0.0,
+        stop=DEFAULT_STOP,
+    )
+    assert output == "Thought: done\nAction: look"
 
 
 def test_optional_stubs_cover_only_unused_components():
