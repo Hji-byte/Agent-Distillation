@@ -33,6 +33,9 @@ The HTTP endpoint is local (`127.0.0.1`): it does not call OpenAI or send trajec
 For Qwen3.5 generation, the endpoint explicitly stops on the chat tokenizer's
 `<|im_end|>` token. This prevents a fine-tuned model from continuing past its
 assistant response into serialized `user` role markers.
+Both teacher generation and local Base/SFT evaluation allow at most 1,024 new
+tokens for each Thought/Action turn; the ALFWorld environment still enforces
+its unchanged 40-step task limit.
 
 ## Windows Docker (recommended for this computer)
 

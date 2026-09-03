@@ -45,6 +45,19 @@ def test_normalize_stops_preserves_eto_stop_words():
         normalize_stops([1])
 
 
+def test_local_student_and_teacher_use_same_per_step_output_budget():
+    config_path = (
+        PROJECT_ROOT
+        / "exps_research"
+        / "alfworld_eto"
+        / "configs"
+        / "model"
+        / "qwen35_local_openai.json"
+    )
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    assert config["config"]["max_tokens"] == 1024
+
+
 def test_local_backend_stops_at_chat_tokenizer_eos():
     class FakeTokenizer:
         eos_token_id = 248046  # Qwen3.5 <|im_end|>

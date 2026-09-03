@@ -33,7 +33,7 @@ args=(
     --served-model-name qwen3.5-0.8b-local
     --host 127.0.0.1
     --port 8000
-    --max-request-tokens 512
+    --max-request-tokens 1024
     --device-map cuda
     --seed 42
 )

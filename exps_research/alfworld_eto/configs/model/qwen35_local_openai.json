@@ -4,7 +4,7 @@
     "api_base": "http://127.0.0.1:8000/v1",
     "api_key": "local",
     "model_name": "qwen3.5-0.8b-local",
-    "max_tokens": 512,
+    "max_tokens": 1024,
     "temperature": 0.0
   }
 }

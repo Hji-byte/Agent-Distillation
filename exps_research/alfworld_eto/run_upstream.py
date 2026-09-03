@@ -80,7 +80,7 @@ def main() -> None:
     parser.add_argument("--override", action="store_true")
     parser.add_argument("--api-base")
     parser.add_argument("--api-key-env", default="ALFWORLD_API_KEY")
-    parser.add_argument("--max-tokens", type=int, default=512)
+    parser.add_argument("--max-tokens", type=int, default=1024)
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--server-health-url")
     parser.add_argument("--task-manifest", type=Path)

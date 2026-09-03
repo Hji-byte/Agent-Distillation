@@ -145,7 +145,7 @@ def make_handler(backend: QwenTransformersBackend, served_model_name: str):
                     raise ValueError("messages must be a list")
                 content = backend.generate(
                     messages,
-                    max_tokens=int(request.get("max_tokens", 512)),
+                    max_tokens=int(request.get("max_tokens", 1024)),
                     temperature=float(request.get("temperature", 0.0)),
                     stop=normalize_stops(request.get("stop")),
                 )
@@ -184,7 +184,7 @@ def main() -> None:
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--served-model-name", default="qwen3.5-0.8b-local")
-    parser.add_argument("--max-request-tokens", type=int, default=512)
+    parser.add_argument("--max-request-tokens", type=int, default=1024)
     parser.add_argument("--device-map", default="cuda")
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
