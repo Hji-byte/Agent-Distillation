@@ -1,0 +1,22 @@
+{
+  "schema_version": "alfworld-teacher-windowed-sft-v1",
+  "input": "data_processor/processed/sft/alfworld_teacher_success_react2_system_user_sft.jsonl",
+  "input_sha256": "4e613b214c4a6db31f73e058969faf3195d67d2225c35483d2e4648f68f90bc2",
+  "output": "data_processor/processed/sft/alfworld_teacher_success_react2_system_user_sft_window5600.jsonl",
+  "output_sha256": "cce11478b0f1aed3d03e34e7dce68362933ab3e6899ee93550634cd08dbf2ab6",
+  "tokenizer_artifacts_sha256": {
+    "tokenizer.json": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+    "tokenizer_config.json": "49e2b6e395f959f077f1e992b338919c0d4a9732fc6e613995e06557f843500c",
+    "chat_template.jinja": "273d8e0e683b885071fb17e08d71e5f2a5ddfb5309756181681de4f5a1822d80"
+  },
+  "max_length": 5600,
+  "input_trajectories": 1642,
+  "output_segments": 1720,
+  "split_trajectories": 76,
+  "unchanged_trajectories": 1566,
+  "supervised_assistant_turns_before": 20385,
+  "supervised_assistant_turns_after": 20385,
+  "segment_token_length_min": 2616,
+  "segment_token_length_max": 5600,
+  "segment_token_length_mean": 3900.6343023255813
+}

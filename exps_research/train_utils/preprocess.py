@@ -118,7 +118,10 @@ def preprocess_alfworld_dataset(datapath, print_first=True):
     rows = load_file_from_path(datapath)
     processed_dataset = []
     for index, row in enumerate(rows):
-        if row.get("schema_version") != "alfworld-teacher-sft-v1":
+        if row.get("schema_version") not in {
+            "alfworld-teacher-sft-v1",
+            "alfworld-teacher-windowed-sft-v1",
+        }:
             raise ValueError(
                 f"ALFWorld row {index} has unsupported schema "
                 f"{row.get('schema_version')!r}"

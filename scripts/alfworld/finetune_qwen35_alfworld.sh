@@ -13,9 +13,10 @@ if [[ ! -x "$python_bin" ]]; then
 fi
 
 model="${1:-}"
-datapath="${2:-data_processor/processed/sft/alfworld_teacher_success_react2_system_user_sft.jsonl}"
-postfix="${3:-alfworld_teacher_sft_qlora}"
+datapath="${2:-data_processor/processed/sft/alfworld_teacher_success_react2_system_user_sft_window5600.jsonl}"
+postfix="${3:-alfworld_teacher_sft_window5600_qlora}"
 epochs="${4:-2}"
+max_length="${5:-5600}"
 
 if [[ -z "$model" ]]; then
     echo "Model path is required as argument 1." >&2
@@ -43,4 +44,4 @@ fi
     --lora_alpha 128 \
     --lora_dropout 0.05 \
     --optim adamw_torch_fused \
-    --max_length 0
+    --max_length "$max_length"
