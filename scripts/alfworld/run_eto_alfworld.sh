@@ -13,8 +13,15 @@ fi
 
 split="${1:-test}"
 mode="${2:-full}"
+model_tag="${3:-base}"
 eto_root="${ETO_ROOT:-$project_root/_local/upstream/ETO}"
-exp_name="_qwen35_local_react2_system_user_${split}"
+
+if [[ ! "$model_tag" =~ ^[A-Za-z0-9._-]+$ ]]; then
+    echo "Model tag may contain only letters, numbers, '.', '_' and '-'." >&2
+    exit 2
+fi
+
+exp_name="_qwen35_local_${model_tag}_react2_system_user_${split}"
 
 args=(
     -u -m exps_research.alfworld_eto.run_upstream

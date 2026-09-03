@@ -97,25 +97,36 @@ bash scripts/alfworld/serve_qwen35_local.sh /mnt/workspace/models/Qwen3.5-0.8B
 Terminal 2, five-task smoke run:
 
 ```bash
-bash scripts/alfworld/run_eto_alfworld.sh test smoke
+bash scripts/alfworld/run_eto_alfworld.sh test smoke base
 ```
 
 Full 134-task unseen test:
 
 ```bash
-bash scripts/alfworld/run_eto_alfworld.sh test full
+bash scripts/alfworld/run_eto_alfworld.sh test full base
 ```
 
 The split is included in the experiment name, so `dev` (Valid Seen) and
-`test` (Valid Unseen) are saved separately and can be run sequentially
-against the same local model server.
+`test` (Valid Unseen) are saved separately. The third launcher argument is a
+model tag and defaults to `base`; use a distinct tag such as `sft` for every
+checkpoint being compared. Split and model tag are both included in the
+experiment name, preventing Base and fine-tuned results from being resumed or
+overwritten as one run.
 
 To evaluate an adapter while keeping the same ETO framework and Prompt, pass it as the second server argument:
 
 ```bash
 bash scripts/alfworld/serve_qwen35_local.sh \
   /mnt/workspace/models/Qwen3.5-0.8B \
-  /mnt/workspace/Agent-Distillation/training_outputs/Qwen3.5-0.8B/agent_baseline_2epochs_qlora
+  /mnt/workspace/Agent-Distillation/training_outputs/Qwen3.5-0.8B/alfworld_baseline_2epochs_alfworld_teacher_sft_max6400_qlora
+```
+
+Then evaluate the adapter under its own result tag:
+
+```bash
+bash scripts/alfworld/run_eto_alfworld.sh test smoke sft
+bash scripts/alfworld/run_eto_alfworld.sh test full sft
+bash scripts/alfworld/run_eto_alfworld.sh dev full sft
 ```
 
 ETO writes its original per-task state JSON files under `_local/upstream/ETO/outputs/`. These are kept separate from the Math500 results until an ALFWorld run is complete and deliberately curated.
