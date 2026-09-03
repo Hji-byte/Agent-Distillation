@@ -13,10 +13,10 @@ if [[ ! -x "$python_bin" ]]; then
 fi
 
 model="${1:-}"
-datapath="${2:-data_processor/processed/sft/alfworld_teacher_success_react2_system_user_sft_window5600.jsonl}"
-postfix="${3:-alfworld_teacher_sft_window5600_qlora}"
+datapath="${2:-data_processor/processed/sft/alfworld_teacher_success_react2_system_user_sft_max6400.jsonl}"
+postfix="${3:-alfworld_teacher_sft_max6400_qlora}"
 epochs="${4:-2}"
-max_length="${5:-5600}"
+max_length="${5:-6400}"
 
 if [[ -z "$model" ]]; then
     echo "Model path is required as argument 1." >&2
