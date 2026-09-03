@@ -14,13 +14,14 @@ fi
 split="${1:-test}"
 mode="${2:-full}"
 eto_root="${ETO_ROOT:-$project_root/_local/upstream/ETO}"
-exp_name="_qwen35_local_react2_${split}"
+exp_name="_qwen35_local_react2_system_user_${split}"
 
 args=(
     -u -m exps_research.alfworld_eto.run_upstream
     --eto-root "$eto_root"
     --split "$split"
-    --prompt-profile react-type-2shot
+    --prompt-profile react-type-2shot-system-user
+    --trajectory-format prompt-normalized
     --exp-name "$exp_name"
     --verbose
 )

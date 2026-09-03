@@ -27,8 +27,11 @@ def main() -> None:
     }
     planned: list[tuple[Path, Path]] = []
     for source in sorted(args.output_dir.glob("*.json")):
+        if not source.stem.isdigit():
+            continue
         state = json.loads(source.read_text(encoding="utf-8"))
-        relative = relative_game_path(state["meta"]["error"])
+        metadata = state["metadata"]
+        relative = relative_game_path(metadata["error"])
         if relative not in index_by_game:
             raise ValueError(f"Output game is outside the manifest: {relative}")
         target = source.with_name(index_by_game[relative] + ".json")

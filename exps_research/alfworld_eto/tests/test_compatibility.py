@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 import json
 import threading
+import types
 import urllib.request
 from http.server import ThreadingHTTPServer
 from pathlib import Path
@@ -20,6 +21,11 @@ from exps_research.alfworld_eto.react_prompting import (
     correct_textworld_action_instruction,
     load_react_two_shot,
     prompt_type_for_game,
+    split_rendered_prompt_into_system_user,
+)
+from exps_research.alfworld_eto.trajectory_serialization import (
+    SCHEMA_VERSION,
+    install_normalized_trajectory_serialization,
 )
 
 
@@ -161,4 +167,136 @@ def test_react_profile_corrects_only_the_textworld_toggle_command():
     instruction = "5. close {recep}\n6. toggle {obj} {recep}\n7. clean {obj} with {recep}"
     assert correct_textworld_action_instruction(instruction) == (
         "5. close {recep}\n6. use {obj}\n7. clean {obj} with {recep}"
+    )
+
+
+def test_rendered_prompt_is_actually_sent_as_system_then_user():
+    messages = split_rendered_prompt_into_system_user(
+        "rules\n---\nHere are 2 examples.\n\nexamples\n---\n"
+        "Now, it's your turn and here is the task.\ncurrent task"
+    )
+    assert messages == [
+        {
+            "role": "system",
+            "content": "rules\n---\nHere are 2 examples.\n\nexamples",
+        },
+        {
+            "role": "user",
+            "content": "Now, it's your turn and here is the task.\ncurrent task",
+        },
+    ]
+
+
+def test_normalized_teacher_serialization_round_trips_and_preserves_steps(monkeypatch):
+    eto_root = PROJECT_ROOT / "_local" / "upstream" / "ETO"
+    raw_path = (
+        eto_root
+        / "outputs"
+        / "qwen3.5-27b"
+        / "alfworld_teacher_api_react2"
+        / "0.json"
+    )
+    normalized_path = (
+        eto_root
+        / "outputs"
+        / "qwen3.5-27b"
+        / "alfworld_teacher_api_react2_prompt_normalized"
+        / "0.json"
+    )
+    if not raw_path.exists() or not normalized_path.exists():
+        pytest.skip("Local teacher trajectories are optional")
+
+    raw = json.loads(raw_path.read_text(encoding="utf-8"))
+    existing_normalized = json.loads(normalized_path.read_text(encoding="utf-8"))
+
+    class State:
+        def __init__(
+            self,
+            reward=None,
+            finished=False,
+            success=False,
+            terminate_reason=None,
+        ):
+            self.reward = reward
+            self.finished = finished
+            self.success = success
+            self.terminate_reason = terminate_reason
+            self.error = None
+            self.steps = 0
+            self.history = []
+
+        @classmethod
+        def load_json(cls, record):
+            meta = record["meta"]
+            state = cls(
+                reward=meta["reward"],
+                finished=meta["finished"],
+                success=meta["success"],
+                terminate_reason=meta["terminate_reason"],
+            )
+            state.error = meta["error"]
+            state.steps = meta["steps"]
+            state.history = record["conversations"]
+            return state
+
+        def to_dict(self, format="fastchat"):
+            assert format == "fastchat"
+            return {
+                "meta": {
+                    "steps": self.steps,
+                    "reward": self.reward,
+                    "finished": self.finished,
+                    "success": self.success,
+                    "terminate_reason": self.terminate_reason,
+                    "error": self.error,
+                },
+                "conversations": self.history,
+            }
+
+    fake_datatypes = types.ModuleType("eval_agent.utils.datatypes")
+    fake_datatypes.State = State
+    monkeypatch.setitem(sys.modules, "eval_agent.utils.datatypes", fake_datatypes)
+
+    existing_metadata = existing_normalized["metadata"]
+    state = State(
+        reward=existing_metadata["reward"],
+        finished=existing_metadata["finished"],
+        success=existing_metadata["success"],
+        terminate_reason=existing_metadata["terminate_reason"],
+    )
+    state.error = existing_metadata["error"]
+    state.steps = existing_metadata["steps"]
+    state.history = existing_normalized["messages"]
+    report = install_normalized_trajectory_serialization(eto_root)
+    assert report["schema_version"] == SCHEMA_VERSION
+
+    normalized = state.to_dict()
+    assert normalized["schema_version"] == SCHEMA_VERSION
+    assert [message["role"] for message in normalized["messages"][:4]] == [
+        "system",
+        "user",
+        "assistant",
+        "user",
+    ]
+    assert "Here are 2 examples." in normalized["messages"][0]["content"]
+    assert normalized["messages"][1]["content"].startswith(
+        "Now, it's your turn and here is the task."
+    )
+    assert sum(
+        message["role"] == "assistant" for message in normalized["messages"]
+    ) == raw["meta"]["steps"]
+
+    restored = State.load_json(normalized)
+    assert restored.steps == state.steps
+    assert restored.success == state.success
+    assert restored.terminate_reason == state.terminate_reason
+
+    with pytest.raises(ValueError, match="legacy"):
+        State.load_json(raw)
+
+    # New teacher runs persist the exact messages sent to the API.
+    directly_saved = state.to_dict()
+    assert directly_saved["messages"] == state.history
+    assert directly_saved["metadata"]["prompt_profile"] == (
+        "react-type-2shot-system-user"
     )

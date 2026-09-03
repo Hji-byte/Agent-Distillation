@@ -106,9 +106,49 @@ def check_two_system_messages(messages):
 def preprocess_sft_dataset(solution_type, datapath):
     if solution_type in ["cot", "reasoning"]:
         dataset = preprocess_cot_dataset(datapath)
+    elif solution_type == "alfworld":
+        dataset = preprocess_alfworld_dataset(datapath)
     else:
         dataset = preprocess_logs(datapath)
     return dataset
+
+
+def preprocess_alfworld_dataset(datapath, print_first=True):
+    """Load ALFWorld chat trajectories without replacing their system prompt."""
+    rows = load_file_from_path(datapath)
+    processed_dataset = []
+    for index, row in enumerate(rows):
+        if row.get("schema_version") != "alfworld-teacher-sft-v1":
+            raise ValueError(
+                f"ALFWorld row {index} has unsupported schema "
+                f"{row.get('schema_version')!r}"
+            )
+        if row.get("supervision") != "all_assistant_turns":
+            raise ValueError(
+                f"ALFWorld row {index} must supervise all assistant turns"
+            )
+        messages = row.get("messages")
+        if not isinstance(messages, list):
+            raise ValueError(f"ALFWorld row {index} is missing messages")
+
+        messages = prepare_sft_messages(messages)
+        if not messages or messages[0]["role"] != "system":
+            raise ValueError(f"ALFWorld row {index} must start with system")
+        if messages[-1]["role"] != "assistant":
+            raise ValueError(f"ALFWorld row {index} must end with assistant")
+        if not any(message["role"] == "assistant" for message in messages):
+            raise ValueError(f"ALFWorld row {index} has no supervised action")
+
+        processed_dataset.append(
+            {
+                "messages": messages,
+                "chat_template_kwargs": {"enable_thinking": False},
+            }
+        )
+        if print_first and index == 0:
+            print_pretty_messages(messages)
+
+    return Dataset.from_list(processed_dataset)
 
 def load_file_from_path(file_path):
     """

@@ -20,8 +20,11 @@ def main() -> None:
     moved = 0
     kept = 0
     for source in sorted(args.output_dir.glob("*.json")):
+        if not source.stem.isdigit():
+            continue
         state = json.loads(source.read_text(encoding="utf-8"))
-        reason = state.get("meta", {}).get("terminate_reason")
+        metadata = state["metadata"]
+        reason = metadata.get("terminate_reason")
         if reason != TECHNICAL_FAILURE_REASON:
             kept += 1
             continue

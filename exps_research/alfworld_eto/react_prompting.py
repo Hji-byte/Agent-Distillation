@@ -142,3 +142,47 @@ def install_react_two_shot_prompt(eto_root: Path) -> dict[str, Any]:
         "example_indices": list(REACT_EXAMPLE_INDICES),
         "action_instruction": "use {obj}",
     }
+
+
+def split_rendered_prompt_into_system_user(prompt: str) -> list[dict[str, str]]:
+    """Turn ETO's rendered ReAct prompt into the actual two-message prefix."""
+    parts = prompt.split("\n---\n")
+    if len(parts) != 3:
+        raise ValueError(
+            f"Expected instruction/examples/task prompt sections, found {len(parts)}"
+        )
+    instruction, examples, task = (part.strip("\n") for part in parts)
+    return [
+        {"role": "system", "content": f"{instruction}\n---\n{examples}"},
+        {"role": "user", "content": task},
+    ]
+
+
+def install_react_two_shot_system_user_prompt(eto_root: Path) -> dict[str, Any]:
+    """Send the rendered two-shot prompt as system + current-task user messages."""
+    import eval_agent.envs.alfworld_env as alfworld_env_module
+
+    install_react_two_shot_prompt(eto_root)
+    env_class = alfworld_env_module.AlfWorldEnv
+    if getattr(env_class, "_react_two_shot_system_user_installed", False):
+        return {
+            "status": "already_installed",
+            "profile": "react-type-2shot-system-user",
+        }
+
+    original_reset = env_class.reset
+
+    def reset_with_system_user_prompt(self):
+        rendered_prompt, state = original_reset(self)
+        state.history = split_rendered_prompt_into_system_user(rendered_prompt)
+        return rendered_prompt, state
+
+    env_class.reset = reset_with_system_user_prompt
+    env_class._react_two_shot_system_user_installed = True
+    return {
+        "status": "installed",
+        "profile": "react-type-2shot-system-user",
+        "actual_api_prefix_roles": ["system", "user"],
+        "example_indices": list(REACT_EXAMPLE_INDICES),
+        "action_instruction": "use {obj}",
+    }

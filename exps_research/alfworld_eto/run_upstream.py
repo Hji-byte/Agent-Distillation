@@ -14,7 +14,13 @@ from exps_research.alfworld_eto.legacy_openai import install_legacy_openai_modul
 from exps_research.alfworld_eto.manifest_tasks import install_alfworld_manifest_loader
 from exps_research.alfworld_eto.optional_imports import install_unused_component_stubs
 from exps_research.alfworld_eto.optional_imports import install_alfworld_environment_exports
-from exps_research.alfworld_eto.react_prompting import install_react_two_shot_prompt
+from exps_research.alfworld_eto.react_prompting import (
+    install_react_two_shot_prompt,
+    install_react_two_shot_system_user_prompt,
+)
+from exps_research.alfworld_eto.trajectory_serialization import (
+    install_normalized_trajectory_serialization,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -81,8 +87,18 @@ def main() -> None:
     parser.add_argument("--max-tasks", type=int)
     parser.add_argument(
         "--prompt-profile",
-        choices=("upstream", "react-type-2shot"),
+        choices=(
+            "upstream",
+            "react-type-2shot",
+            "react-type-2shot-system-user",
+        ),
         default="upstream",
+    )
+    parser.add_argument(
+        "--trajectory-format",
+        choices=("upstream", "prompt-normalized"),
+        default="upstream",
+        help="Choose how completed trajectories are stored.",
     )
     args = parser.parse_args()
 
@@ -108,6 +124,18 @@ def main() -> None:
     if args.prompt_profile == "react-type-2shot":
         prompt_report = install_react_two_shot_prompt(eto_root)
         print("Using ALFWorld prompt profile: " + json.dumps(prompt_report))
+    elif args.prompt_profile == "react-type-2shot-system-user":
+        prompt_report = install_react_two_shot_system_user_prompt(eto_root)
+        print("Using ALFWorld prompt profile: " + json.dumps(prompt_report))
+
+    if args.trajectory_format == "prompt-normalized":
+        if args.prompt_profile != "react-type-2shot-system-user":
+            raise ValueError(
+                "prompt-normalized serialization requires "
+                "react-type-2shot-system-user"
+            )
+        serialization_report = install_normalized_trajectory_serialization(eto_root)
+        print("Using ALFWorld trajectory format: " + json.dumps(serialization_report))
 
     if args.verbose:
         upstream_main.logger.setLevel(logging.INFO)

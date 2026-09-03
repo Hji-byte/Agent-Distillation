@@ -264,11 +264,12 @@ def main(args):
 
     batch_size = args.batch_size
     # Step 3: Train
+    max_length = None if args.max_length <= 0 else args.max_length
     train_args = SFTConfig(
         per_device_train_batch_size=batch_size,
         per_device_eval_batch_size=batch_size,
         gradient_accumulation_steps=args.gradient_accumulation_steps,
-        max_length=args.max_length,
+        max_length=max_length,
         bf16=use_bf16,
         fp16=use_fp16,
         num_train_epochs=args.num_epochs,
@@ -306,7 +307,7 @@ def main(args):
     else:
         raise NotImplementedError(f"Unsupported model {args.model_name} for response template")
 
-    if args.solution_type == "agent":
+    if args.solution_type in ["agent", "alfworld"]:
         collator = DataCollatorForCompletionOnlyLMMultiTurn(
             response_template,
             instruction_template=instruction_template,
@@ -373,7 +374,12 @@ if __name__ == "__main__":
         action=argparse.BooleanOptionalAction,
         default=True,
     )
-    parser.add_argument("--max_length", default=4096, type=int)
+    parser.add_argument(
+        "--max_length",
+        default=4096,
+        type=int,
+        help="Maximum tokenized length; use 0 to disable trainer-side truncation.",
+    )
     parser.add_argument("--use_qlora", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--lora_r", default=64, type=int)
     parser.add_argument("--lora_alpha", default=128, type=int)
@@ -388,7 +394,12 @@ if __name__ == "__main__":
         type=int,
         help="First row to use when --dataset_size selects a smoke-test slice.",
     )
-    parser.add_argument("--solution_type", type=str, default="agent", choices=["cot", "reasoning", "agent"])
+    parser.add_argument(
+        "--solution_type",
+        type=str,
+        default="agent",
+        choices=["cot", "reasoning", "agent", "alfworld"],
+    )
 
     parser.add_argument(
         "--train_filepath",
