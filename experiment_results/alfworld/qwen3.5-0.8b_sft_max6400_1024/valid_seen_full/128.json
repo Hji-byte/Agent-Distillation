@@ -1,0 +1,220 @@
+{
+    "schema_version": "alfworld-eto-react2-system-user-v1",
+    "messages": [
+        {
+            "role": "system",
+            "content": "Interact with a household to solve a task. Imagine you are an intelligent agent in a household environment and your target is to perform actions to complete the task goal. At the beginning of your interactions, you will be given the detailed description of the current environment and your goal to accomplish. \nFor each of your turn, you will be given the observation of the last turn. You should first think about the current condition and plan for your future actions, and then output your action in this turn. Your output must strictly follow this format:\"Thought: your thoughts.\\nAction: your next action\".\n\nThe available actions are:\n1. go to {recep}\n2. take {obj} from {recep}\n3. put {obj} in/on {recep}\n4. open {recep}\n5. close {recep}\n6. use {obj}\n7. clean {obj} with {recep}\n8. heat {obj} with {recep}\n9. cool {obj} with {recep}\nwhere {obj} and {recep} correspond to objects and receptacles.\nAfter your each turn, the environment will give you immediate feedback based on which you plan your next few steps. if the envrionment output \"Nothing happened\", that means the previous action is invalid and you should try more options.\n\nYour response should use the following format:\n\nThought: <your thoughts>\nAction: <your next action>\n---\nHere are 2 examples.\n\nExample task 1:\nYou are in the middle of a room. Looking quickly around you, you see a coffeetable 1, a diningtable 1, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a sidetable 2, a sidetable 1, and a sofa 1.\nYour task is to: put two cellphone in sofa.\nThought: To solve the task, I need to find and take the first cellphone, then put it in sofa, then find and take the second cellphone, then put it in sofa. First I need to find the first cellphone. A cellphone is more likely to appear in coffeetable (1), diningtable (1), sidetable (1-2), drawer (1-4), sofa (1), dresser (1), garbagecan (1). I can check one by one, starting with coffeetable 1.\nAction: go to coffeetable 1\nObservation: On the coffeetable 1, you see a box 1, a cellphone 3, and a plate 1.\n\nThought: To solve the task, I need to find and take the first cellphone, then put it in sofa, then find and take the second cellphone, then put it in sofa. First I need to find the first cellphone. A cellphone is more likely to appear in coffeetable (1), diningtable (1), sidetable (1-2), drawer (1-4), sofa (1), dresser (1), garbagecan (1). I can check one by one, starting with coffeetable 1.\nAction: take cellphone 3 from coffeetable 1\nObservation: You pick up the cellphone 3 from the coffeetable 1.\n\nThought: Now I find the first cellphone (3). Next, I need to put it in/on sofa 1.\nAction: go to sofa 1\nObservation: On the sofa 1, you see a newspaper 2, a pillow 1, a remotecontrol 2, and a remotecontrol 1.\n\nThought: Now I find the first cellphone (3). Next, I need to put it in/on sofa 1.\nAction: put cellphone 3 in/on sofa 1\nObservation: You put the cellphone 3 in/on the sofa 1.\n\nThought: Now I put the first cellphone in sofa. Next, I need to find the second cellphone. I have visited coffeetable (1), so the second cellphone is more likely to appear in diningtable (1), sidetable (1-2), drawer (1-4), sofa (1), dresser (1), garbagecan (1). I can check one by one, starting with coffeetable 1.\nAction: go to diningtable 1\nObservation: On the diningtable 1, you see a cellphone 2, a keychain 2, a laptop 1, a statue 2, and a statue 1.\n\nThought: Now I find the second cellphone (2). Next, I need to take it.\nAction: take cellphone 2 from diningtable 1\nObservation: You pick up the cellphone 2 from the diningtable 1.\n\nThought: Now I take the second cellphone (2). Next, I need to put it in/on sofa 1.\nAction: go to sofa 1\nObservation: On the sofa 1, you see a cellphone 3, a newspaper 2, a pillow 1, a remotecontrol 2, and a remotecontrol 1.\n\nThought: Now I take the second cellphone (2). Next, I need to put it in/on sofa 1.\nAction: put cellphone 2 in/on sofa 1\n\nExample task 2:\nYou are in the middle of a room. Looking quickly around you, you see a armchair 2, a armchair 1, a bed 1, a countertop 1, a diningtable 1, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a laundryhamper 1, and a sidetable 1.\nYour task is to: put two creditcard in dresser.\nThought: To solve the task, I need to find and take the first creditcard, then put it in dresser, then find and take the second creditcard, then put it in dresser. First I need to find the first creditcard. A creditcard is more likely to appear in drawer (1-2), coutertop (1), sidetable (1), diningtable (1), armchair (1-2), bed (1). I can check one by one, starting with drawer 1.\nAction: go to drawer 1\nObservation: The drawer 1 is closed.\n\nThought: To solve the task, I need to find and take the first creditcard, then put it in dresser, then find and take the second creditcard, then put it in dresser. First I need to find the first creditcard. A creditcard is more likely to appear in drawer (1-2), coutertop (1), sidetable (1), diningtable (1), armchair (1-2), bed (1). I can check one by one, starting with drawer 1.\nAction: open drawer 1\nObservation: You open the drawer 1. The drawer 1 is open. In it, you see a book 1, a cd 1, and a pen 1.\n\nThought: To solve the task, I need to find and take the first creditcard, then put it in dresser, then find and take the second creditcard, then put it in dresser. First I need to find the first creditcard. A creditcard is more likely to appear in drawer (1-2), coutertop (1), sidetable (1), diningtable (1), armchair (1-2), bed (1). I can check one by one, starting with drawer 1.\nAction: go to drawer 2\nObservation: The drawer 2 is closed.\n\nThought: To solve the task, I need to find and take the first creditcard, then put it in dresser, then find and take the second creditcard, then put it in dresser. First I need to find the first creditcard. A creditcard is more likely to appear in drawer (1-2), coutertop (1), sidetable (1), diningtable (1), armchair (1-2), bed (1). I can check one by one, starting with drawer 1.\nAction: open drawer 2\nObservation: You open the drawer 2. The drawer 2 is open. In it, you see nothing.\n\nThought: To solve the task, I need to find and take the first creditcard, then put it in dresser, then find and take the second creditcard, then put it in dresser. First I need to find the first creditcard. A creditcard is more likely to appear in drawer (1-2), coutertop (1), sidetable (1), diningtable (1), armchair (1-2), bed (1). I can check one by one, starting with drawer 1.\nAction: go to countertop 1\nObservation: On the countertop 1, you see a cellphone 2, a creditcard 4, a creditcard 3, a creditcard 2, a mirror 1, a pencil 2, and a pencil 1.\n\nThought: Now I find the first creditcard (2). Next, I need to take it. I can find the second creditcard (3) later in countertop 1.\nAction: take creditcard 2 from countertop 1\nObservation: You pick up the creditcard 2 from the countertop 1.\n\nThought: Now I take the first creditcard (2). Next, I need to put it in/on dresser 1.\nAction: go to dresser 1\nObservation: On the dresser 1, you see a mug 1, and a television 1.\n\nThought: Now I take the first creditcard (2). Next, I need to put it in/on dresser 1.\nAction: put creditcard 2 in/on dresser 1\nObservation: You put the creditcard 2 in/on the dresser 1.\n\nThought: Now I put the first creditcard in dresser. Next, I need to find the second creditcard. I can directly go to countertop 1.\nAction: go to countertop 1\nObservation: On the countertop 1, you see a cellphone 2, a creditcard 4, a creditcard 3, a mirror 1, a pencil 2, and a pencil 1.\n\nThought: Now I find the second creditcard (3). Next, I need to take it.\nAction: take creditcard 3 from countertop 1\nObservation: You pick up the creditcard 3 from the countertop 1.\n\nThought: Now I take the second creditcard (3). Next, I need to put it in/on dresser 1.\nAction: go to dresser 1\nObservation: On the dresser 1, you see a creditcard 2, a mug 1, and a television 1.\n\nThought: Now I take the second creditcard (3). Next, I need to put it in/on dresser 1.\nAction: put creditcard 3 in/on dresser 1"
+        },
+        {
+            "role": "user",
+            "content": "Now, it's your turn and here is the task.\nYou are in the middle of a room. Looking quickly around you, you see a bathtubbasin 1, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a countertop 1, a garbagecan 1, a handtowelholder 2, a handtowelholder 1, a shelf 1, a sinkbasin 2, a sinkbasin 1, a toilet 1, a toiletpaperhanger 1, a towelholder 2, and a towelholder 1.\nYour task is to: find two spraybottle and put them in toilet."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: To solve the task, I need to find two spraybottles and put them in the toilet. Spraybottles are likely to be found on countertops, shelves, or inside cabinets. I will start by checking the countertop 1.\nAction: go to countertop 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the countertop 1, you see a candle 3, a candle 1, and a soapbottle 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I did not find a spraybottle on the countertop. I need to check other locations. Cabinets are common places for cleaning supplies like spraybottles. I will start checking the cabinets, beginning with cabinet 1.\nAction: go to cabinet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 1 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The cabinet 1 is closed, so I need to open it to check if there are any spraybottles inside.\nAction: open cabinet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You open the cabinet 1. The cabinet 1 is open. In it, you see a tissuebox 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I did not find a spraybottle in cabinet 1. I need to continue searching other cabinets. I will check cabinet 2 next.\nAction: go to cabinet 2"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 2 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The cabinet 2 is closed, so I need to open it to check if there are any spraybottles inside.\nAction: open cabinet 2"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You open the cabinet 2. The cabinet 2 is open. In it, you see a toiletpaper 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I did not find a spraybottle in cabinet 2. I need to continue searching other cabinets. I will check cabinet 3 next.\nAction: go to cabinet 3"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 3 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The cabinet 3 is closed, so I need to open it to check if there are any spraybottles inside.\nAction: open cabinet 3"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You open the cabinet 3. The cabinet 3 is open. In it, you see a spraybottle 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I found the first spraybottle (spraybottle 2) in cabinet 3. I need to take it and then find a second spraybottle before putting both in the toilet.\nAction: take spraybottle 2 from cabinet 3"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You pick up the spraybottle 2 from the cabinet 3."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have picked up the first spraybottle (spraybottle 2). Now I need to find a second spraybottle. I will continue checking the remaining cabinets, starting with cabinet 4.\nAction: go to cabinet 4"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 4 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The cabinet 4 is closed, so I need to open it to check if there is a second spraybottle inside.\nAction: open cabinet 4"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You open the cabinet 4. The cabinet 4 is open. In it, you see a candle 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I did not find a second spraybottle in cabinet 4. I need to check other locations. Cabinets are common places for cleaning supplies, but I should also check the shelf or other receptacles like the sinkbasin or bathtubbasin. Let's check the shelf 1 next.\nAction: go to shelf 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the shelf 1, you see a cloth 1, a soapbottle 1, a tissuebox 1, and a toiletpaper 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I did not find a second spraybottle on shelf 1. I need to continue searching other locations. Cabinets are common places for cleaning supplies, but I should also check the sinkbasin or bathtubbasin. Let's check sinkbasin 1 next.\nAction: go to sinkbasin 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the sinkbasin 1, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I did not find a second spraybottle on sinkbasin 1. I need to continue searching other locations. Cabinets are common places for cleaning supplies, but I should also check the bathtubbasin or the other sinkbasin (sinkbasin 2). Let's check sinkbasin 2 next.\nAction: go to sinkbasin 2"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the sinkbasin 2, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked the countertop, all four cabinets, and both sinkbasins, but found only one spraybottle (spraybottle 2) in cabinet 3. The second spraybottle must be in another location. I should check the bathtubbasin 1, as it is another potential place for cleaning supplies.\nAction: go to bathtubbasin 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the bathtubbasin 1, you see a cloth 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked the countertop, all four cabinets, both sinkbasins, and the bathtubbasin, but found only one spraybottle (spraybottle 2) in cabinet 3. The second spraybottle must be in another location. I should check the toilet itself, as sometimes items are placed there, or perhaps I missed something. Let's check the toilet 1.\nAction: go to toilet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the toilet 1, you see a cloth 3."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked the countertop, all four cabinets, both sinkbasins, the bathtubbasin, and the toilet, but found only one spraybottle (spraybottle 2) in cabinet 3. The second spraybottle must be in another location. I have checked all the obvious places (countertop, cabinets, sinks, bathtub, toilet). Let me re-check the cabinets or other receptacles I might have missed. Wait, I should check if there are any other receptacles like the garbagecan or handtowelholders? Unlikely. Let's re-examine the cabinets or maybe I missed a location. Actually, let's check the garbagecan 1 just in case, though it's unlikely. Or perhaps I need to look closer at the items I saw. No, I see \"candle 3\", \"candle 1\", \"soapbottle 2\" on countertop 1. \"tissuebox 2\" in cabinet 1. \"toiletpaper 2\" in cabinet 2. \"spraybottle 2\" in cabinet 3. \"cloth 1\", \"soapbottle 1\", \"tissuebox 1\", \"toiletpaper 1\" on shelf 1. \"nothing\" on sinkbasin 1 and 2. \"cloth 2\" on bathtubbasin 1. \"cloth 3\" on toilet 1.\n\nIs it possible the second spraybottle is in a cabinet I didn't open? No, I opened all 4.\nIs it possible I missed a location? The list of receptacles was: bathtubbasin 1, cabinet 4, cabinet 3, cabinet 2, cabinet 1, countertop 1, garbagecan 1, handtowelholder 2, handtowelholder 1, shelf 1, sinkbasin 2, sinkbasin 1, toilet 1, toiletpaperhanger 1, towelholder 2, towelholder 1.\nI have checked: countertop, cabinets 1-4, shelf, sinkbasin 1, sinkbasin 2, bathtubbasin, toilet.\nI haven't checked: garbagecan, handtowelholders, shelf (already), towelholders.\nLet's check the garbagecan 1.\nAction: go to garbagecan 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the garbagecan 1, you see a spraybottle 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I found the second spraybottle (spraybottle 1) in the garbagecan 1. Now I need to take it and then put both spraybottles (spraybottle 2 and spraybottle 1) into the toilet.\nAction: take spraybottle 1 from garbagecan 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: Nothing happens."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The previous action \"take spraybottle 1 from garbagecan 1\" resulted in \"Nothing happened\". This usually means the object is not directly accessible or I am not holding it correctly, but since I just arrived at the garbagecan, it might be that I need to ensure I am interacting with the correct object. However, looking at the observation \"On the garbagecan 1, you see a spraybottle 1\", it should be takeable. Perhaps the issue is that I am already holding an object (spraybottle 2) and the environment doesn't allow holding multiple items? No, usually agents can hold multiple items. Let's re-evaluate. Maybe the garbagecan is closed? No, it's a receptacle. Let's try taking it again, or maybe I should put the first one down? No, I need both. Wait, maybe the \"Nothing happened\" implies the object is actually there but I missed something? Or perhaps I need to go to the garbagecan again? No, I am already there. Let's try taking it again. If it fails again, I will assume there is a bug or I need to check if I am holding something that prevents taking another? No, typically not. Let's try taking it again.\nAction: take spraybottle 1 from garbagecan 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: Nothing happens."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The action \"take spraybottle 1 from garbagecan 1\" failed twice. This is strange since the observation listed it there. Perhaps the issue is that I am already holding an object (spraybottle 2) and the environment restricts holding multiple items? However, usually, agents can hold multiple items. Let's reconsider the state. Maybe I need to put the first spraybottle (spraybottle 2) into the toilet first, then come back? But I still need the second one. Wait, maybe the \"garbagecan\" is not the right place? Or maybe I should check if there are other spraybottles I missed? No, I found only one in cabinet 3 and one in garbagecan. Let's try putting the first spraybottle (spraybottle 2) into the toilet first. Then I will try to take the second one again, perhaps the previous failure was a glitch or I need to be precise.\nAction: go to toilet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the toilet 1, you see a cloth 3."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I am currently holding spraybottle 2. I need to put it in the toilet first. Then I will try to take the second spraybottle (spraybottle 1) from the garbagecan again, as it might be that the previous failure was due to some state issue or I need to re-approach.\nAction: put spraybottle 2 in/on toilet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You put the spraybottle 2 in/on the toilet 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have successfully placed the first spraybottle (spraybottle 2) in the toilet. Now I need to retrieve the second spraybottle (spraybottle 1) from the garbagecan 1. My previous attempt to take it failed, possibly because I was already holding an item or there was a transient issue, but now that I have put down the first one, I should try again.\nAction: go to garbagecan 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the garbagecan 1, you see a spraybottle 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I am now at the garbagecan 1 and can see spraybottle 1. Since I have placed the first spraybottle in the toilet, I should try to take this second one again.\nAction: take spraybottle 1 from garbagecan 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You pick up the spraybottle 1 from the garbagecan 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have successfully picked up the second spraybottle (spraybottle 1). Now I need to put it in the toilet 1 to complete the task of having two spraybottles in the toilet.\nAction: go to toilet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the toilet 1, you see a cloth 3, and a spraybottle 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I am at the toilet 1 and holding spraybottle 1. The observation confirms that spraybottle 2 is already there. I need to put spraybottle 1 in/on the toilet 1 to complete the task.\nAction: put spraybottle 1 in/on toilet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You put the spraybottle 1 in/on the toilet 1."
+        }
+    ],
+    "supervision": "all_assistant_turns",
+    "metadata": {
+        "steps": 24,
+        "reward": true,
+        "finished": true,
+        "success": true,
+        "terminate_reason": "success",
+        "error": "eval_agent/data/alfworld/json_2.1.1/valid_seen/pick_two_obj_and_place-SprayBottle-None-Toilet-402/trial_T20190910_222914_814642/game.tw-pddl",
+        "prompt_profile": "react-type-2shot-system-user",
+        "prompt_type": "puttwo",
+        "react_example_keys": [
+            "react_puttwo_1",
+            "react_puttwo_0"
+        ]
+    }
+}

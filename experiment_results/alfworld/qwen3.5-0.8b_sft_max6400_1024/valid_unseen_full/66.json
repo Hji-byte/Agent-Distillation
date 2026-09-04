@@ -1,0 +1,180 @@
+{
+    "schema_version": "alfworld-eto-react2-system-user-v1",
+    "messages": [
+        {
+            "role": "system",
+            "content": "Interact with a household to solve a task. Imagine you are an intelligent agent in a household environment and your target is to perform actions to complete the task goal. At the beginning of your interactions, you will be given the detailed description of the current environment and your goal to accomplish. \nFor each of your turn, you will be given the observation of the last turn. You should first think about the current condition and plan for your future actions, and then output your action in this turn. Your output must strictly follow this format:\"Thought: your thoughts.\\nAction: your next action\".\n\nThe available actions are:\n1. go to {recep}\n2. take {obj} from {recep}\n3. put {obj} in/on {recep}\n4. open {recep}\n5. close {recep}\n6. use {obj}\n7. clean {obj} with {recep}\n8. heat {obj} with {recep}\n9. cool {obj} with {recep}\nwhere {obj} and {recep} correspond to objects and receptacles.\nAfter your each turn, the environment will give you immediate feedback based on which you plan your next few steps. if the envrionment output \"Nothing happened\", that means the previous action is invalid and you should try more options.\n\nYour response should use the following format:\n\nThought: <your thoughts>\nAction: <your next action>\n---\nHere are 2 examples.\n\nExample task 1:\nYou are in the middle of a room. Looking quickly around you, you see a coffeetable 1, a diningtable 1, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a sidetable 2, a sidetable 1, and a sofa 1.\nYour task is to: put two cellphone in sofa.\nThought: To solve the task, I need to find and take the first cellphone, then put it in sofa, then find and take the second cellphone, then put it in sofa. First I need to find the first cellphone. A cellphone is more likely to appear in coffeetable (1), diningtable (1), sidetable (1-2), drawer (1-4), sofa (1), dresser (1), garbagecan (1). I can check one by one, starting with coffeetable 1.\nAction: go to coffeetable 1\nObservation: On the coffeetable 1, you see a box 1, a cellphone 3, and a plate 1.\n\nThought: To solve the task, I need to find and take the first cellphone, then put it in sofa, then find and take the second cellphone, then put it in sofa. First I need to find the first cellphone. A cellphone is more likely to appear in coffeetable (1), diningtable (1), sidetable (1-2), drawer (1-4), sofa (1), dresser (1), garbagecan (1). I can check one by one, starting with coffeetable 1.\nAction: take cellphone 3 from coffeetable 1\nObservation: You pick up the cellphone 3 from the coffeetable 1.\n\nThought: Now I find the first cellphone (3). Next, I need to put it in/on sofa 1.\nAction: go to sofa 1\nObservation: On the sofa 1, you see a newspaper 2, a pillow 1, a remotecontrol 2, and a remotecontrol 1.\n\nThought: Now I find the first cellphone (3). Next, I need to put it in/on sofa 1.\nAction: put cellphone 3 in/on sofa 1\nObservation: You put the cellphone 3 in/on the sofa 1.\n\nThought: Now I put the first cellphone in sofa. Next, I need to find the second cellphone. I have visited coffeetable (1), so the second cellphone is more likely to appear in diningtable (1), sidetable (1-2), drawer (1-4), sofa (1), dresser (1), garbagecan (1). I can check one by one, starting with coffeetable 1.\nAction: go to diningtable 1\nObservation: On the diningtable 1, you see a cellphone 2, a keychain 2, a laptop 1, a statue 2, and a statue 1.\n\nThought: Now I find the second cellphone (2). Next, I need to take it.\nAction: take cellphone 2 from diningtable 1\nObservation: You pick up the cellphone 2 from the diningtable 1.\n\nThought: Now I take the second cellphone (2). Next, I need to put it in/on sofa 1.\nAction: go to sofa 1\nObservation: On the sofa 1, you see a cellphone 3, a newspaper 2, a pillow 1, a remotecontrol 2, and a remotecontrol 1.\n\nThought: Now I take the second cellphone (2). Next, I need to put it in/on sofa 1.\nAction: put cellphone 2 in/on sofa 1\n\nExample task 2:\nYou are in the middle of a room. Looking quickly around you, you see a armchair 2, a armchair 1, a bed 1, a countertop 1, a diningtable 1, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a laundryhamper 1, and a sidetable 1.\nYour task is to: put two creditcard in dresser.\nThought: To solve the task, I need to find and take the first creditcard, then put it in dresser, then find and take the second creditcard, then put it in dresser. First I need to find the first creditcard. A creditcard is more likely to appear in drawer (1-2), coutertop (1), sidetable (1), diningtable (1), armchair (1-2), bed (1). I can check one by one, starting with drawer 1.\nAction: go to drawer 1\nObservation: The drawer 1 is closed.\n\nThought: To solve the task, I need to find and take the first creditcard, then put it in dresser, then find and take the second creditcard, then put it in dresser. First I need to find the first creditcard. A creditcard is more likely to appear in drawer (1-2), coutertop (1), sidetable (1), diningtable (1), armchair (1-2), bed (1). I can check one by one, starting with drawer 1.\nAction: open drawer 1\nObservation: You open the drawer 1. The drawer 1 is open. In it, you see a book 1, a cd 1, and a pen 1.\n\nThought: To solve the task, I need to find and take the first creditcard, then put it in dresser, then find and take the second creditcard, then put it in dresser. First I need to find the first creditcard. A creditcard is more likely to appear in drawer (1-2), coutertop (1), sidetable (1), diningtable (1), armchair (1-2), bed (1). I can check one by one, starting with drawer 1.\nAction: go to drawer 2\nObservation: The drawer 2 is closed.\n\nThought: To solve the task, I need to find and take the first creditcard, then put it in dresser, then find and take the second creditcard, then put it in dresser. First I need to find the first creditcard. A creditcard is more likely to appear in drawer (1-2), coutertop (1), sidetable (1), diningtable (1), armchair (1-2), bed (1). I can check one by one, starting with drawer 1.\nAction: open drawer 2\nObservation: You open the drawer 2. The drawer 2 is open. In it, you see nothing.\n\nThought: To solve the task, I need to find and take the first creditcard, then put it in dresser, then find and take the second creditcard, then put it in dresser. First I need to find the first creditcard. A creditcard is more likely to appear in drawer (1-2), coutertop (1), sidetable (1), diningtable (1), armchair (1-2), bed (1). I can check one by one, starting with drawer 1.\nAction: go to countertop 1\nObservation: On the countertop 1, you see a cellphone 2, a creditcard 4, a creditcard 3, a creditcard 2, a mirror 1, a pencil 2, and a pencil 1.\n\nThought: Now I find the first creditcard (2). Next, I need to take it. I can find the second creditcard (3) later in countertop 1.\nAction: take creditcard 2 from countertop 1\nObservation: You pick up the creditcard 2 from the countertop 1.\n\nThought: Now I take the first creditcard (2). Next, I need to put it in/on dresser 1.\nAction: go to dresser 1\nObservation: On the dresser 1, you see a mug 1, and a television 1.\n\nThought: Now I take the first creditcard (2). Next, I need to put it in/on dresser 1.\nAction: put creditcard 2 in/on dresser 1\nObservation: You put the creditcard 2 in/on the dresser 1.\n\nThought: Now I put the first creditcard in dresser. Next, I need to find the second creditcard. I can directly go to countertop 1.\nAction: go to countertop 1\nObservation: On the countertop 1, you see a cellphone 2, a creditcard 4, a creditcard 3, a mirror 1, a pencil 2, and a pencil 1.\n\nThought: Now I find the second creditcard (3). Next, I need to take it.\nAction: take creditcard 3 from countertop 1\nObservation: You pick up the creditcard 3 from the countertop 1.\n\nThought: Now I take the second creditcard (3). Next, I need to put it in/on dresser 1.\nAction: go to dresser 1\nObservation: On the dresser 1, you see a creditcard 2, a mug 1, and a television 1.\n\nThought: Now I take the second creditcard (3). Next, I need to put it in/on dresser 1.\nAction: put creditcard 3 in/on dresser 1"
+        },
+        {
+            "role": "user",
+            "content": "Now, it's your turn and here is the task.\nYou are in the middle of a room. Looking quickly around you, you see a cabinet 6, a cabinet 5, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 3, a countertop 2, a countertop 1, a drawer 3, a drawer 2, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a shelf 3, a shelf 2, a shelf 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.\nYour task is to: find two peppershaker and put them in drawer."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: To solve the task, I need to find two peppershakers and put them in a drawer. First, I will search for peppershakers. They are likely on countertops, shelves, or inside cabinets. I'll start by checking countertop 1.\nAction: go to countertop 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the countertop 1, you see a egg 1, and a potato 3."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I did not find any peppershakers on countertop 1. I need to continue searching. I will check the next countertop, countertop 2.\nAction: go to countertop 2"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the countertop 2, you see a apple 1, a bread 2, a bread 1, a butterknife 2, a butterknife 1, a glassbottle 2, a papertowelroll 1, a potato 1, and a soapbottle 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I did not find any peppershakers on countertop 2. I need to continue searching. I will check the next countertop, countertop 3.\nAction: go to countertop 3"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the countertop 3, you see a butterknife 3, a cellphone 1, a fork 1, a houseplant 1, a knife 2, a knife 1, a lettuce 2, a peppershaker 4, a pot 2, a statue 2, and a statue 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I found a peppershaker (peppershaker 4) on countertop 3. I need to take it first, then find a second peppershaker, and finally put both in a drawer.\nAction: take peppershaker 4 from countertop 3"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You pick up the peppershaker 4 from the countertop 3."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have picked up the first peppershaker (peppershaker 4). Now I need to find a second peppershaker. I will continue searching the remaining countertops and shelves. Let's check countertop 1 again, as it was the first one I looked at and might have missed something or I need to re-evaluate. Wait, I already checked countertop 1 and it had eggs and potatoes. Let's check countertop 2 again? No, I saw apples, breads, etc. Let's check countertop 3 again? No, I saw the peppershaker. Maybe there is another one on another surface like a shelf or inside a cabinet. Let's try checking shelf 1.\nAction: go to shelf 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the shelf 1, you see a peppershaker 3, and a saltshaker 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I found a second peppershaker (peppershaker 3) on shelf 1. Now I need to take it so I can put both peppershakers in a drawer.\nAction: take peppershaker 3 from shelf 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: Nothing happens."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The previous action \"take peppershaker 3 from shelf 1\" resulted in \"Nothing happened\". This usually means the object is not directly accessible or I am not holding it correctly, but since I just arrived at shelf 1 and saw it, it should be there. However, sometimes in these environments, if you are holding an object, you might need to put it down first? No, that doesn't make sense for taking another. Perhaps the issue is that I need to ensure I am interacting with the correct receptacle. Wait, looking back at the observation: \"On the shelf 1, you see a peppershaker 3...\". It should be takeable. Maybe the error is because I am already holding something? No, I put peppershaker 4 in a drawer earlier. That shouldn't prevent me from taking another. Let's re-read the available actions. Maybe the problem is that I need to go to the shelf again? Or maybe the object name is different? No, it says \"peppershaker 3\". Is it possible the shelf is closed? No, shelves are usually open. Let's try going to shelf 1 again to ensure I am at the location, then try taking it. Or perhaps I should check if there are other peppershakers on other surfaces first? I found one on countertop 3. Maybe there is another one on countertop 1? I saw eggs and potatoes. Let's try going to countertop 1 again to see if I missed anything, or maybe check the cabinets? No, let's try the shelf again.\nAction: go to shelf 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: Nothing happens."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The previous action \"go to shelf 1\" resulted in \"Nothing happened\". This is strange because I was just there. It might be that the environment state is different than my memory, or perhaps I need to check other locations first. Let's try going to countertop 1 again, as it was the first one I looked at and might have hidden items or I might have missed a pepper. Alternatively, let's check the cabinets or other countertops. Wait, I found peppershaker 4 on countertop 3. Maybe there is another one on countertop 1? Let's go back to countertop 1.\nAction: go to countertop 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the countertop 1, you see a egg 1, and a potato 3."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I did not find a second peppershaker on countertop 1. I have one on countertop 3. Let's check the shelves again, maybe there is another one I missed or it's in a different location. I will check shelf 2 next.\nAction: go to shelf 2"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the shelf 2, you see a cup 3, and a vase 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I did not find a second peppershaker on shelf 2. I have one on countertop 3. Let's check shelf 3 next, as it is the last shelf I haven't visited.\nAction: go to shelf 3"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the shelf 3, you see a vase 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all the shelves (1, 2, 3) and two countertops (1, 3) without finding a second peppershaker. I found one on countertop 3. Let's check the cabinets, as they are common places for kitchen items. I will start with cabinet 1.\nAction: go to cabinet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the cabinet 1, you see a dishsponge 1, a glassbottle 1, and a peppershaker 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I found a second peppershaker (peppershaker 2) on cabinet 1. Now I need to take it so I can put both peppershakers (peppershaker 4 and peppershaker 2) in a drawer.\nAction: take peppershaker 2 from cabinet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: Nothing happens."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The action \"take peppershaker 2 from cabinet 1\" resulted in \"Nothing happened\". This is unexpected since I was just there and saw it. It might be that I am already holding an object (peppershaker 4) and the environment restricts holding multiple items, or there is a specific condition preventing the take. However, usually, if you are holding something, you can still pick up another unless the task implies putting the first one down first. But the goal is to put *two* peppershakers in a drawer. So I should probably put the first one (peppershaker 4) into a drawer first, then come back to get the second one. Let's try putting peppershaker 4 in a drawer. I will go to drawer 1.\nAction: go to drawer 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The drawer 1 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I am holding peppershaker 4 and need to put it in a drawer. Drawer 1 is closed, so I must open it first before I can place the item inside.\nAction: open drawer 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You open the drawer 1. The drawer 1 is open. In it, you see a creditcard 1, and a spatula 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have opened drawer 1 and it is now open. I am holding peppershaker 4. Now I can put it in the open drawer 1. After that, I will go back to shelf 3 to get peppershaker 2 and put it in the same drawer.\nAction: put peppershaker 4 in/on drawer 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You put the peppershaker 4 in/on the drawer 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have successfully placed the first peppershaker (peppershaker 4) in drawer 1. Now I need to retrieve the second peppershaker (peppershaker 2) which I saw on cabinet 1, and then place it in drawer 1 as well. I will go back to cabinet 1 to pick it up.\nAction: go to cabinet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the cabinet 1, you see a dishsponge 1, a glassbottle 1, and a peppershaker 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I am at cabinet 1 and can see peppershaker 2. Since I have already placed the first peppershaker in drawer 1, I should go back here to pick up the second one.\nAction: take peppershaker 2 from cabinet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You pick up the peppershaker 2 from the cabinet 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have picked up the second peppershaker (peppershaker 2). Now I need to put it in drawer 1, where I already placed the first one.\nAction: go to drawer 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The drawer 1 is open. In it, you see a creditcard 1, a peppershaker 4, and a spatula 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I am at drawer 1, which is open and already contains peppershaker 4. I am holding peppershaker 2. Now I need to put peppershaker 2 into drawer 1 to complete the task of putting two peppershakers in a drawer.\nAction: put peppershaker 2 in/on drawer 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You put the peppershaker 2 in/on the drawer 1."
+        }
+    ],
+    "supervision": "all_assistant_turns",
+    "metadata": {
+        "steps": 19,
+        "reward": true,
+        "finished": true,
+        "success": true,
+        "terminate_reason": "success",
+        "error": "eval_agent/data/alfworld/json_2.1.1/valid_unseen/pick_two_obj_and_place-PepperShaker-None-Drawer-10/trial_T20190912_221141_608117/game.tw-pddl",
+        "prompt_profile": "react-type-2shot-system-user",
+        "prompt_type": "puttwo",
+        "react_example_keys": [
+            "react_puttwo_1",
+            "react_puttwo_0"
+        ]
+    }
+}

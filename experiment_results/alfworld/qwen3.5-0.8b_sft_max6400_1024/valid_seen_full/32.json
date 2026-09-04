@@ -1,0 +1,308 @@
+{
+    "schema_version": "alfworld-eto-react2-system-user-v1",
+    "messages": [
+        {
+            "role": "system",
+            "content": "Interact with a household to solve a task. Imagine you are an intelligent agent in a household environment and your target is to perform actions to complete the task goal. At the beginning of your interactions, you will be given the detailed description of the current environment and your goal to accomplish. \nFor each of your turn, you will be given the observation of the last turn. You should first think about the current condition and plan for your future actions, and then output your action in this turn. Your output must strictly follow this format:\"Thought: your thoughts.\\nAction: your next action\".\n\nThe available actions are:\n1. go to {recep}\n2. take {obj} from {recep}\n3. put {obj} in/on {recep}\n4. open {recep}\n5. close {recep}\n6. use {obj}\n7. clean {obj} with {recep}\n8. heat {obj} with {recep}\n9. cool {obj} with {recep}\nwhere {obj} and {recep} correspond to objects and receptacles.\nAfter your each turn, the environment will give you immediate feedback based on which you plan your next few steps. if the envrionment output \"Nothing happened\", that means the previous action is invalid and you should try more options.\n\nYour response should use the following format:\n\nThought: <your thoughts>\nAction: <your next action>\n---\nHere are 2 examples.\n\nExample task 1:\nYou are in the middle of a room. Looking quickly around you, you see a bed 1, a drawer 10, a drawer 9, a drawer 8, a drawer 7, a drawer 6, a drawer 5, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a shelf 9, a shelf 8, a shelf 7, a shelf 6, a shelf 5, a shelf 4, a shelf 3, a shelf 2, and a shelf 1.\nYour task is to: examine the pen with the desklamp.\nThought: To solve the task, I need to find and take a pen, then find and use a desklamp. First I need to find a pen. A pen is more likely to appear in drawer (1-10), shelf (1-9), bed (1), garbagecan (1). I can check one by one, starting with drawer 1.\nAction: go to drawer 1\nObservation: The drawer 1 is closed.\n\nThought: To solve the task, I need to find and take a pen, then find and use a desklamp. First I need to find a pen. A pen is more likely to appear in drawer (1-10), shelf (1-9), bed (1), garbagecan (1). I can check one by one, starting with drawer 1.\nAction: open drawer 1\nObservation: You open the drawer 1. The drawer 1 is open. In it, you see nothing.\n\nThought: To solve the task, I need to find and take a pen, then find and use a desklamp. First I need to find a pen. A pen is more likely to appear in drawer (1-10), shelf (1-9), bed (1), garbagecan (1). I can check one by one, starting with drawer 1.\nAction: go to drawer 2\nObservation: The drawer 2 is closed.\n\nThought: To solve the task, I need to find and take a pen, then find and use a desklamp. First I need to find a pen. A pen is more likely to appear in drawer (1-10), shelf (1-9), bed (1), garbagecan (1). I can check one by one, starting with drawer 1.\nAction: open drawer 2\nObservation: You open the drawer 2. The drawer 2 is open. In it, you see nothing.\n\nThought: To solve the task, I need to find and take a pen, then find and use a desklamp. First I need to find a pen. A pen is more likely to appear in drawer (1-10), shelf (1-9), bed (1), garbagecan (1). I can check one by one, starting with drawer 1.\nAction: go to drawer 3\nObservation: The drawer 3 is closed.\n\nThought: To solve the task, I need to find and take a pen, then find and use a desklamp. First I need to find a pen. A pen is more likely to appear in drawer (1-10), shelf (1-9), bed (1), garbagecan (1). I can check one by one, starting with drawer 1.\nAction: open drawer 3\nObservation: You open the drawer 3. The drawer 3 is open. In it, you see nothing.\n\nThought: To solve the task, I need to find and take a pen, then find and use a desklamp. First I need to find a pen. A pen is more likely to appear in drawer (1-10), shelf (1-9), bed (1), garbagecan (1). I can check one by one, starting with drawer 1.\nAction: go to drawer 4\nObservation: The drawer 4 is closed.\n\nThought: To solve the task, I need to find and take a pen, then find and use a desklamp. First I need to find a pen. A pen is more likely to appear in drawer (1-10), shelf (1-9), bed (1), garbagecan (1). I can check one by one, starting with drawer 1.\nAction: open drawer 4\nObservation: You open the drawer 4. The drawer 4 is open. In it, you see a cd 3, a keychain 1, and a pen 2.\n\nThought: Now I find a pen (2). Next, I need to take it.\nAction: take pen 2 from drawer 4\nObservation: You pick up the pen 2 from the drawer 4.\n\nThought: Now I take a pen (2). Next, I need to find a desklamp. A desklamp is more likely to appear in dresser (1), shelf (1-9), bed (1), garbagecan (1), drawer (1-10). I can check one by one, starting with dresser 1.\nAction: go to dresser 1\nObservation: On the dresser 1, you see a alarmclock 2, a alarmclock 1, a book 1, a cd 1, a creditcard 1, a desklamp 1, a keychain 2, a pen 3, and a pen 1.\n\nThought: Now I find a desklamp (1). Next, I need to use it.\nAction: use desklamp 1\n\nExample task 2:\nYou are in the middle of a room. Looking quickly around you, you see a bed 1, a desk 1, a drawer 3, a drawer 2, a drawer 1, a garbagecan 1, a safe 1, a shelf 5, a shelf 4, a shelf 3, a shelf 2, a shelf 1, a sidetable 2, and a sidetable 1.\nYour task is to: look at bowl under the desklamp.\nThought: To solve the task, I need to find and take a bowl, then find and use a desklamp. First I need to find a bowl. A bowl is more likely to appear in drawer (1-3), desk (1), sidetable (1-2), shelf (1-5), garbagecan (1). I can check one by one, starting with drawer 1.\nAction: go to drawer 1\nObservation: On the drawer 1, you see nothing.\n\nThought: To solve the task, I need to find and take a bowl, then find and use a desklamp. First I need to find a bowl. A bowl is more likely to appear in drawer (1-3), desk (1), sidetable (1-2), shelf (1-5), garbagecan (1). I can check one by one, starting with drawer 1.\nAction: go to drawer 2\nObservation: The drawer 2 is closed.\n\nThought: To solve the task, I need to find and take a bowl, then find and use a desklamp. First I need to find a bowl. A bowl is more likely to appear in drawer (1-3), desk (1), sidetable (1-2), shelf (1-5), garbagecan (1). I can check one by one, starting with drawer 1.\nAction: open drawer 2\nObservation: You open the drawer 2. The drawer 2 is open. In it, you see nothing.\n\nThought: To solve the task, I need to find and take a bowl, then find and use a desklamp. First I need to find a bowl. A bowl is more likely to appear in drawer (1-3), desk (1), sidetable (1-2), shelf (1-5), garbagecan (1). I can check one by one, starting with drawer 1.\nAction: go to drawer 3\nObservation: The drawer 3 is closed.\n\nThought: To solve the task, I need to find and take a bowl, then find and use a desklamp. First I need to find a bowl. A bowl is more likely to appear in drawer (1-3), desk (1), sidetable (1-2), shelf (1-5), garbagecan (1). I can check one by one, starting with drawer 1.\nAction: open drawer 3\nObservation: You open the drawer 3. The drawer 3 is open. In it, you see nothing.\n\nThought: To solve the task, I need to find and take a bowl, then find and use a desklamp. First I need to find a bowl. A bowl is more likely to appear in drawer (1-3), desk (1), sidetable (1-2), shelf (1-5), garbagecan (1). I can check one by one, starting with drawer 1.\nAction: go to desk 1\nObservation: On the desk 1, you see a alarmclock 2, a book 1, a cellphone 1, a keychain 1, a laptop 2, a laptop 1, and a pen 3.\n\nThought: To solve the task, I need to find and take a bowl, then find and use a desklamp. First I need to find a bowl. A bowl is more likely to appear in drawer (1-3), desk (1), sidetable (1-2), shelf (1-5), garbagecan (1). I can check one by one, starting with drawer 1.\nAction: go to sidetable 1\nObservation: On the sidetable 1, you see a cd 1, a pen 1, and a pencil 1.\n\nThought: To solve the task, I need to find and take a bowl, then find and use a desklamp. First I need to find a bowl. A bowl is more likely to appear in drawer (1-3), desk (1), sidetable (1-2), shelf (1-5), garbagecan (1). I can check one by one, starting with drawer 1.\nAction: go to shelf 1\nObservation: On the shelf 1, you see nothing.\n\nThought: To solve the task, I need to find and take a bowl, then find and use a desklamp. First I need to find a bowl. A bowl is more likely to appear in drawer (1-3), desk (1), sidetable (1-2), shelf (1-5), garbagecan (1). I can check one by one, starting with drawer 1.\nAction: go to shelf 2\nObservation: On the shelf 2, you see a bowl 1.\n\nThought: Now I find a bowl (1). Next, I need to take it.\nAction: take bowl 1 from shelf 2\nObservation: You pick up the bowl 1 from the shelf 2.\n\nThought: Now I take a bowl (1). Next, I need to find a desklamp. A desklamp is more likely to appear in desk (1), sidetable (1-2), shelf (1-5), bed (1), drawer (1-3). I can check one by one, starting with desk 1.\nAction: go to desk 1\nObservation: On the desk 1, you see a alarmclock 2, a book 1, a cellphone 1, a keychain 1, a laptop 2, a laptop 1, and a pen 3.\n\nThought: Now I take a bowl (1). Next, I need to find a desklamp. A desklamp is more likely to appear in desk (1), sidetable (1-2), shelf (1-5), bed (1), drawer (1-3). I can check one by one, starting with desk 1.\nAction: go to sidetable 1\nObservation: On the sidetable 1, you see a cd 1, a pen 1, and a pencil 1.\n\nThought: Now I take a bowl (1). Next, I need to find a desklamp. A desklamp is more likely to appear in desk (1), sidetable (1-2), shelf (1-5), bed (1), drawer (1-3). I can check one by one, starting with desk 1.\nAction: go to sidetable 2\nObservation: On the sidetable 2, you see a alarmclock 1, a desklamp 1, and a pen 2.\n\nThought: Now I find a desklamp (1). Next, I need to use it.\nAction: use desklamp 1"
+        },
+        {
+            "role": "user",
+            "content": "Now, it's your turn and here is the task.\nYou are in the middle of a room. Looking quickly around you, you see a bed 1, a desk 1, a drawer 17, a drawer 16, a drawer 15, a drawer 14, a drawer 13, a drawer 12, a drawer 11, a drawer 10, a drawer 9, a drawer 8, a drawer 7, a drawer 6, a drawer 5, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a shelf 6, a shelf 5, a shelf 4, a shelf 3, a shelf 2, and a shelf 1.\nYour task is to: examine the bowl with the desklamp."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: To solve the task, I need to find and take a bowl, then find and use a desklamp. First, I will search for a bowl. Common locations include drawers, shelves, desks, dressers, or beds. I'll start by checking the drawers one by one, beginning with drawer 1.\nAction: go to drawer 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The drawer 1 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The drawer 1 is closed, so I need to open it to check if there is a bowl inside.\nAction: open drawer 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You open the drawer 1. The drawer 1 is open. In it, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Drawer 1 is empty. I need to continue searching for a bowl in other drawers or receptacles. I will check drawer 2 next.\nAction: go to drawer 2"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The drawer 2 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The drawer 2 is closed, so I need to open it to check if there is a bowl inside.\nAction: open drawer 2"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You open the drawer 2. The drawer 2 is open. In it, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Drawer 2 is empty. I need to continue searching for a bowl in other drawers or receptacles. I will check drawer 3 next.\nAction: go to drawer 3"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the drawer 3, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Drawer 3 is empty. I need to continue searching for a bowl in other drawers or receptacles. I will check drawer 4 next.\nAction: go to drawer 4"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the drawer 4, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Drawer 4 is empty. I need to continue searching for a bowl in other drawers or receptacles. I will check drawer 5 next.\nAction: go to drawer 5"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The drawer 5 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The drawer 5 is closed, so I need to open it to check if there is a bowl inside.\nAction: open drawer 5"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You open the drawer 5. The drawer 5 is open. In it, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Drawer 5 is empty. I need to continue searching for a bowl in other drawers or receptacles. I will check drawer 6 next.\nAction: go to drawer 6"
+        },
+        {
+            "role": "user",
+            "content": "Observation: Nothing happens."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The previous action \"go to drawer 6\" resulted in \"Nothing happened\", which likely means I am already at drawer 6 or the command was invalid for some reason. Since I haven't checked inside drawer 6 yet, and it's a common place for bowls, I should try to open it.\nAction: open drawer 6"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You open the drawer 6. The drawer 6 is open. In it, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Drawer 6 is empty. I need to continue searching for a bowl in other drawers or receptacles. I will check drawer 7 next.\nAction: go to drawer 7"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The drawer 7 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The drawer 7 is closed, so I need to open it to check if there is a bowl inside.\nAction: open drawer 7"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You open the drawer 7. The drawer 7 is open. In it, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Drawer 7 is empty. I need to continue searching for a bowl in other drawers or receptacles. I will check drawer 8 next.\nAction: go to drawer 8"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The drawer 8 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The drawer 8 is closed, so I need to open it to check if there is a bowl inside.\nAction: open drawer 8"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You open the drawer 8. The drawer 8 is open. In it, you see a tissuebox 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Drawer 8 contains a tissuebox, not a bowl. I need to continue searching for a bowl in other drawers or receptacles. I will check drawer 9 next.\nAction: go to drawer 9"
+        },
+        {
+            "role": "user",
+            "content": "Observation: Nothing happens."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The previous action \"go to drawer 9\" resulted in \"Nothing happened\", which likely means I am already at drawer 9. Since I haven't checked inside it yet, and it's a common place for bowls, I should try to open it.\nAction: open drawer 9"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You open the drawer 9. The drawer 9 is open. In it, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Drawer 9 is empty. I need to continue searching for a bowl in other drawers or receptacles. I will check drawer 10 next.\nAction: go to drawer 10"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the drawer 10, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Drawer 10 is empty. I need to continue searching for a bowl in other drawers or receptacles. I will check drawer 11 next.\nAction: go to drawer 11"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the drawer 11, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Drawer 11 is empty. I need to continue searching for a bowl in other drawers or receptacles. I will check drawer 12 next.\nAction: go to drawer 12"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the drawer 12, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Drawer 12 is empty. I need to continue searching for a bowl in other drawers or receptacles. I will check drawer 13 next.\nAction: go to drawer 13"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the drawer 13, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Drawer 13 is empty. I need to continue searching for a bowl in other drawers or receptacles. I will check drawer 14 next.\nAction: go to drawer 14"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the drawer 14, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Drawer 14 is empty. I need to continue searching for a bowl in other drawers or receptacles. I will check drawer 15 next.\nAction: go to drawer 15"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the drawer 15, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Drawer 15 is empty. I need to continue searching for a bowl in other drawers or receptacles. I will check drawer 16 next.\nAction: go to drawer 16"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the drawer 16, you see a cd 1, and a pencil 3."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Drawer 16 contains a CD and a pencil, but no bowl. I need to continue searching for a bowl in the remaining drawers or other receptacles like shelves, desk, dresser, or bed. I will check drawer 17 next.\nAction: go to drawer 17"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the drawer 17, you see a cellphone 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Drawer 17 contains a cellphone, but no bowl. I have checked all drawers (1-17) and found no bowl. Next, I will check the shelves (1-6), desk, dresser, or bed. I'll start with shelf 1.\nAction: go to shelf 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the shelf 1, you see a pen 1, and a pencil 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Shelf 1 contains a pen and a pencil, but no bowl. I need to continue searching for a bowl in the remaining shelves (2-6), desk, dresser, or bed. I will check shelf 2 next.\nAction: go to shelf 2"
+        },
+        {
+            "role": "user",
+            "content": "Observation: Nothing happens."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The previous action \"go to shelf 2\" resulted in \"Nothing happened\", which likely means I am already at shelf 2. Since I haven't checked inside it yet, and it's a common place for bowls, I should try to open it.\nAction: open shelf 2"
+        },
+        {
+            "role": "user",
+            "content": "Observation: Nothing happens."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The previous action \"open shelf 2\" resulted in \"Nothing happened\", which might mean the shelf is already open or I am not correctly interacting with it. However, since I am likely at shelf 2, I should check if there is anything on it. If nothing is there, I will move to the next location, which is shelf 3.\nAction: go to shelf 3"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the shelf 3, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Shelf 3 is empty. I need to continue searching for a bowl in the remaining shelves (4-6), desk, dresser, or bed. I will check shelf 4 next.\nAction: go to shelf 4"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the shelf 4, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Shelf 4 is empty. I need to continue searching for a bowl in the remaining shelves (5-6), desk, dresser, or bed. I will check shelf 5 next.\nAction: go to shelf 5"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the shelf 5, you see a statue 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Shelf 5 contains a statue, but no bowl. I need to continue searching for a bowl in the remaining locations: shelf 6, desk, dresser, or bed. I will check shelf 6 next.\nAction: go to shelf 6"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the shelf 6, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all drawers (1-17) and shelves (1-6) without finding a bowl. The remaining locations to check are the desk, dresser, and bed. I will start by checking the desk.\nAction: go to desk 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the desk 1, you see a alarmclock 1, a bowl 1, a keychain 1, and a mug 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I found a bowl (bowl 1) on the desk 1. Now I need to take it so I can examine it with the desklamp later.\nAction: take bowl 1 from desk 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You pick up the bowl 1 from the desk 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have picked up the bowl 1. Now I need to find a desklamp to examine the bowl with it. Desklamps are often found on desks, dressers, or shelves. Since I am currently at desk 1, I should check the dresser next, as it is a common place for lamps.\nAction: go to dresser 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the dresser 1, you see a cellphone 2, a creditcard 1, a desklamp 1, a pencil 2, and a watch 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I found a desklamp (desklamp 1) on the dresser 1. Now that I have both the bowl and the desklamp, I can use the desklamp to examine the bowl.\nAction: use desklamp 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You turn on the desklamp 1."
+        }
+    ],
+    "supervision": "all_assistant_turns",
+    "metadata": {
+        "steps": 35,
+        "reward": true,
+        "finished": true,
+        "success": true,
+        "terminate_reason": "success",
+        "error": "eval_agent/data/alfworld/json_2.1.1/valid_seen/look_at_obj_in_light-Bowl-None-DeskLamp-301/trial_T20190909_150719_492274/game.tw-pddl",
+        "prompt_profile": "react-type-2shot-system-user",
+        "prompt_type": "examine",
+        "react_example_keys": [
+            "react_examine_1",
+            "react_examine_0"
+        ]
+    }
+}

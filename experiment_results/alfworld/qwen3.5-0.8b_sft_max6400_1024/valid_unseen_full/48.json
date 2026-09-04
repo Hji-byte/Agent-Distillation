@@ -1,0 +1,188 @@
+{
+    "schema_version": "alfworld-eto-react2-system-user-v1",
+    "messages": [
+        {
+            "role": "system",
+            "content": "Interact with a household to solve a task. Imagine you are an intelligent agent in a household environment and your target is to perform actions to complete the task goal. At the beginning of your interactions, you will be given the detailed description of the current environment and your goal to accomplish. \nFor each of your turn, you will be given the observation of the last turn. You should first think about the current condition and plan for your future actions, and then output your action in this turn. Your output must strictly follow this format:\"Thought: your thoughts.\\nAction: your next action\".\n\nThe available actions are:\n1. go to {recep}\n2. take {obj} from {recep}\n3. put {obj} in/on {recep}\n4. open {recep}\n5. close {recep}\n6. use {obj}\n7. clean {obj} with {recep}\n8. heat {obj} with {recep}\n9. cool {obj} with {recep}\nwhere {obj} and {recep} correspond to objects and receptacles.\nAfter your each turn, the environment will give you immediate feedback based on which you plan your next few steps. if the envrionment output \"Nothing happened\", that means the previous action is invalid and you should try more options.\n\nYour response should use the following format:\n\nThought: <your thoughts>\nAction: <your next action>\n---\nHere are 2 examples.\n\nExample task 1:\nYou are in the middle of a room. Looking quickly around you, you see a coffeetable 1, a diningtable 1, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a sidetable 2, a sidetable 1, and a sofa 1.\nYour task is to: put two cellphone in sofa.\nThought: To solve the task, I need to find and take the first cellphone, then put it in sofa, then find and take the second cellphone, then put it in sofa. First I need to find the first cellphone. A cellphone is more likely to appear in coffeetable (1), diningtable (1), sidetable (1-2), drawer (1-4), sofa (1), dresser (1), garbagecan (1). I can check one by one, starting with coffeetable 1.\nAction: go to coffeetable 1\nObservation: On the coffeetable 1, you see a box 1, a cellphone 3, and a plate 1.\n\nThought: To solve the task, I need to find and take the first cellphone, then put it in sofa, then find and take the second cellphone, then put it in sofa. First I need to find the first cellphone. A cellphone is more likely to appear in coffeetable (1), diningtable (1), sidetable (1-2), drawer (1-4), sofa (1), dresser (1), garbagecan (1). I can check one by one, starting with coffeetable 1.\nAction: take cellphone 3 from coffeetable 1\nObservation: You pick up the cellphone 3 from the coffeetable 1.\n\nThought: Now I find the first cellphone (3). Next, I need to put it in/on sofa 1.\nAction: go to sofa 1\nObservation: On the sofa 1, you see a newspaper 2, a pillow 1, a remotecontrol 2, and a remotecontrol 1.\n\nThought: Now I find the first cellphone (3). Next, I need to put it in/on sofa 1.\nAction: put cellphone 3 in/on sofa 1\nObservation: You put the cellphone 3 in/on the sofa 1.\n\nThought: Now I put the first cellphone in sofa. Next, I need to find the second cellphone. I have visited coffeetable (1), so the second cellphone is more likely to appear in diningtable (1), sidetable (1-2), drawer (1-4), sofa (1), dresser (1), garbagecan (1). I can check one by one, starting with coffeetable 1.\nAction: go to diningtable 1\nObservation: On the diningtable 1, you see a cellphone 2, a keychain 2, a laptop 1, a statue 2, and a statue 1.\n\nThought: Now I find the second cellphone (2). Next, I need to take it.\nAction: take cellphone 2 from diningtable 1\nObservation: You pick up the cellphone 2 from the diningtable 1.\n\nThought: Now I take the second cellphone (2). Next, I need to put it in/on sofa 1.\nAction: go to sofa 1\nObservation: On the sofa 1, you see a cellphone 3, a newspaper 2, a pillow 1, a remotecontrol 2, and a remotecontrol 1.\n\nThought: Now I take the second cellphone (2). Next, I need to put it in/on sofa 1.\nAction: put cellphone 2 in/on sofa 1\n\nExample task 2:\nYou are in the middle of a room. Looking quickly around you, you see a armchair 2, a armchair 1, a bed 1, a countertop 1, a diningtable 1, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a laundryhamper 1, and a sidetable 1.\nYour task is to: put two creditcard in dresser.\nThought: To solve the task, I need to find and take the first creditcard, then put it in dresser, then find and take the second creditcard, then put it in dresser. First I need to find the first creditcard. A creditcard is more likely to appear in drawer (1-2), coutertop (1), sidetable (1), diningtable (1), armchair (1-2), bed (1). I can check one by one, starting with drawer 1.\nAction: go to drawer 1\nObservation: The drawer 1 is closed.\n\nThought: To solve the task, I need to find and take the first creditcard, then put it in dresser, then find and take the second creditcard, then put it in dresser. First I need to find the first creditcard. A creditcard is more likely to appear in drawer (1-2), coutertop (1), sidetable (1), diningtable (1), armchair (1-2), bed (1). I can check one by one, starting with drawer 1.\nAction: open drawer 1\nObservation: You open the drawer 1. The drawer 1 is open. In it, you see a book 1, a cd 1, and a pen 1.\n\nThought: To solve the task, I need to find and take the first creditcard, then put it in dresser, then find and take the second creditcard, then put it in dresser. First I need to find the first creditcard. A creditcard is more likely to appear in drawer (1-2), coutertop (1), sidetable (1), diningtable (1), armchair (1-2), bed (1). I can check one by one, starting with drawer 1.\nAction: go to drawer 2\nObservation: The drawer 2 is closed.\n\nThought: To solve the task, I need to find and take the first creditcard, then put it in dresser, then find and take the second creditcard, then put it in dresser. First I need to find the first creditcard. A creditcard is more likely to appear in drawer (1-2), coutertop (1), sidetable (1), diningtable (1), armchair (1-2), bed (1). I can check one by one, starting with drawer 1.\nAction: open drawer 2\nObservation: You open the drawer 2. The drawer 2 is open. In it, you see nothing.\n\nThought: To solve the task, I need to find and take the first creditcard, then put it in dresser, then find and take the second creditcard, then put it in dresser. First I need to find the first creditcard. A creditcard is more likely to appear in drawer (1-2), coutertop (1), sidetable (1), diningtable (1), armchair (1-2), bed (1). I can check one by one, starting with drawer 1.\nAction: go to countertop 1\nObservation: On the countertop 1, you see a cellphone 2, a creditcard 4, a creditcard 3, a creditcard 2, a mirror 1, a pencil 2, and a pencil 1.\n\nThought: Now I find the first creditcard (2). Next, I need to take it. I can find the second creditcard (3) later in countertop 1.\nAction: take creditcard 2 from countertop 1\nObservation: You pick up the creditcard 2 from the countertop 1.\n\nThought: Now I take the first creditcard (2). Next, I need to put it in/on dresser 1.\nAction: go to dresser 1\nObservation: On the dresser 1, you see a mug 1, and a television 1.\n\nThought: Now I take the first creditcard (2). Next, I need to put it in/on dresser 1.\nAction: put creditcard 2 in/on dresser 1\nObservation: You put the creditcard 2 in/on the dresser 1.\n\nThought: Now I put the first creditcard in dresser. Next, I need to find the second creditcard. I can directly go to countertop 1.\nAction: go to countertop 1\nObservation: On the countertop 1, you see a cellphone 2, a creditcard 4, a creditcard 3, a mirror 1, a pencil 2, and a pencil 1.\n\nThought: Now I find the second creditcard (3). Next, I need to take it.\nAction: take creditcard 3 from countertop 1\nObservation: You pick up the creditcard 3 from the countertop 1.\n\nThought: Now I take the second creditcard (3). Next, I need to put it in/on dresser 1.\nAction: go to dresser 1\nObservation: On the dresser 1, you see a creditcard 2, a mug 1, and a television 1.\n\nThought: Now I take the second creditcard (3). Next, I need to put it in/on dresser 1.\nAction: put creditcard 3 in/on dresser 1"
+        },
+        {
+            "role": "user",
+            "content": "Now, it's your turn and here is the task.\nYou are in the middle of a room. Looking quickly around you, you see a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a countertop 1, a garbagecan 1, a handtowelholder 2, a handtowelholder 1, a sinkbasin 2, a sinkbasin 1, a toilet 1, a toiletpaperhanger 1, and a towelholder 1.\nYour task is to: put two soapbar in garbagecan."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: To solve the task, I need to find and take the first soapbar, then put it in garbagecan, then find and take the second soapbar, then put it in garbagecan. First I need to find the first soapbar. A soapbar is more likely to appear in cabinet (1-4), countertop (1), sinkbasin (1-2). I can check one by one, starting with cabinet 1.\nAction: go to cabinet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 1 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The cabinet 1 is closed, so I need to open it to check if there are any soapbars inside.\nAction: open cabinet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You open the cabinet 1. The cabinet 1 is open. In it, you see a cloth 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Cabinet 1 only contains a cloth, so I need to check the other cabinets for soapbars. I will try cabinet 2 next.\nAction: go to cabinet 2"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 2 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The cabinet 2 is closed, so I need to open it to check if there are any soapbars inside.\nAction: open cabinet 2"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You open the cabinet 2. The cabinet 2 is open. In it, you see a cloth 3, and a soapbottle 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Cabinet 2 contains a soapbottle, but I need soapbars. I should check the other cabinets (3 and 4) or the countertop/sinkbasins for soapbars. Let's try cabinet 3 next.\nAction: go to cabinet 3"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 3 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The cabinet 3 is closed, so I need to open it to check if there are any soapbars inside.\nAction: open cabinet 3"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You open the cabinet 3. The cabinet 3 is open. In it, you see a cloth 1, and a toiletpaper 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Cabinet 3 does not contain a soapbar. I need to check the remaining cabinet (cabinet 4) or the countertop/sinkbasins for soapbars. Let's try cabinet 4 next.\nAction: go to cabinet 4"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 4 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The cabinet 4 is closed, so I need to open it to check if there are any soapbars inside.\nAction: open cabinet 4"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You open the cabinet 4. The cabinet 4 is open. In it, you see a candle 2, a soapbottle 3, and a spraybottle 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Cabinet 4 contains a soapbottle, but I need soapbars. I have checked all cabinets (1-4) and found no soapbars. The next likely places are the countertop or sinkbasins. Let's check the countertop first.\nAction: go to countertop 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the countertop 1, you see a candle 3, a candle 1, a soapbottle 1, and a spraybottle 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The countertop 1 does not contain any soapbars. I have checked all cabinets and the countertop. The remaining likely places are the sinkbasins (1 and 2). Let's check sinkbasin 1 next.\nAction: go to sinkbasin 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the sinkbasin 1, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: Sinkbasin 1 is empty. I need to check sinkbasin 2 for soapbars.\nAction: go to sinkbasin 2"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the sinkbasin 2, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-4), the countertop, and both sinkbasins, but found no soapbars. The remaining receptacles in the room are the garbagecan, handtowelholder 1, handtowelholder 2, toilet, toiletpaperhanger, and towelholder. Soapbars are unlikely to be in holders or on a toilet, but they could be in the garbagecan or perhaps I missed something. Let's check the garbagecan first as it's the destination and might contain items.\nAction: go to garbagecan 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the garbagecan 1, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets, the countertop, both sinkbasins, and the garbagecan, but found no soapbars. The remaining receptacles are handtowelholder 1, handtowelholder 2, toilet 1, toiletpaperhanger 1, and towelholder 1. It is unlikely to find soapbars in holders or on a toilet, but they might be in the garbagecan (though I checked it) or perhaps I need to re-evaluate the locations. Wait, I might have missed checking if there are items inside the cabinets that I misread or if the \"soapbottle\" counts as a soapbar? No, the task specifies \"soapbar\". Let's try the toilet just in case, or perhaps the handtowelholders? No, that's unlikely. Let's re-check the cabinets or countertop for any other items I might have missed, but I was thorough. Actually, let's try the toilet.\nAction: go to toilet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the toilet 1, you see a soapbar 2, and a soapbar 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I found two soapbars (soapbar 1 and soapbar 2) on the toilet 1. My task is to put two soapbars in the garbagecan. I will first take soapbar 1 from the toilet, then go to the garbagecan and put it there. After that, I will return to the toilet, take soapbar 2, and put it in the garbagecan as well.\nAction: take soapbar 1 from toilet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You pick up the soapbar 1 from the toilet 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have picked up the first soapbar (soapbar 1). Now I need to go to the garbagecan to put it there.\nAction: go to garbagecan 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the garbagecan 1, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I am at the garbagecan 1 with soapbar 1 in hand. I need to put it inside the garbagecan.\nAction: put soapbar 1 in/on garbagecan 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You put the soapbar 1 in/on the garbagecan 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have successfully put the first soapbar (soapbar 1) in the garbagecan. Now I need to retrieve the second soapbar (soapbar 2) which is still on the toilet 1, and then put it in the garbagecan as well.\nAction: go to toilet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the toilet 1, you see a soapbar 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I am at the toilet 1 and see the second soapbar (soapbar 2). I need to take it so I can put it in the garbagecan.\nAction: take soapbar 2 from toilet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You pick up the soapbar 2 from the toilet 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have picked up the second soapbar (soapbar 2). Now I need to go to the garbagecan to put it there, completing the task of putting two soapbars in the garbagecan.\nAction: go to garbagecan 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the garbagecan 1, you see a soapbar 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I am at the garbagecan 1 with soapbar 2 in hand. The first soapbar (soapbar 1) is already inside. I need to put the second soapbar (soapbar 2) into the garbagecan to complete the task.\nAction: put soapbar 2 in/on garbagecan 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: You put the soapbar 2 in/on the garbagecan 1."
+        }
+    ],
+    "supervision": "all_assistant_turns",
+    "metadata": {
+        "steps": 20,
+        "reward": true,
+        "finished": true,
+        "success": true,
+        "terminate_reason": "success",
+        "error": "eval_agent/data/alfworld/json_2.1.1/valid_unseen/pick_two_obj_and_place-SoapBar-None-GarbageCan-424/trial_T20190909_064309_357168/game.tw-pddl",
+        "prompt_profile": "react-type-2shot-system-user",
+        "prompt_type": "puttwo",
+        "react_example_keys": [
+            "react_puttwo_1",
+            "react_puttwo_0"
+        ]
+    }
+}
