@@ -1,0 +1,348 @@
+{
+    "schema_version": "alfworld-eto-react2-system-user-v1",
+    "messages": [
+        {
+            "role": "system",
+            "content": "Interact with a household to solve a task. Imagine you are an intelligent agent in a household environment and your target is to perform actions to complete the task goal. At the beginning of your interactions, you will be given the detailed description of the current environment and your goal to accomplish. \nFor each of your turn, you will be given the observation of the last turn. You should first think about the current condition and plan for your future actions, and then output your action in this turn. Your output must strictly follow this format:\"Thought: your thoughts.\\nAction: your next action\".\n\nThe available actions are:\n1. go to {recep}\n2. take {obj} from {recep}\n3. put {obj} in/on {recep}\n4. open {recep}\n5. close {recep}\n6. use {obj}\n7. clean {obj} with {recep}\n8. heat {obj} with {recep}\n9. cool {obj} with {recep}\nwhere {obj} and {recep} correspond to objects and receptacles.\nAfter your each turn, the environment will give you immediate feedback based on which you plan your next few steps. if the envrionment output \"Nothing happened\", that means the previous action is invalid and you should try more options.\n\nYour response should use the following format:\n\nThought: <your thoughts>\nAction: <your next action>\n---\nHere are 2 examples.\n\nExample task 1:\nYou are in the middle of a room. Looking quickly around you, you see a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 1, a diningtable 3, a diningtable 2, a diningtable 1, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a sidetable 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.\nYour task is to: clean some apple and put it in sidetable.\nThought: To solve the task, I need to find and take an apple, then clean it with sinkbasin, then put it in sidetable. First I need to find an apple. An apple is more likely to appear in fridges (1), diningtable (1-3), sidetable (1), countertop (1), sinkbasin (1), garbagecan (1). I can check one by one, starting with fridge 1.\nAction: go to fridge 1\nObservation: The fridge 1 is closed.\n\nThought: To solve the task, I need to find and take an apple, then clean it with sinkbasin, then put it in sidetable. First I need to find an apple. An apple is more likely to appear in fridges (1), diningtable (1-3), sidetable (1), countertop (1), sinkbasin (1), garbagecan (1). I can check one by one, starting with fridge 1.\nAction: open fridge 1\nObservation: You open the fridge 1. The fridge 1 is open. In it, you see a lettuce 2, a mug 2, a potato 2, and a tomato 1.\n\nThought: To solve the task, I need to find and take an apple, then clean it with sinkbasin, then put it in sidetable. First I need to find an apple. An apple is more likely to appear in fridges (1), diningtable (1-3), sidetable (1), countertop (1), sinkbasin (1), garbagecan (1). I can check one by one, starting with fridge 1.\nAction: go to diningtable 1\nObservation: On the diningtable 1, you see nothing.\n\nThought: To solve the task, I need to find and take an apple, then clean it with sinkbasin, then put it in sidetable. First I need to find an apple. An apple is more likely to appear in fridges (1), diningtable (1-3), sidetable (1), countertop (1), sinkbasin (1), garbagecan (1). I can check one by one, starting with fridge 1.\nAction: go to diningtable 2\nObservation: On the diningtable 2, you see a pineapple 1.\n\nThought: To solve the task, I need to find and take an apple, then clean it with sinkbasin, then put it in sidetable. First I need to find an apple. An apple is more likely to appear in fridges (1), diningtable (1-3), sidetable (1), countertop (1), sinkbasin (1), garbagecan (1). I can check one by one, starting with fridge 1.\nAction: go to diningtable 3\nObservation: On the diningtable 3, you see a bowl 2, a bowl 1, a bread 2, and a bread 1.\n\nThought: To solve the task, I need to find and take an apple, then clean it with sinkbasin, then put it in sidetable. First I need to find an apple. An apple is more likely to appear in fridges (1), diningtable (1-3), sidetable (1), countertop (1), sinkbasin (1), garbagecan (1). I can check one by one, starting with fridge 1.\nAction: go to sidetable 1\nObservation: On the sidetable 1, you see a cup 1, a lettuce 1, a peppershaker 3, a potato 1, and a saltshaker 1.\n\nThought: To solve the task, I need to find and take an apple, then clean it with sinkbasin, then put it in sidetable. First I need to find an apple. An apple is more likely to appear in fridges (1), diningtable (1-3), sidetable (1), countertop (1), sinkbasin (1), garbagecan (1). I can check one by one, starting with fridge 1.\nAction: go to countertop 1\nObservation: On the countertop 1, you see a butterknife 1, a dishsponge 1, and a soapbottle 1.\n\nThought: To solve the task, I need to find and take an apple, then clean it with sinkbasin, then put it in sidetable. First I need to find an apple. An apple is more likely to appear in fridges (1), diningtable (1-3), sidetable (1), countertop (1), sinkbasin (1), garbagecan (1). I can check one by one, starting with fridge 1.\nAction: go to sinkbasin 1\nObservation: On the sinkbasin 1, you see a cup 2, a egg 1, a mug 1, and a potato 3.\n\nThought: To solve the task, I need to find and take an apple, then clean it with sinkbasin, then put it in sidetable. First I need to find an apple. An apple is more likely to appear in fridges (1), diningtable (1-3), sidetable (1), countertop (1), sinkbasin (1), garbagecan (1). I can check one by one, starting with fridge 1.\nAction: go to garbagecan 1\nObservation: On the garbagecan 1, you see a apple 3, and a egg 3.\n\nThought: Now I find an apple (3). Next, I need to take it.\nAction: take apple 3 from garbagecan 1\nObservation: You pick up the apple 3 from the garbagecan 1.\n\nThought: Now I take an apple (3). Next, I need to go to sinkbasin (1) and clean it.\nAction: go to sinkbasin 1\nObservation: On the sinkbasin 1, you see a cup 2, a egg 1, a mug 1, and a potato 3.\n\nThought: Now I take an apple (3). Next, I need to go to sinkbasin (1) and clean it.\nAction: clean apple 3 with sinkbasin 1\nObservation: You clean the apple 3 using the sinkbasin 1.\n\nThought: Now I clean an apple (3). Next, I need to put it in/on sidetable 1.\nAction: go to sidetable 1\nObservation: On the sidetable 1, you see a cup 1, a lettuce 1, a peppershaker 3, a potato 1, and a saltshaker 1.\n\nThought: Now I clean an apple (3). Next, I need to put it in/on sidetable 1.\nAction: put apple 3 in/on sidetable 1\n\nExample task 2:\nYou are in the middle of a room. Looking quickly around you, you see a cabinet 13, a cabinet 12, a cabinet 11, a cabinet 10, a cabinet 9, a cabinet 8, a cabinet 7, a cabinet 6, a cabinet 5, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 1, a diningtable 1, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a shelf 3, a shelf 2, a shelf 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.\nYour task is to: put a clean lettuce in diningtable.\nThought: To solve the task, I need to find and take a lettuce, then clean it with sinkbasin, then put it in diningtable. First I need to find a lettuce. A lettuce is more likely to appear in fridge (1), diningtable (1), sinkbasin (1), stoveburner (1-3), cabinet (1-13). I can check one by one, starting with fridge 1.\nAction: go to fridge 1\nObservation: The fridge 1 is closed.\n\nThought: To solve the task, I need to find and take a lettuce, then clean it with sinkbasin, then put it in diningtable. First I need to find a lettuce. A lettuce is more likely to appear in fridge (1), diningtable (1), sinkbasin (1), stoveburner (1-3), cabinet (1-13). I can check one by one, starting with fridge 1.\nAction: open fridge 1\nObservation: You open the fridge 1. The fridge 1 is open. In it, you see a cup 3, a egg 2, a potato 3, and a potato 2.\n\nThought: To solve the task, I need to find and take a lettuce, then clean it with sinkbasin, then put it in diningtable. First I need to find a lettuce. A lettuce is more likely to appear in fridge (1), diningtable (1), sinkbasin (1), stoveburner (1-3), cabinet (1-13). I can check one by one, starting with fridge 1.\nAction: go to diningtable 1\nObservation: On the diningtable 1, you see a apple 1, a bread 1, a butterknife 2, a cup 2, a fork 2, a knife 2, a knife 1, a ladle 1, a lettuce 1, a mug 2, a mug 1, a pan 2, a peppershaker 1, a spatula 3, a tomato 2, and a tomato 1.\n\nThought: Now I find a lettuce (1). Next, I need to take it.\nAction: take lettuce 1 from diningtable 1\nObservation: You pick up the lettuce 1 from the diningtable 1.\n\nThought: Now I take a lettuce (1). Next, I need to go to sinkbasin (1) and clean it.\nAction: go to sinkbasin 1\nObservation: On the sinkbasin 1, you see a apple 2, a ladle 2, a spoon 1, and a tomato 3.\n\nThought: Now I take a lettuce (1). Next, I need to go to sinkbasin (1) and clean it.\nAction: clean lettuce 1 with sinkbasin 1\nObservation: You clean the lettuce 1 using the sinkbasin 1.\n\nThought: Now I clean a lettuce (1). Next, I need to put it in/on diningtable 1.\nAction: go to diningtable 1\nObservation: On the diningtable 1, you see a apple 1, a bread 1, a butterknife 2, a cup 2, a fork 2, a knife 2, a knife 1, a ladle 1, a mug 2, a mug 1, a pan 2, a peppershaker 1, a spatula 3, a tomato 2, and a tomato 1.\n\nThought: Now I clean a lettuce (1). Next, I need to put it in/on diningtable 1.\nAction: put lettuce 1 in/on diningtable 1"
+        },
+        {
+            "role": "user",
+            "content": "Now, it's your turn and here is the task.\nYou are in the middle of a room. Looking quickly around you, you see a cabinet 13, a cabinet 12, a cabinet 11, a cabinet 10, a cabinet 9, a cabinet 8, a cabinet 7, a cabinet 6, a cabinet 5, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 1, a drawer 5, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.\nYour task is to: clean some tomato and put it in countertop."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: To solve the task, I need to find and take a tomato, then clean it with sinkbasin, then put it in countertop. First, I need to find a tomato. A tomato is more likely to appear in fridge (1), diningtable (1-3), sidetable (1), countertop (1), sinkbasin (1), garbagecan (1). I can check one by one, starting with fridge 1.\nAction: go to fridge 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The fridge 1 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The fridge 1 is closed, so I cannot open it to find a tomato. I need to check other cabinets or surfaces. Looking at the list of items, there is a countertop 1. I will go to the countertop 1 to look for a tomato.\nAction: go to countertop 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the countertop 1, you see a bread 1, a butterknife 1, a dishsponge 1, a fork 1, a knife 1, a mug 3, a pan 1, a peppershaker 2, a saltshaker 2, a saltshaker 1, a soapbottle 1, and a spoon 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have not found a tomato on the countertop yet. I need to check other locations. Looking at the list of items, there is a drawer 5, a drawer 4, a drawer 3, a drawer 2, a drawer 1. I will check the drawers to see if a tomato is stored there.\nAction: go to drawer 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The drawer 1 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: The drawer 1 is closed, so I cannot open it to find a tomato. I need to check other locations. Looking at the list of items, there is a cabinet 13, a cabinet 12, a cabinet 11, a cabinet 10, a cabinet 9, a cabinet 8, a cabinet 7, a cabinet 6, a cabinet 5, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 1, a drawer 5, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1. I have checked fridge 1, diningtable 1, sinkbasin 1, countertop 1, and drawer 1. I need to check the remaining cabinets. Let's check cabinet 13.\nAction: go to cabinet 13"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the cabinet 13, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked the fridge, diningtable, sinkbasin, countertop, and all drawers. I have not found a tomato anywhere in the environment. I need to check the remaining cabinets. Let's check cabinet 12.\nAction: go to cabinet 12"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the cabinet 12, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked the fridge, diningtable, sinkbasin, countertop, all drawers, and cabinet 13. I have not found a tomato anywhere in the environment. I need to check the remaining cabinets. Let's check cabinet 11.\nAction: go to cabinet 11"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the cabinet 11, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked the fridge, diningtable, sinkbasin, countertop, all drawers, cabinet 13, and cabinet 12. I have not found a tomato anywhere in the environment. I need to check the remaining cabinets. Let's check cabinet 10.\nAction: go to cabinet 10"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the cabinet 10, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked the fridge, diningtable, sinkbasin, countertop, all drawers, cabinet 13, cabinet 12, and cabinet 11. I have not found a tomato anywhere in the environment. I need to check the remaining cabinets. Let's check cabinet 9.\nAction: go to cabinet 9"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 9 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked the fridge, diningtable, sinkbasin, countertop, all drawers, cabinet 13, cabinet 12, cabinet 11, and cabinet 10. The cabinet 9 is closed. I need to check the remaining cabinets. Let's check cabinet 8.\nAction: go to cabinet 8"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 8 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked the fridge, diningtable, sinkbasin, countertop, all drawers, cabinet 13, cabinet 12, cabinet 11, cabinet 10, and cabinet 9. The cabinet 8 is closed. I need to check the remaining cabinets. Let's check cabinet 7.\nAction: go to cabinet 7"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 7 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked the fridge, diningtable, sinkbasin, countertop, all drawers, cabinet 13, cabinet 12, cabinet 11, cabinet 10, cabinet 9, and cabinet 8. The cabinet 7 is closed. I need to check the remaining cabinets. Let's check cabinet 6.\nAction: go to cabinet 6"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 6 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked the fridge, diningtable, sinkbasin, countertop, all drawers, cabinet 13, cabinet 12, cabinet 11, cabinet 10, cabinet 9, cabinet 8, and cabinet 7. The cabinet 6 is closed. I need to check the remaining cabinets. Let's check cabinet 5.\nAction: go to cabinet 5"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 5 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked the fridge, diningtable, sinkbasin, countertop, all drawers, cabinet 13, cabinet 12, cabinet 11, cabinet 10, cabinet 9, cabinet 8, cabinet 7, and cabinet 6. The cabinet 5 is closed. I need to check the remaining cabinets. Let's check cabinet 4.\nAction: go to cabinet 4"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the cabinet 4, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked the fridge, diningtable, sinkbasin, countertop, all drawers, cabinet 13, cabinet 12, cabinet 11, cabinet 10, cabinet 9, cabinet 8, cabinet 7, cabinet 6, and cabinet 5. The cabinet 4 is closed. I need to check the remaining cabinets. Let's check cabinet 3.\nAction: go to cabinet 3"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 3 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked the fridge, diningtable, sinkbasin, countertop, all drawers, cabinet 13, cabinet 12, cabinet 11, cabinet 10, cabinet 9, cabinet 8, cabinet 7, cabinet 6, cabinet 5, and cabinet 4. The cabinet 3 is closed. I need to check the remaining cabinets. Let's check cabinet 2.\nAction: go to cabinet 2"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 2 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked the fridge, diningtable, sinkbasin, countertop, all drawers, cabinet 13, cabinet 12, cabinet 11, cabinet 10, cabinet 9, cabinet 8, cabinet 7, cabinet 6, cabinet 5, cabinet 4, and cabinet 3. The cabinet 2 is closed. I need to check the remaining cabinets. Let's check cabinet 1.\nAction: go to cabinet 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 1 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13) and all surfaces (fridge, diningtable, sinkbasin, countertop, drawers). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the microwave.\nAction: go to microwave 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The microwave 1 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13) and all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the stoveburner.\nAction: go to stoveburner 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the stoveburner 1, you see a pot 1."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13) and all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the toaster.\nAction: go to toaster 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the toaster 1, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the sinkbasin.\nAction: go to sinkbasin 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the sinkbasin 1, you see a fork 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the countertop again.\nAction: go to countertop 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the countertop 1, you see a bread 1, a butterknife 1, a dishsponge 1, a fork 1, a knife 1, a mug 3, a pan 1, a peppershaker 2, a saltshaker 2, a saltshaker 1, a soapbottle 1, and a spoon 2."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the drawer 5.\nAction: go to drawer 5"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The drawer 5 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the drawer 4.\nAction: go to drawer 4"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The drawer 4 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5, drawer 4). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the drawer 3.\nAction: go to drawer 3"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The drawer 3 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5, drawer 4, drawer 3). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the drawer 2.\nAction: go to drawer 2"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The drawer 2 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5, drawer 4, drawer 3, drawer 2). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the drawer 1.\nAction: go to drawer 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The drawer 1 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5, drawer 4, drawer 3, drawer 2, drawer 1). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the fridge again.\nAction: go to fridge 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The fridge 1 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5, drawer 4, drawer 3, drawer 2, drawer 1, fridge). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the garbagecan.\nAction: go to garbagecan 1"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the garbagecan 1, you see a soapbottle 3."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5, drawer 4, drawer 3, drawer 2, drawer 1, fridge, garbagecan). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the cabinet 13 again.\nAction: go to cabinet 13"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the cabinet 13, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5, drawer 4, drawer 3, drawer 2, drawer 1, fridge, garbagecan, cabinet 13). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the cabinet 12 again.\nAction: go to cabinet 12"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the cabinet 12, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5, drawer 4, drawer 3, drawer 2, drawer 1, fridge, garbagecan, cabinet 13, cabinet 12). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the cabinet 11 again.\nAction: go to cabinet 11"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the cabinet 11, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5, drawer 4, drawer 3, drawer 2, drawer 1, fridge, garbagecan, cabinet 13, cabinet 12, cabinet 11). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the cabinet 10 again.\nAction: go to cabinet 10"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the cabinet 10, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5, drawer 4, drawer 3, drawer 2, drawer 1, fridge, garbagecan, cabinet 13, cabinet 12, cabinet 11, cabinet 10). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the cabinet 9 again.\nAction: go to cabinet 9"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 9 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5, drawer 4, drawer 3, drawer 2, drawer 1, fridge, garbagecan, cabinet 13, cabinet 12, cabinet 11, cabinet 10, cabinet 9). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the cabinet 8 again.\nAction: go to cabinet 8"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 8 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5, drawer 4, drawer 3, drawer 2, drawer 1, fridge, garbagecan, cabinet 13, cabinet 12, cabinet 11, cabinet 10, cabinet 9, cabinet 8). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the cabinet 7 again.\nAction: go to cabinet 7"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 7 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5, drawer 4, drawer 3, drawer 2, drawer 1, fridge, garbagecan, cabinet 13, cabinet 12, cabinet 11, cabinet 10, cabinet 9, cabinet 8, cabinet 7). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the cabinet 6 again.\nAction: go to cabinet 6"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 6 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5, drawer 4, drawer 3, drawer 2, drawer 1, fridge, garbagecan, cabinet 13, cabinet 12, cabinet 11, cabinet 10, cabinet 9, cabinet 8, cabinet 7, cabinet 6). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the cabinet 5 again.\nAction: go to cabinet 5"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 5 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5, drawer 4, drawer 3, drawer 2, drawer 1, fridge, garbagecan, cabinet 13, cabinet 12, cabinet 11, cabinet 10, cabinet 9, cabinet 8, cabinet 7, cabinet 6, cabinet 5). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the cabinet 4 again.\nAction: go to cabinet 4"
+        },
+        {
+            "role": "user",
+            "content": "Observation: On the cabinet 4, you see nothing."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5, drawer 4, drawer 3, drawer 2, drawer 1, fridge, garbagecan, cabinet 13, cabinet 12, cabinet 11, cabinet 10, cabinet 9, cabinet 8, cabinet 7, cabinet 6, cabinet 5, cabinet 4). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the cabinet 3 again.\nAction: go to cabinet 3"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 3 is closed."
+        },
+        {
+            "role": "assistant",
+            "content": "Thought: I have checked all cabinets (1-13), all surfaces (fridge, diningtable, sinkbasin, countertop, drawers, microwave, stoveburner, toaster, sinkbasin, countertop, drawer 5, drawer 4, drawer 3, drawer 2, drawer 1, fridge, garbagecan, cabinet 13, cabinet 12, cabinet 11, cabinet 10, cabinet 9, cabinet 8, cabinet 7, cabinet 6, cabinet 5, cabinet 4, cabinet 3). I have not found a tomato anywhere in the environment. I need to check the remaining surfaces. Let's check the cabinet 2 again.\nAction: go to cabinet 2"
+        },
+        {
+            "role": "user",
+            "content": "Observation: The cabinet 2 is closed."
+        }
+    ],
+    "supervision": "all_assistant_turns",
+    "metadata": {
+        "steps": 40,
+        "reward": false,
+        "finished": true,
+        "success": false,
+        "terminate_reason": "max_steps",
+        "error": "eval_agent/data/alfworld/json_2.1.1/valid_seen/pick_clean_then_place_in_recep-Tomato-None-CounterTop-25/trial_T20190909_012550_586494/game.tw-pddl",
+        "prompt_profile": "react-type-2shot-system-user",
+        "prompt_type": "clean",
+        "react_example_keys": [
+            "react_clean_1",
+            "react_clean_0"
+        ]
+    }
+}
