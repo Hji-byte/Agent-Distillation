@@ -1,5 +1,7 @@
 import importlib.util
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 
@@ -47,3 +49,21 @@ def test_count_generated_tokens_includes_first_eos():
     assert MODULE.count_generated_tokens([10, 11, 2, 2], {2}) == 3
     assert MODULE.count_generated_tokens([10, 11], {2}) == 2
     assert MODULE.count_generated_tokens([], {2}) == 0
+
+
+def test_direct_script_execution_adds_project_root_to_import_path(tmp_path):
+    code = (
+        "import runpy,sys; "
+        f"ns=runpy.run_path({str(MODULE_PATH)!r}); "
+        "print(str(ns['PROJECT_ROOT']) in sys.path)"
+    )
+
+    completed = subprocess.run(
+        [sys.executable, "-c", code],
+        cwd=tmp_path,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.stdout.strip() == "True"
