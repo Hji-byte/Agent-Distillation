@@ -206,7 +206,9 @@ class ExperimentProcessor(ABC):
             # Only modify API base if it's not explicitly set
             if not model_kwargs.get('api_base'):
                 if use_single_endpoint:
-                    model_kwargs["api_base"] = "http://0.0.0.0:8000/v1"
+                    model_kwargs["api_base"] = os.getenv(
+                        "VLLM_API_BASE", "http://127.0.0.1:8000/v1"
+                    )
                 else:
                     model_kwargs["api_base"] = f"http://0.0.0.0:{8000 + worker_id}/v1"
         
