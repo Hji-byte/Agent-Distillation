@@ -10,6 +10,7 @@ python_bin="$project_root/.venv/bin/python"
 if [[ ! -x "$python_bin" ]]; then
     python_bin="${PYTHON:-python}"
 fi
+vllm_python="${AGENT_DISTILLATION_VLLM_PYTHON:-$python_bin}"
 
 model_path="${1:-${AGENT_DISTILLATION_MODEL_PATH:-}}"
 baseline_4k="${2:-experiment_results/math500/qwen3.5-0.8B_cot_prompting/math_500_20250414_test/Qwen3.5-0.8B_temp=0.0_seed=42_type=reasoning_max_tokens=4096_cot_prompting_base.jsonl}"
@@ -43,9 +44,9 @@ if ! [[ "$parallel_workers" =~ ^[1-9][0-9]*$ ]]; then
     echo "AGENT_DISTILLATION_PARALLEL_WORKERS must be a positive integer." >&2
     exit 2
 fi
-if ! "$python_bin" -c 'import vllm' >/dev/null 2>&1; then
-    echo "vLLM is not installed in the selected Python environment: $python_bin" >&2
-    echo "Install a vLLM release compatible with Qwen3.5, then rerun this script." >&2
+if ! "$vllm_python" -c 'import vllm' >/dev/null 2>&1; then
+    echo "vLLM is not installed in the selected server environment: $vllm_python" >&2
+    echo "Set AGENT_DISTILLATION_VLLM_PYTHON to a Python environment containing vLLM." >&2
     exit 2
 fi
 
@@ -70,7 +71,7 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 echo "Starting one-GPU vLLM server for $parallel_workers concurrent requests..."
-"$python_bin" -m vllm.entrypoints.openai.api_server \
+"$vllm_python" -m vllm.entrypoints.openai.api_server \
     --model "$model_path" \
     --served-model-name "$model_path" \
     --host 127.0.0.1 \
@@ -79,6 +80,7 @@ echo "Starting one-GPU vLLM server for $parallel_workers concurrent requests..."
     --max-model-len "$max_model_len" \
     --max-num-seqs "$parallel_workers" \
     --gpu-memory-utilization "$gpu_memory_utilization" \
+    --language-model-only \
     --enable-prefix-caching \
     --trust-remote-code \
     --default-chat-template-kwargs '{"enable_thinking": false}' \
