@@ -1,0 +1,13 @@
+{
+  "source_dataset": "data_processor/math_dataset/test/math_500_20250414.json",
+  "baseline_file": "experiment_results/math500/qwen3.5-0.8B_cot_prompting/math_500_20250414_test/Qwen3.5-0.8B_temp=0.0_seed=42_type=reasoning_max_tokens=4096_cot_prompting_base.jsonl",
+  "rerun_file": "logs/qa_results/transformers/qwen3.5-0.8B_cot_truncated_8k/math500_cot_truncated_only_8k_batched.jsonl",
+  "output_file": "logs/qa_results/transformers/qwen3.5-0.8B_cot_truncated_8k/math500_cot_4k_plus_truncated_8k.jsonl",
+  "total_questions": 500,
+  "source_max_tokens": 4096,
+  "rerun_max_tokens": 8192,
+  "replaced_truncated_questions": 168,
+  "retained_baseline_questions": 332,
+  "reruns_reaching_new_limit": 118,
+  "merged_output_tokens": 1316190
+}
