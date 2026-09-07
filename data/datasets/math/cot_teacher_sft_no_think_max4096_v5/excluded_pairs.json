@@ -1,0 +1,1694 @@
+[
+  {
+    "question_id": "math_cot_01f2d87e91e8ee1801687fa6145d3a8d2b147472d9730e66014aa42f7c626785",
+    "normal_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 4949,
+      "prompt_prefix_tokens": 147,
+      "continuation_tokens": 4802,
+      "teacher_completion_tokens": 4800
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 4949,
+      "prompt_prefix_tokens": 147,
+      "continuation_tokens": 4802,
+      "teacher_completion_tokens": 4800
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_04936e3c5a44f5f07bf392290767e2adbc437867fa5638fd41bc9fc2899b5fe2",
+    "normal_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 6311,
+      "prompt_prefix_tokens": 153,
+      "continuation_tokens": 6158,
+      "teacher_completion_tokens": 6156
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 4229,
+      "prompt_prefix_tokens": 153,
+      "continuation_tokens": 4076,
+      "teacher_completion_tokens": 4074
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_050d614f15ad7eb5cdea2e0dc88a2ea603ae8acfc46ceb6612e0ce924c5b4331",
+    "normal_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 4554,
+      "prompt_prefix_tokens": 152,
+      "continuation_tokens": 4402,
+      "teacher_completion_tokens": 4401
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 3138,
+      "prompt_prefix_tokens": 152,
+      "continuation_tokens": 2986,
+      "teacher_completion_tokens": 2985
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_05615fab525a22954b1d67010064888f4a82487f1dfbce09a4b1821206548bb7",
+    "normal_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 6589,
+      "prompt_prefix_tokens": 122,
+      "continuation_tokens": 6467,
+      "teacher_completion_tokens": 6465
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 6589,
+      "prompt_prefix_tokens": 122,
+      "continuation_tokens": 6467,
+      "teacher_completion_tokens": 6465
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_09109c88e46ed02a3782cab26a7bc2da8b6cfae66c530867cf3731213c1e32b2",
+    "normal_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 7030,
+      "prompt_prefix_tokens": 110,
+      "continuation_tokens": 6920,
+      "teacher_completion_tokens": 6918
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 3171,
+      "prompt_prefix_tokens": 110,
+      "continuation_tokens": 3061,
+      "teacher_completion_tokens": 3060
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_09b1b85018621a412dbda484f607508bd27106ad4b49ff490bcfcd8e0f08bfe1",
+    "normal_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 6652,
+      "prompt_prefix_tokens": 199,
+      "continuation_tokens": 6453,
+      "teacher_completion_tokens": 6451
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 4922,
+      "prompt_prefix_tokens": 199,
+      "continuation_tokens": 4723,
+      "teacher_completion_tokens": 4721
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_0c10dcd63953d3e0b1857d91c0ff592d041a5b01a12178405c6c8410a1af413b",
+    "normal_correct_sft": {
+      "candidate_index": 7,
+      "full_tokens": 5520,
+      "prompt_prefix_tokens": 107,
+      "continuation_tokens": 5413,
+      "teacher_completion_tokens": 5412
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 1530,
+      "prompt_prefix_tokens": 107,
+      "continuation_tokens": 1423,
+      "teacher_completion_tokens": 1422
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_0dc3615c69d822f98bcb807ef389c58dedf9b9b8d011d407d879f14fe5d6760f",
+    "normal_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 4575,
+      "prompt_prefix_tokens": 196,
+      "continuation_tokens": 4379,
+      "teacher_completion_tokens": 4377
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 1946,
+      "prompt_prefix_tokens": 196,
+      "continuation_tokens": 1750,
+      "teacher_completion_tokens": 1749
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_1374b7964057ead238aa416efc5edad3cc3fdb9b37db259bd4d142edc5b34c22",
+    "normal_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 6012,
+      "prompt_prefix_tokens": 137,
+      "continuation_tokens": 5875,
+      "teacher_completion_tokens": 5874
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 2105,
+      "prompt_prefix_tokens": 137,
+      "continuation_tokens": 1968,
+      "teacher_completion_tokens": 1967
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_14f669c8a05b98788f3a01db3c71d3ec075e9f3f98a0e76308ecdfb666a041b2",
+    "normal_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 4796,
+      "prompt_prefix_tokens": 136,
+      "continuation_tokens": 4660,
+      "teacher_completion_tokens": 4658
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 4451,
+      "prompt_prefix_tokens": 136,
+      "continuation_tokens": 4315,
+      "teacher_completion_tokens": 4313
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_19b5d98cb33dfb3b2fdf770d13181d9226d516fd1e18a5141c97d514f50bda31",
+    "normal_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 6728,
+      "prompt_prefix_tokens": 169,
+      "continuation_tokens": 6559,
+      "teacher_completion_tokens": 6557
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 6728,
+      "prompt_prefix_tokens": 169,
+      "continuation_tokens": 6559,
+      "teacher_completion_tokens": 6557
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_1c07c82cbc12e9ac86b8e83874864fd74b38b430b02a4d60e741c97c8b092b36",
+    "normal_correct_sft": {
+      "candidate_index": 7,
+      "full_tokens": 5400,
+      "prompt_prefix_tokens": 128,
+      "continuation_tokens": 5272,
+      "teacher_completion_tokens": 5270
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 7,
+      "full_tokens": 5400,
+      "prompt_prefix_tokens": 128,
+      "continuation_tokens": 5272,
+      "teacher_completion_tokens": 5270
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_21479117f6ffcfa3cc77f77ef50116042ae4045a897f539a81feb7f439fc9882",
+    "normal_correct_sft": {
+      "candidate_index": 7,
+      "full_tokens": 4485,
+      "prompt_prefix_tokens": 188,
+      "continuation_tokens": 4297,
+      "teacher_completion_tokens": 4296
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 1424,
+      "prompt_prefix_tokens": 188,
+      "continuation_tokens": 1236,
+      "teacher_completion_tokens": 1235
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_2184b1bb853fb2461cb8855b53b0c1b5f83afc04b2fc84544fc94dce766e647e",
+    "normal_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 7669,
+      "prompt_prefix_tokens": 150,
+      "continuation_tokens": 7519,
+      "teacher_completion_tokens": 7517
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 7669,
+      "prompt_prefix_tokens": 150,
+      "continuation_tokens": 7519,
+      "teacher_completion_tokens": 7517
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_23bada79e40bf784eb080452aa87d1682efb414a2518fbfe906ace6f9b3da841",
+    "normal_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 6922,
+      "prompt_prefix_tokens": 122,
+      "continuation_tokens": 6800,
+      "teacher_completion_tokens": 6798
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 5160,
+      "prompt_prefix_tokens": 122,
+      "continuation_tokens": 5038,
+      "teacher_completion_tokens": 5036
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_23dafe6bfb54b35cf375c2c71930d963af0bab9a9085eeedc890025d76355a31",
+    "normal_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 4414,
+      "prompt_prefix_tokens": 165,
+      "continuation_tokens": 4249,
+      "teacher_completion_tokens": 4247
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 2287,
+      "prompt_prefix_tokens": 165,
+      "continuation_tokens": 2122,
+      "teacher_completion_tokens": 2121
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_289943942b60daf65a196e9aa9867b132ec5adf80fc338dff6f9d059f3fe4171",
+    "normal_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 4909,
+      "prompt_prefix_tokens": 118,
+      "continuation_tokens": 4791,
+      "teacher_completion_tokens": 4789
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 2117,
+      "prompt_prefix_tokens": 118,
+      "continuation_tokens": 1999,
+      "teacher_completion_tokens": 1998
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_29b254c4b0e76a1ca2163b49bb5cd8ad0737c69dbb4fd8f6757c0744cdeabfed",
+    "normal_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 5222,
+      "prompt_prefix_tokens": 169,
+      "continuation_tokens": 5053,
+      "teacher_completion_tokens": 5052
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 3891,
+      "prompt_prefix_tokens": 169,
+      "continuation_tokens": 3722,
+      "teacher_completion_tokens": 3721
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_31b9e5c9252dcf1d71270ed61fc5f82ff0258789d577c46a2014bc443af41452",
+    "normal_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 4935,
+      "prompt_prefix_tokens": 208,
+      "continuation_tokens": 4727,
+      "teacher_completion_tokens": 4725
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 4935,
+      "prompt_prefix_tokens": 208,
+      "continuation_tokens": 4727,
+      "teacher_completion_tokens": 4725
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_35468786688754103d7d8d0101732c5b2eca9756e37f95878cd9f7428655592a",
+    "normal_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 4160,
+      "prompt_prefix_tokens": 160,
+      "continuation_tokens": 4000,
+      "teacher_completion_tokens": 3998
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 3098,
+      "prompt_prefix_tokens": 160,
+      "continuation_tokens": 2938,
+      "teacher_completion_tokens": 2937
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_38212ef456ff12ba0a59343ed501ae1c74105c9d489ddd7696fd75f98e25ee4c",
+    "normal_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 6059,
+      "prompt_prefix_tokens": 93,
+      "continuation_tokens": 5966,
+      "teacher_completion_tokens": 5964
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 5137,
+      "prompt_prefix_tokens": 93,
+      "continuation_tokens": 5044,
+      "teacher_completion_tokens": 5042
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_3e6913c272fdc2f3050f963b24141b83bb6f758266dead45b800a98a2475d395",
+    "normal_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 5224,
+      "prompt_prefix_tokens": 112,
+      "continuation_tokens": 5112,
+      "teacher_completion_tokens": 5111
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 5224,
+      "prompt_prefix_tokens": 112,
+      "continuation_tokens": 5112,
+      "teacher_completion_tokens": 5111
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_3f3dfeb488046ba6b62290a77ff8c94ae8f78f3d79ce45590980c9f867c521dc",
+    "normal_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 7271,
+      "prompt_prefix_tokens": 157,
+      "continuation_tokens": 7114,
+      "teacher_completion_tokens": 7113
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 7271,
+      "prompt_prefix_tokens": 157,
+      "continuation_tokens": 7114,
+      "teacher_completion_tokens": 7113
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_3f53b439160acafdc66465138e335aee10e7134da89beb0bc14bfc829da35fca",
+    "normal_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 6338,
+      "prompt_prefix_tokens": 117,
+      "continuation_tokens": 6221,
+      "teacher_completion_tokens": 6219
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 4736,
+      "prompt_prefix_tokens": 117,
+      "continuation_tokens": 4619,
+      "teacher_completion_tokens": 4617
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_3f8e127372df3c51618fee6303999a8e15e07210c057bce03b76f93c3036c954",
+    "normal_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 4399,
+      "prompt_prefix_tokens": 155,
+      "continuation_tokens": 4244,
+      "teacher_completion_tokens": 4242
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 3398,
+      "prompt_prefix_tokens": 155,
+      "continuation_tokens": 3243,
+      "teacher_completion_tokens": 3242
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_42956bef46fefecd27c8059ddf604a596fa0fed3e9a8a29ffe87f05002255cd0",
+    "normal_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 8119,
+      "prompt_prefix_tokens": 131,
+      "continuation_tokens": 7988,
+      "teacher_completion_tokens": 7986
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 6863,
+      "prompt_prefix_tokens": 131,
+      "continuation_tokens": 6732,
+      "teacher_completion_tokens": 6730
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_4cfe22d1d0b84560a4e88974eece44cac013c81169c57d91db2693c247e6b3cb",
+    "normal_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 5475,
+      "prompt_prefix_tokens": 104,
+      "continuation_tokens": 5371,
+      "teacher_completion_tokens": 5369
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 5475,
+      "prompt_prefix_tokens": 104,
+      "continuation_tokens": 5371,
+      "teacher_completion_tokens": 5369
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_4d9467cdd7c940493021a4927c9eb5f4dbae58f32debeb1d9281da866df7b338",
+    "normal_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 7073,
+      "prompt_prefix_tokens": 192,
+      "continuation_tokens": 6881,
+      "teacher_completion_tokens": 6879
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 7,
+      "full_tokens": 5739,
+      "prompt_prefix_tokens": 192,
+      "continuation_tokens": 5547,
+      "teacher_completion_tokens": 5546
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_4ede44a2f58f558adc008e141611c7372ea31e05029eb5e299660b70393ecc17",
+    "normal_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 6164,
+      "prompt_prefix_tokens": 93,
+      "continuation_tokens": 6071,
+      "teacher_completion_tokens": 6069
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 5120,
+      "prompt_prefix_tokens": 93,
+      "continuation_tokens": 5027,
+      "teacher_completion_tokens": 5025
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_5504f159763ee4c762a106b77deba96d1577430089390bb141ed73b094836226",
+    "normal_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 7455,
+      "prompt_prefix_tokens": 100,
+      "continuation_tokens": 7355,
+      "teacher_completion_tokens": 7354
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 4513,
+      "prompt_prefix_tokens": 100,
+      "continuation_tokens": 4413,
+      "teacher_completion_tokens": 4412
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_56d6be3167f51fc2ee46d4ad615670f6c9a280b7a3e7f2414c83a10b6d0f839a",
+    "normal_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 5675,
+      "prompt_prefix_tokens": 169,
+      "continuation_tokens": 5506,
+      "teacher_completion_tokens": 5505
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 1771,
+      "prompt_prefix_tokens": 169,
+      "continuation_tokens": 1602,
+      "teacher_completion_tokens": 1601
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_57ef2449347cb009928534e29f33b50846d74a3a18a5d1b562516bc8fc33ecd8",
+    "normal_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 8118,
+      "prompt_prefix_tokens": 117,
+      "continuation_tokens": 8001,
+      "teacher_completion_tokens": 8000
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 5301,
+      "prompt_prefix_tokens": 117,
+      "continuation_tokens": 5184,
+      "teacher_completion_tokens": 5182
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_5d34e967623cc2ff352f5954e3304a80808b7477a1ea23b825e11202897800b5",
+    "normal_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 7716,
+      "prompt_prefix_tokens": 137,
+      "continuation_tokens": 7579,
+      "teacher_completion_tokens": 7577
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 7716,
+      "prompt_prefix_tokens": 137,
+      "continuation_tokens": 7579,
+      "teacher_completion_tokens": 7577
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_5ec227b6266594253e974a5322b8e7a87a3522a5eb14305745c68b24de811bcf",
+    "normal_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 6513,
+      "prompt_prefix_tokens": 176,
+      "continuation_tokens": 6337,
+      "teacher_completion_tokens": 6335
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 6513,
+      "prompt_prefix_tokens": 176,
+      "continuation_tokens": 6337,
+      "teacher_completion_tokens": 6335
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_60eba72511bdb4777f5d52e062002517b726b52cbe22858ef5515a67eb41ee9a",
+    "normal_correct_sft": {
+      "candidate_index": 7,
+      "full_tokens": 4982,
+      "prompt_prefix_tokens": 188,
+      "continuation_tokens": 4794,
+      "teacher_completion_tokens": 4792
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 7,
+      "full_tokens": 4982,
+      "prompt_prefix_tokens": 188,
+      "continuation_tokens": 4794,
+      "teacher_completion_tokens": 4792
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_616901d38a7b34c60e407dee707178b69616e949db639235fd38a60f50396f57",
+    "normal_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 4889,
+      "prompt_prefix_tokens": 76,
+      "continuation_tokens": 4813,
+      "teacher_completion_tokens": 4812
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 2813,
+      "prompt_prefix_tokens": 76,
+      "continuation_tokens": 2737,
+      "teacher_completion_tokens": 2736
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_658403144b201a0a8933d1612ec207972e5ffecfff1691ccd573d3fbc4545283",
+    "normal_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 5237,
+      "prompt_prefix_tokens": 106,
+      "continuation_tokens": 5131,
+      "teacher_completion_tokens": 5130
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 2464,
+      "prompt_prefix_tokens": 106,
+      "continuation_tokens": 2358,
+      "teacher_completion_tokens": 2357
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_6a3ba02b4b99f6537c78274ffca1f4d488e41185814fcbafe23fa92f838b9b02",
+    "normal_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 4539,
+      "prompt_prefix_tokens": 118,
+      "continuation_tokens": 4421,
+      "teacher_completion_tokens": 4419
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 1705,
+      "prompt_prefix_tokens": 118,
+      "continuation_tokens": 1587,
+      "teacher_completion_tokens": 1586
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_6ed88b6abd6407e7accf4d06e482439916aa2d6ef500aaac77a01925ab977e41",
+    "normal_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 7618,
+      "prompt_prefix_tokens": 110,
+      "continuation_tokens": 7508,
+      "teacher_completion_tokens": 7506
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 2003,
+      "prompt_prefix_tokens": 110,
+      "continuation_tokens": 1893,
+      "teacher_completion_tokens": 1892
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_708d78dd3b517415a71e353d5a0e48e16d7ec9c9f14b93da192fe7de454a5ea5",
+    "normal_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 7485,
+      "prompt_prefix_tokens": 121,
+      "continuation_tokens": 7364,
+      "teacher_completion_tokens": 7362
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 3965,
+      "prompt_prefix_tokens": 121,
+      "continuation_tokens": 3844,
+      "teacher_completion_tokens": 3843
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_72bd03ffdcf66cad4581fc28084a42de53aa07997ce6f46c19c446a731a9dc46",
+    "normal_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 8109,
+      "prompt_prefix_tokens": 159,
+      "continuation_tokens": 7950,
+      "teacher_completion_tokens": 7948
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 7004,
+      "prompt_prefix_tokens": 159,
+      "continuation_tokens": 6845,
+      "teacher_completion_tokens": 6844
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_766604ee475d85f8833cba8057eb10002dfa31762e98132f22e69c7df9eaf41a",
+    "normal_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 7124,
+      "prompt_prefix_tokens": 124,
+      "continuation_tokens": 7000,
+      "teacher_completion_tokens": 6998
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 5732,
+      "prompt_prefix_tokens": 124,
+      "continuation_tokens": 5608,
+      "teacher_completion_tokens": 5606
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_77a04fc59593c8c170d536cc8fc30047b332683f04f5307481eb1c9e55a71d74",
+    "normal_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 5532,
+      "prompt_prefix_tokens": 131,
+      "continuation_tokens": 5401,
+      "teacher_completion_tokens": 5400
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 2463,
+      "prompt_prefix_tokens": 131,
+      "continuation_tokens": 2332,
+      "teacher_completion_tokens": 2331
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_7caf932312cb01d0588a54c14f6bfaf6d99882bcb6b54f064d0621054c5071f1",
+    "normal_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 6792,
+      "prompt_prefix_tokens": 178,
+      "continuation_tokens": 6614,
+      "teacher_completion_tokens": 6612
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 6792,
+      "prompt_prefix_tokens": 178,
+      "continuation_tokens": 6614,
+      "teacher_completion_tokens": 6612
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_858688c5f906af0d59ae28237603ca1447b870d9c45ee7bfb709998cadb7d416",
+    "normal_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 6439,
+      "prompt_prefix_tokens": 181,
+      "continuation_tokens": 6258,
+      "teacher_completion_tokens": 6256
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 2279,
+      "prompt_prefix_tokens": 181,
+      "continuation_tokens": 2098,
+      "teacher_completion_tokens": 2097
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_8654d19af88889dee772f012a8b6b780de4358597ad04fce6add24e34834f099",
+    "normal_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 6241,
+      "prompt_prefix_tokens": 95,
+      "continuation_tokens": 6146,
+      "teacher_completion_tokens": 6144
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 3544,
+      "prompt_prefix_tokens": 95,
+      "continuation_tokens": 3449,
+      "teacher_completion_tokens": 3448
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_8da0fcc382419958a1310150d293cd7d58b6c2687b7546dac718f8cd3adca9e4",
+    "normal_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 8371,
+      "prompt_prefix_tokens": 177,
+      "continuation_tokens": 8194,
+      "teacher_completion_tokens": 8192
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 3005,
+      "prompt_prefix_tokens": 177,
+      "continuation_tokens": 2828,
+      "teacher_completion_tokens": 2827
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_9131f9116932e597fac333b4c6a13e23fafde44ba1b77a9e4f7f3c68cef35a00",
+    "normal_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 6431,
+      "prompt_prefix_tokens": 222,
+      "continuation_tokens": 6209,
+      "teacher_completion_tokens": 6207
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 4850,
+      "prompt_prefix_tokens": 222,
+      "continuation_tokens": 4628,
+      "teacher_completion_tokens": 4626
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_9146bea1755d3b7d87005756baad20fd8de94922cebc8926324419362bc6f522",
+    "normal_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 7598,
+      "prompt_prefix_tokens": 111,
+      "continuation_tokens": 7487,
+      "teacher_completion_tokens": 7485
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 7598,
+      "prompt_prefix_tokens": 111,
+      "continuation_tokens": 7487,
+      "teacher_completion_tokens": 7485
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_9493f9f91b7a084da5d9b545dca1466580b959b75137642d6a34eb66a902d2a7",
+    "normal_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 5547,
+      "prompt_prefix_tokens": 112,
+      "continuation_tokens": 5435,
+      "teacher_completion_tokens": 5433
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 2004,
+      "prompt_prefix_tokens": 112,
+      "continuation_tokens": 1892,
+      "teacher_completion_tokens": 1891
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_95f72b20d6b3bf14d891049273d1b02338cc3223b7bb781c1370aab32ef5c4a4",
+    "normal_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 6409,
+      "prompt_prefix_tokens": 150,
+      "continuation_tokens": 6259,
+      "teacher_completion_tokens": 6257
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 6409,
+      "prompt_prefix_tokens": 150,
+      "continuation_tokens": 6259,
+      "teacher_completion_tokens": 6257
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_9918adb29727d5d4f715ec054f9f8ef1f1e949c141eb33af9639bee3633bc3e8",
+    "normal_correct_sft": {
+      "candidate_index": 7,
+      "full_tokens": 7297,
+      "prompt_prefix_tokens": 191,
+      "continuation_tokens": 7106,
+      "teacher_completion_tokens": 7105
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 7,
+      "full_tokens": 7297,
+      "prompt_prefix_tokens": 191,
+      "continuation_tokens": 7106,
+      "teacher_completion_tokens": 7105
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_9c7be0c25eaf320eb575ebc7cf381e9296758ebab3ef5831241273c14ca3b0e7",
+    "normal_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 6463,
+      "prompt_prefix_tokens": 134,
+      "continuation_tokens": 6329,
+      "teacher_completion_tokens": 6328
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 4155,
+      "prompt_prefix_tokens": 134,
+      "continuation_tokens": 4021,
+      "teacher_completion_tokens": 4020
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_9d754ec97bdc19d7812a40a3d75eb2a52a8721cc68a045d2c588f8f74349efe3",
+    "normal_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 4729,
+      "prompt_prefix_tokens": 121,
+      "continuation_tokens": 4608,
+      "teacher_completion_tokens": 4606
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 3083,
+      "prompt_prefix_tokens": 121,
+      "continuation_tokens": 2962,
+      "teacher_completion_tokens": 2961
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_a5f7588c78494ec5fec76f3374c672e7aef2aad10221ab074df470893ccfce88",
+    "normal_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 7641,
+      "prompt_prefix_tokens": 92,
+      "continuation_tokens": 7549,
+      "teacher_completion_tokens": 7547
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 7641,
+      "prompt_prefix_tokens": 92,
+      "continuation_tokens": 7549,
+      "teacher_completion_tokens": 7547
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_ac54f335839c7ae1a3078064c6a3cd4fd0b47d30b878a3f39fb30cc028caf544",
+    "normal_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 5062,
+      "prompt_prefix_tokens": 156,
+      "continuation_tokens": 4906,
+      "teacher_completion_tokens": 4904
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 4416,
+      "prompt_prefix_tokens": 156,
+      "continuation_tokens": 4260,
+      "teacher_completion_tokens": 4258
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_ad31c87daa6cb171d307b6ae43df7b3e172f1943e59f8018f787b8ede2922793",
+    "normal_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 7398,
+      "prompt_prefix_tokens": 89,
+      "continuation_tokens": 7309,
+      "teacher_completion_tokens": 7308
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 3044,
+      "prompt_prefix_tokens": 89,
+      "continuation_tokens": 2955,
+      "teacher_completion_tokens": 2954
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_af9d41348580c94e9c82be143fe25def635eda045ef67a5bb5ae72c256e80fc1",
+    "normal_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 6904,
+      "prompt_prefix_tokens": 146,
+      "continuation_tokens": 6758,
+      "teacher_completion_tokens": 6756
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 6534,
+      "prompt_prefix_tokens": 146,
+      "continuation_tokens": 6388,
+      "teacher_completion_tokens": 6386
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_b3c25af2b401e13d59bd08f4e2f77f10ebf0726c643a74d11604c40e710ecd8f",
+    "normal_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 5364,
+      "prompt_prefix_tokens": 114,
+      "continuation_tokens": 5250,
+      "teacher_completion_tokens": 5248
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 1628,
+      "prompt_prefix_tokens": 114,
+      "continuation_tokens": 1514,
+      "teacher_completion_tokens": 1513
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_b42a96c23d2eb85c23af3e472ab50c6918be899d00eb57084e828fa555f2b006",
+    "normal_correct_sft": {
+      "candidate_index": 7,
+      "full_tokens": 4101,
+      "prompt_prefix_tokens": 197,
+      "continuation_tokens": 3904,
+      "teacher_completion_tokens": 3903
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 1738,
+      "prompt_prefix_tokens": 197,
+      "continuation_tokens": 1541,
+      "teacher_completion_tokens": 1540
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_b5f8dfcb42ada9c992acc85fb018d2b290f8a7d23a7fc6d9765d192076638ea5",
+    "normal_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 8006,
+      "prompt_prefix_tokens": 141,
+      "continuation_tokens": 7865,
+      "teacher_completion_tokens": 7863
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 8006,
+      "prompt_prefix_tokens": 141,
+      "continuation_tokens": 7865,
+      "teacher_completion_tokens": 7863
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_b6bc63d5f9e6b1791da8102aac61b1bb5d51e4b8d81934c6d970004e3b1890eb",
+    "normal_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 8088,
+      "prompt_prefix_tokens": 283,
+      "continuation_tokens": 7805,
+      "teacher_completion_tokens": 7803
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 8088,
+      "prompt_prefix_tokens": 283,
+      "continuation_tokens": 7805,
+      "teacher_completion_tokens": 7803
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_b7fe654446c4eb344d82d00a62c5de4a9742e7dcc7933a487bf598b4ab0209f9",
+    "normal_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 6266,
+      "prompt_prefix_tokens": 124,
+      "continuation_tokens": 6142,
+      "teacher_completion_tokens": 6140
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 5685,
+      "prompt_prefix_tokens": 124,
+      "continuation_tokens": 5561,
+      "teacher_completion_tokens": 5559
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_b941422debcb14fa7d70a6f3531463c9c85a8fc09ec926b3b3ab93252f0babaa",
+    "normal_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 8294,
+      "prompt_prefix_tokens": 220,
+      "continuation_tokens": 8074,
+      "teacher_completion_tokens": 8072
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 6798,
+      "prompt_prefix_tokens": 220,
+      "continuation_tokens": 6578,
+      "teacher_completion_tokens": 6576
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_b9494cb5f45634cdae2c2b78f4e59acb47ada899600bdc3ea87a3b3d9a4fb831",
+    "normal_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 4531,
+      "prompt_prefix_tokens": 148,
+      "continuation_tokens": 4383,
+      "teacher_completion_tokens": 4381
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 4531,
+      "prompt_prefix_tokens": 148,
+      "continuation_tokens": 4383,
+      "teacher_completion_tokens": 4381
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_bbb228fa8675a6be038e162f0d8fee6f62200d4c9af182de6708d95fca322e46",
+    "normal_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 6648,
+      "prompt_prefix_tokens": 92,
+      "continuation_tokens": 6556,
+      "teacher_completion_tokens": 6554
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 5173,
+      "prompt_prefix_tokens": 92,
+      "continuation_tokens": 5081,
+      "teacher_completion_tokens": 5079
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_bbce64a48e90f6b4000e7bc9efa413d6309604b555f50bf77765752d9aa14f7a",
+    "normal_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 6559,
+      "prompt_prefix_tokens": 176,
+      "continuation_tokens": 6383,
+      "teacher_completion_tokens": 6382
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 4010,
+      "prompt_prefix_tokens": 176,
+      "continuation_tokens": 3834,
+      "teacher_completion_tokens": 3833
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_bca1fa852788aacad9c63dc66a824c9e555f4a63a6606aa55622818045c25b7c",
+    "normal_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 4638,
+      "prompt_prefix_tokens": 151,
+      "continuation_tokens": 4487,
+      "teacher_completion_tokens": 4485
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 4194,
+      "prompt_prefix_tokens": 151,
+      "continuation_tokens": 4043,
+      "teacher_completion_tokens": 4041
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_bda7975bdb0ce68fa3867c2cef9d51a4189d17f01a1039fda581f4f8ae23c3f2",
+    "normal_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 4527,
+      "prompt_prefix_tokens": 127,
+      "continuation_tokens": 4400,
+      "teacher_completion_tokens": 4398
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 3961,
+      "prompt_prefix_tokens": 127,
+      "continuation_tokens": 3834,
+      "teacher_completion_tokens": 3832
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_c4ddf174b001a0e8ddc93cf2a9c8e73ce3ae0a345bdca176db61cb58347b3b96",
+    "normal_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 8006,
+      "prompt_prefix_tokens": 90,
+      "continuation_tokens": 7916,
+      "teacher_completion_tokens": 7914
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 8006,
+      "prompt_prefix_tokens": 90,
+      "continuation_tokens": 7916,
+      "teacher_completion_tokens": 7914
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_c5603e92db4d4b5067b1e79fe4f148fe45d368bdccaca472c6555704f2386552",
+    "normal_correct_sft": {
+      "candidate_index": 7,
+      "full_tokens": 6110,
+      "prompt_prefix_tokens": 92,
+      "continuation_tokens": 6018,
+      "teacher_completion_tokens": 6016
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 5906,
+      "prompt_prefix_tokens": 92,
+      "continuation_tokens": 5814,
+      "teacher_completion_tokens": 5812
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_c73460a6c1e119043980712a56088e960eb325402b5d068e7d5101af49bf4496",
+    "normal_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 4667,
+      "prompt_prefix_tokens": 192,
+      "continuation_tokens": 4475,
+      "teacher_completion_tokens": 4474
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 3594,
+      "prompt_prefix_tokens": 192,
+      "continuation_tokens": 3402,
+      "teacher_completion_tokens": 3401
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_ca179e8c8d9b02082d87ed3e35f8f3751556fe084562b61fc4dc8be7628cbe34",
+    "normal_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 6710,
+      "prompt_prefix_tokens": 123,
+      "continuation_tokens": 6587,
+      "teacher_completion_tokens": 6585
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 7,
+      "full_tokens": 4965,
+      "prompt_prefix_tokens": 123,
+      "continuation_tokens": 4842,
+      "teacher_completion_tokens": 4840
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_cb06b626998e8aa7d47109aaf811814813c27e86068e5630dea166fcd0725f16",
+    "normal_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 6781,
+      "prompt_prefix_tokens": 223,
+      "continuation_tokens": 6558,
+      "teacher_completion_tokens": 6556
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 7,
+      "full_tokens": 2296,
+      "prompt_prefix_tokens": 223,
+      "continuation_tokens": 2073,
+      "teacher_completion_tokens": 2072
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_cc1060b99ce3a0b84fb94297b27d8bcfb6e3d3c5fd31c38c1c3e78ed291eb1e1",
+    "normal_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 5277,
+      "prompt_prefix_tokens": 187,
+      "continuation_tokens": 5090,
+      "teacher_completion_tokens": 5088
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 7,
+      "full_tokens": 2445,
+      "prompt_prefix_tokens": 187,
+      "continuation_tokens": 2258,
+      "teacher_completion_tokens": 2257
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_ccbc465a3a1de69302fbea5a5318d22233a96483473ef292587cca7316f4a12d",
+    "normal_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 6095,
+      "prompt_prefix_tokens": 153,
+      "continuation_tokens": 5942,
+      "teacher_completion_tokens": 5940
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 5397,
+      "prompt_prefix_tokens": 153,
+      "continuation_tokens": 5244,
+      "teacher_completion_tokens": 5242
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_cda91da19999be26eed23438fa69a6dcc65b8e40c5e12d0ba5dff9e85937942d",
+    "normal_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 7130,
+      "prompt_prefix_tokens": 197,
+      "continuation_tokens": 6933,
+      "teacher_completion_tokens": 6931
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 7130,
+      "prompt_prefix_tokens": 197,
+      "continuation_tokens": 6933,
+      "teacher_completion_tokens": 6931
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_cec3a5aed906f46cb29e9f32143fd7700227e5c658021ee31244fc9bfec364a2",
+    "normal_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 4836,
+      "prompt_prefix_tokens": 149,
+      "continuation_tokens": 4687,
+      "teacher_completion_tokens": 4685
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 2065,
+      "prompt_prefix_tokens": 149,
+      "continuation_tokens": 1916,
+      "teacher_completion_tokens": 1915
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_d4c356842a4abe313342af05f7649345156a12541ba5ba86ee4c2072ce6cd4f5",
+    "normal_correct_sft": {
+      "candidate_index": 1,
+      "full_tokens": 5209,
+      "prompt_prefix_tokens": 90,
+      "continuation_tokens": 5119,
+      "teacher_completion_tokens": 5117
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 2811,
+      "prompt_prefix_tokens": 90,
+      "continuation_tokens": 2721,
+      "teacher_completion_tokens": 2720
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_da1ed4d589bbcf7cf27069be26251112dcc1851acc8153de90534270695cb031",
+    "normal_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 5169,
+      "prompt_prefix_tokens": 275,
+      "continuation_tokens": 4894,
+      "teacher_completion_tokens": 4892
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 1986,
+      "prompt_prefix_tokens": 275,
+      "continuation_tokens": 1711,
+      "teacher_completion_tokens": 1710
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_dfcc39af82f490a03cae3482d8cc9e83f1a97cc1f89748418382ca8b0546e33a",
+    "normal_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 5426,
+      "prompt_prefix_tokens": 418,
+      "continuation_tokens": 5008,
+      "teacher_completion_tokens": 5006
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 4925,
+      "prompt_prefix_tokens": 418,
+      "continuation_tokens": 4507,
+      "teacher_completion_tokens": 4505
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_dfd85826719f0cab48a8c7a500f917e0496627a85951ca70f678e5f1d4facc1f",
+    "normal_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 6428,
+      "prompt_prefix_tokens": 136,
+      "continuation_tokens": 6292,
+      "teacher_completion_tokens": 6291
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 6354,
+      "prompt_prefix_tokens": 136,
+      "continuation_tokens": 6218,
+      "teacher_completion_tokens": 6216
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_e013fc28bc948835ec939fbb5f9148ec943b877027ae5507789d48c83443715d",
+    "normal_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 5606,
+      "prompt_prefix_tokens": 111,
+      "continuation_tokens": 5495,
+      "teacher_completion_tokens": 5493
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 2980,
+      "prompt_prefix_tokens": 111,
+      "continuation_tokens": 2869,
+      "teacher_completion_tokens": 2868
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_e58aa6fdb3e4405b587100290a3ee6e685921fc2be1e4ecdd9bcecc0bbbcc780",
+    "normal_correct_sft": {
+      "candidate_index": 7,
+      "full_tokens": 5677,
+      "prompt_prefix_tokens": 112,
+      "continuation_tokens": 5565,
+      "teacher_completion_tokens": 5563
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 2276,
+      "prompt_prefix_tokens": 112,
+      "continuation_tokens": 2164,
+      "teacher_completion_tokens": 2163
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_e83c2719075aefad22abe4a76040854e00c5cc8e9af6f65fb446af9c3002dd43",
+    "normal_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 4758,
+      "prompt_prefix_tokens": 136,
+      "continuation_tokens": 4622,
+      "teacher_completion_tokens": 4620
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 4758,
+      "prompt_prefix_tokens": 136,
+      "continuation_tokens": 4622,
+      "teacher_completion_tokens": 4620
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_e894505be997c3a4c8c87637b8113ac93a16d820dcab9a60005e3855f83a771b",
+    "normal_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 5501,
+      "prompt_prefix_tokens": 96,
+      "continuation_tokens": 5405,
+      "teacher_completion_tokens": 5403
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 3163,
+      "prompt_prefix_tokens": 96,
+      "continuation_tokens": 3067,
+      "teacher_completion_tokens": 3066
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_ef4ae141e32f418cd71e0221bb0b46842445c0be129e247876546ec89ef4a5ee",
+    "normal_correct_sft": {
+      "candidate_index": 7,
+      "full_tokens": 4621,
+      "prompt_prefix_tokens": 223,
+      "continuation_tokens": 4398,
+      "teacher_completion_tokens": 4396
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 4,
+      "full_tokens": 4051,
+      "prompt_prefix_tokens": 223,
+      "continuation_tokens": 3828,
+      "teacher_completion_tokens": 3826
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_efc9d4637dfe97aa3bc91d04d91d122636c8c75c156d7c67fe2118c3263dceba",
+    "normal_correct_sft": {
+      "candidate_index": 5,
+      "full_tokens": 4698,
+      "prompt_prefix_tokens": 73,
+      "continuation_tokens": 4625,
+      "teacher_completion_tokens": 4624
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 7,
+      "full_tokens": 2889,
+      "prompt_prefix_tokens": 73,
+      "continuation_tokens": 2816,
+      "teacher_completion_tokens": 2815
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_f14d0504f3f2b6c01baac04e9e2e6fe3ee6f56d813f12ca8ddbf498db7fc95cc",
+    "normal_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 5906,
+      "prompt_prefix_tokens": 191,
+      "continuation_tokens": 5715,
+      "teacher_completion_tokens": 5713
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 3124,
+      "prompt_prefix_tokens": 191,
+      "continuation_tokens": 2933,
+      "teacher_completion_tokens": 2932
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_f66eb8297acda8c3565b6f5f0a72b4b80e68e7b25e0c61ef84ede89fe9252600",
+    "normal_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 7005,
+      "prompt_prefix_tokens": 95,
+      "continuation_tokens": 6910,
+      "teacher_completion_tokens": 6908
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 7005,
+      "prompt_prefix_tokens": 95,
+      "continuation_tokens": 6910,
+      "teacher_completion_tokens": 6908
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_fac41f9704f9fadea5a5e7e9975f830b5319f09958c46398268b0cc67a56c526",
+    "normal_correct_sft": {
+      "candidate_index": 0,
+      "full_tokens": 5629,
+      "prompt_prefix_tokens": 98,
+      "continuation_tokens": 5531,
+      "teacher_completion_tokens": 5529
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 6,
+      "full_tokens": 1554,
+      "prompt_prefix_tokens": 98,
+      "continuation_tokens": 1456,
+      "teacher_completion_tokens": 1455
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_faeff76764eb0a2aaf4309a0233b339e17dbea3906409093554d0427b2a6768d",
+    "normal_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 6700,
+      "prompt_prefix_tokens": 159,
+      "continuation_tokens": 6541,
+      "teacher_completion_tokens": 6539
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 6700,
+      "prompt_prefix_tokens": 159,
+      "continuation_tokens": 6541,
+      "teacher_completion_tokens": 6539
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_fdfa27d487baac8cf6a7febbedc87bd2bb82290173e1ca3a8c4ff3085ea36590",
+    "normal_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 4552,
+      "prompt_prefix_tokens": 107,
+      "continuation_tokens": 4445,
+      "teacher_completion_tokens": 4443
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 2,
+      "full_tokens": 4552,
+      "prompt_prefix_tokens": 107,
+      "continuation_tokens": 4445,
+      "teacher_completion_tokens": 4443
+    },
+    "excluded": true
+  },
+  {
+    "question_id": "math_cot_fe764de3d9109e5a1fbec82edf3745511516336dc62009fb07b01cdd7f6db9ac",
+    "normal_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 8041,
+      "prompt_prefix_tokens": 167,
+      "continuation_tokens": 7874,
+      "teacher_completion_tokens": 7872
+    },
+    "shortest_correct_sft": {
+      "candidate_index": 3,
+      "full_tokens": 8041,
+      "prompt_prefix_tokens": 167,
+      "continuation_tokens": 7874,
+      "teacher_completion_tokens": 7872
+    },
+    "excluded": true
+  }
+]
