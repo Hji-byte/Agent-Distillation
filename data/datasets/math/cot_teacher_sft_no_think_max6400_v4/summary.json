@@ -1,0 +1,95 @@
+{
+  "max_length": 6400,
+  "length_scope": "Full chat template including system/user/assistant and end marker",
+  "input_pairs": 1981,
+  "excluded_pairs": 41,
+  "kept_pairs": 1940,
+  "individual_over_limit": {
+    "normal_correct_sft": 41,
+    "shortest_correct_sft": 22
+  },
+  "kept_lengths": {
+    "normal_correct_sft": {
+      "full_tokens": {
+        "count": 1940,
+        "min": 256,
+        "mean": 1284.3546391752577,
+        "median": 986.5,
+        "p90": 2335,
+        "p95": 3179,
+        "p99": 5426,
+        "max": 6338
+      },
+      "continuation_tokens": {
+        "count": 1940,
+        "min": 188,
+        "mean": 1186.3051546391753,
+        "median": 894.5,
+        "p90": 2201,
+        "p95": 3091,
+        "p99": 5272,
+        "max": 6221
+      },
+      "teacher_completion_tokens": {
+        "count": 1940,
+        "min": 187,
+        "mean": 1185.2788659793814,
+        "median": 893.5,
+        "p90": 2200,
+        "p95": 3090,
+        "p99": 5270,
+        "max": 6219
+      }
+    },
+    "shortest_correct_sft": {
+      "full_tokens": {
+        "count": 1940,
+        "min": 254,
+        "mean": 1056.0350515463917,
+        "median": 873.0,
+        "p90": 1771,
+        "p95": 2160,
+        "p99": 4194,
+        "max": 5906
+      },
+      "continuation_tokens": {
+        "count": 1940,
+        "min": 186,
+        "mean": 957.9855670103093,
+        "median": 777.5,
+        "p90": 1643,
+        "p95": 2034,
+        "p99": 4043,
+        "max": 5814
+      },
+      "teacher_completion_tokens": {
+        "count": 1940,
+        "min": 185,
+        "mean": 956.9747422680413,
+        "median": 776.5,
+        "p90": 1642,
+        "p95": 2033,
+        "p99": 4041,
+        "max": 5812
+      }
+    }
+  },
+  "validation_count": 188,
+  "enable_thinking": false,
+  "truncation": false,
+  "prefix_mismatches": 0,
+  "reselected_candidates": false,
+  "model_path": "E:\\modelscope\\qwen3.5-0.8B",
+  "tokenizer_hashes": {
+    "chat_template.jinja": "273d8e0e683b885071fb17e08d71e5f2a5ddfb5309756181681de4f5a1822d80",
+    "tokenizer.json": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+    "tokenizer_config.json": "49e2b6e395f959f077f1e992b338919c0d4a9732fc6e613995e06557f843500c"
+  },
+  "source_hashes": {
+    "normal_correct_sft": "707fab162b9d4c234c39be3fe06fd06dc6bf78d3910a27172987328e145d5765",
+    "shortest_correct_sft": "f01b8a306408328348dfbc0326abc414691047336d44108f774811dedd9d7447"
+  },
+  "validation_sha256": "33e106ae68bb2a9c4237072e64642f6ae33736912be71f73cd661ccb30220605",
+  "script_sha256": "41ac903c3536f941e6b56dc168e984e1d10d8a665cbd1779b908f6c58507fc92",
+  "training_note": "Use max_length=6400 for this requested version. No separate 2048-token assistant limit. Do not truncate. Training and GPU memory feasibility not tested."
+}
