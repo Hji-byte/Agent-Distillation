@@ -1,4 +1,4 @@
-"""Controlled QLoRA SFT: normal-correct versus shortest-correct, full length 6400."""
+"""Controlled paired QLoRA SFT at full sequence length 6400 or 4096."""
 import argparse
 from collections.abc import Mapping
 import hashlib
@@ -8,6 +8,8 @@ import re
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT/'data/datasets/math/cot_teacher_sft_no_think_max6400_v4'
+PROFILES = {6400: (DATA, 1940),
+            4096: (ROOT/'data/datasets/math/cot_teacher_sft_no_think_max4096_v5', 1887)}
 TARGETS = ['q_proj','k_proj','v_proj','o_proj','in_proj_qkv','in_proj_z','in_proj_a','in_proj_b','out_proj','gate_proj','up_proj','down_proj']
 
 
@@ -41,7 +43,8 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--model',required=True)
     p.add_argument('--variant',choices=['normal','shortest'],required=True)
-    p.add_argument('--data-dir',type=Path,default=DATA)
+    p.add_argument('--max-length',type=int,choices=sorted(PROFILES),default=6400)
+    p.add_argument('--data-dir',type=Path,default=None)
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--preflight',action='store_true',help='Tokenize/check all pairs; no model weights or training')
     p.add_argument('--smoke',action='store_true',help='Two updates on the same 16 longest paired questions')
@@ -50,6 +53,11 @@ def main():
     p.add_argument('--lr',type=float,default=2e-4)
     p.add_argument('--seed',type=int,default=42)
     args=p.parse_args()
+    default_data, expected_pairs = PROFILES[args.max_length]
+    args.data_dir = args.data_dir or default_data
+    summary = json.loads((args.data_dir/'summary.json').read_text(encoding='utf-8'))
+    if summary['max_length'] != args.max_length or summary['kept_pairs'] != expected_pairs:
+        raise ValueError('Dataset summary does not match selected length profile')
     from transformers import AutoTokenizer
     tokenizer=AutoTokenizer.from_pretrained(args.model,local_files_only=True,trust_remote_code=False,padding_side='right')
     if tokenizer.pad_token_id is None:
@@ -57,18 +65,18 @@ def main():
     names={'normal':'normal_correct_sft','shortest':'shortest_correct_sft'}
     rows={k:[json.loads(s) for s in (args.data_dir/f'{v}.jsonl').read_text(encoding='utf-8').splitlines()] for k,v in names.items()}
     assert [r['question_id'] for r in rows['normal']]==[r['question_id'] for r in rows['shortest']]
-    assert len(rows['normal'])==len({r['question_id'] for r in rows['normal']})==1940
+    assert len(rows['normal'])==len({r['question_id'] for r in rows['normal']})==expected_pairs
     validation=json.loads((args.data_dir/'validation.json').read_text(encoding='utf-8'))['examples']
     assert not {r['question_id'] for r in rows['normal']} & {r['id'] for r in validation}
     assert all(a['messages'][:2]==b['messages'][:2] for a,b in zip(rows['normal'],rows['shortest']))
     tokenized={}
     for k,rs in rows.items():
-        tokenized[k]=[encode_row(tokenizer,r) for r in rs]
+        tokenized[k]=[encode_row(tokenizer,r,args.max_length) for r in rs]
         print(f'{k}: {len(rs)} rows; max_length={max(len(r["input_ids"]) for r in tokenized[k])}; masks OK',flush=True)
     indices=list(range(len(rows['normal'])))
     if args.smoke:
         indices=sorted(indices,key=lambda i:(-max(len(tokenized[k][i]['input_ids']) for k in names),rows['normal'][i]['question_id']))[:16]
-    config={'variant':args.variant,'model':str(Path(args.model).resolve()),'max_length':6400,
+    config={'variant':args.variant,'model':str(Path(args.model).resolve()),'max_length':args.max_length,
             'epochs':args.epochs,'lr':args.lr,'seed':args.seed,'batch_size':1,'gradient_accumulation_steps':8,
             'lora_r':64,'lora_alpha':128,'lora_dropout':0.05,'target_modules':TARGETS,
             'quantization':'nf4_double','gradient_checkpointing':True,'smoke':args.smoke,

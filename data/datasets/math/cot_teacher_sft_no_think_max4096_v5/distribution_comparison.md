@@ -38,6 +38,6 @@ distribution; it is not random subsampling. Both training arms remain paired.
 | Mean | 1174.43 | 988.16 |
 | Maximum | 4065 | 3834 |
 
-This change creates datasets only. The existing 6400 trainer still hardcodes
-1940 pairs and its old data path; it needs adaptation before using v5.
+Use `scripts/training/run_cot_sft_4096.sh` to train this v5 dataset with the
+4096 profile (1887 pairs). The separate 6400 entry still selects v4.
 Cloud training memory feasibility has not yet been verified.
