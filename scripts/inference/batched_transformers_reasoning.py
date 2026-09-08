@@ -254,6 +254,10 @@ def run(args: argparse.Namespace) -> None:
         raise ValueError("--max-new-tokens must be at least 1")
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is required for this batched inference runner")
+    if args.adapter is not None and not (args.adapter / "adapter_config.json").is_file():
+        raise FileNotFoundError(f"Adapter config missing: {args.adapter}")
+    torch.manual_seed(42)
+    torch.cuda.manual_seed_all(42)
 
     examples = load_examples(args.dataset)
     resumed = collect_resume_records(examples, args.output, args.resume_from)
@@ -291,6 +295,10 @@ def run(args: argparse.Namespace) -> None:
         torch_dtype="auto",
         trust_remote_code=True,
     )
+    if args.adapter is not None:
+        from peft import PeftModel
+
+        model = PeftModel.from_pretrained(model, str(args.adapter))
     model.eval()
     system_prompt = load_system_prompt(args.system_prompt)
 
@@ -316,6 +324,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset", type=Path, required=True)
     parser.add_argument("--model", type=Path, required=True)
+    parser.add_argument("--adapter", type=Path, help="Optional SFT LoRA adapter")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--resume-from", type=Path, action="append", default=[])
     parser.add_argument(

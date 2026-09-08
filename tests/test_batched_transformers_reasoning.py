@@ -51,6 +51,13 @@ def test_count_generated_tokens_includes_first_eos():
     assert MODULE.count_generated_tokens([], {2}) == 0
 
 
+def test_adapter_argument_is_optional():
+    arguments = ["--dataset", "data.json", "--model", "base", "--output", "out.jsonl"]
+    assert MODULE.build_parser().parse_args(arguments).adapter is None
+    parsed = MODULE.build_parser().parse_args(arguments + ["--adapter", "sft/final"])
+    assert parsed.adapter == Path("sft/final")
+
+
 def test_direct_script_execution_adds_project_root_to_import_path(tmp_path):
     code = (
         "import runpy,sys; "
