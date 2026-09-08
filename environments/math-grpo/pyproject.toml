@@ -1,0 +1,41 @@
+# UNUSED full-isolation alternative. Current setup: setup_overlay.py; see README.
+[project]
+name = "math-grpo-environment"
+version = "0.1.0"
+description = "Isolated Linux CUDA 12.8 environment for paired CoT SFT to GRPO"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "torch==2.8.0+cu128",
+  "trl==1.12.0",
+  "transformers==5.15.0",
+  "peft==0.20.0",
+  "accelerate==1.14.0",
+  "datasets==4.7.0",
+  "sympy==1.14.0",
+  "antlr4-python3-runtime==4.11.1",
+  "latex2sympy2",
+  "pebble",
+  "timeout-decorator",
+  "word2number",
+  "pyyaml",
+  "pytest",
+]
+
+[tool.uv]
+package = false
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+required-environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu128" }
+latex2sympy2 = { git = "https://github.com/QwenLM/Qwen2.5-Math.git", rev = "a45202bd16f1ec06f433442dc1152d0074773465", subdirectory = "evaluation/latex2sympy" }
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+default = true

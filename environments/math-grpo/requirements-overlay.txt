@@ -1,0 +1,14 @@
+# Inherit Torch/CUDA from the AutoDL image. Do not install with uv sync.
+trl==1.12.0
+transformers==5.15.0
+peft==0.20.0
+accelerate==1.14.0
+datasets==4.7.0
+sympy==1.14.0
+antlr4-python3-runtime==4.11.1
+latex2sympy2 @ git+https://github.com/QwenLM/Qwen2.5-Math.git@a45202bd16f1ec06f433442dc1152d0074773465#subdirectory=evaluation/latex2sympy
+pebble
+timeout-decorator
+word2number
+pyyaml
+pytest
